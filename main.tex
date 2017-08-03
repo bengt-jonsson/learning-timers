@@ -1,0 +1,94 @@
+
+\documentclass{llncs}
+
+\usepackage{paralist}
+
+\usepackage{amssymb, amsmath}
+\usepackage{enumitem}
+\usepackage{todonotes}
+\usepackage{subcaption}
+\captionsetup{compatibility=false}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{xcolor}
+%\usepackage{rotating}
+\usepackage{tikz}
+\graphicspath{{figures/}}
+\usetikzlibrary{calc,trees,positioning,arrows,chains,automata,shapes.geometric,%
+    decorations.pathreplacing,decorations.pathmorphing,shapes,%
+    matrix,shapes.symbols}
+
+\usetikzlibrary{shapes,arrows,automata,positioning,calc}
+\usetikzlibrary{fit,backgrounds}
+\usetikzlibrary{decorations.pathreplacing}
+\tikzset{
+>=stealth',
+  punktchain/.style={
+    rectangle,
+    rounded corners,
+    % fill=black!10,
+    draw=black, very thick,
+    text width=6em,
+    minimum height=3em,
+    text centered,
+    on chain},
+  line/.style={draw, thick, <-},
+  element/.style={
+    tape,
+    top color=white,
+    bottom color=blue!50!black!60!,
+    minimum width=8em,
+    draw=blue!40!black!90, very thick,
+    text width=10em,
+    minimum height=3.5em,
+    text centered,
+    on chain},
+  every join/.style={->, thick,shorten >=1pt},
+  decoration={brace},
+  tuborg/.style={decorate},
+  tubnode/.style={midway, right=2pt},
+}
+
+
+\newcommand*\InputTable[1]{\input{tables/#1.tex}}
+\newcommand*\InputTikz[1]{\input{figures/#1.tex}}
+\newif\iflong
+%\longtrue
+\longfalse
+\usepackage{marginnote}
+
+\pagestyle{plain}
+
+\begin{document}
+
+\title{Mealy Machines with Timers}
+\author{
+Bengt Jonsson \inst{1}
+\and
+Frits Vaandrager \inst{2}
+}
+\institute{
+Department of Information Technology, Uppsala University
+  \and
+Institute for Computing and Information Sciences, Radboud University, Nijmegen
+}
+
+\maketitle
+
+%\begin{abstract}
+
+%\end{abstract}
+
+\input{macros}
+
+\input{introduction}
+\input{MMTO}
+\input{bj-nclocks}
+%% \input{../OldFiles/oldstuff-bj-nclocks}
+%% \input{textbank}
+\input{1clockalgorithm}
+
+\bibliographystyle{plain}
+\bibliography{abbreviations,dbase}
+
+\end{document}

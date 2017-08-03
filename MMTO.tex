@@ -1,0 +1,365 @@
+\section{Mealy Machines with One Timer}
+
+Before we present the general model of Mealy machines with timers, we first discuss the special case of
+Mealy machines with a single timer (MM1T). 
+\marginnote{For multiple timers definition of semantics becomes more involved, and learning algorithm
+becomes considerably more difficult.}
+These are just regular (deterministic) Mealy machines,
+augmented with a timeout event and a function $\tau$ that specifies how transitions affect the timer.
+
+\begin{definition}
+\label{MM1T}
+A \emph{Mealy machine with one timer (MM1T)} is defined as a tuple $\M = (I, O, Q, q_0, \delta, \lambda, \tau)$, where
+\begin{itemize}
+\item
+$I$ is a finite set of inputs, containing a special timeout event $\mathit{to}$,
+\item
+$O$ is a finite set of outputs, containing a special default output $\Lambda$,
+\item
+$Q$ is a finite set of states,
+\item
+$q_0 \in Q$ is the initial state,
+\item
+$\delta: Q \times I \rightarrow Q$ is a transition function, 
+\item
+$\lambda: Q \times I \rightarrow O$ is an output function, 
+\item
+$\tau : Q \times I \rightarrow (\nat^{>0} \cup \{ \infty, \perp \})$ is a timer function.
+\end{itemize}
+\marginnote{Add initial timer value?}
+Function $\tau$ specifies the effect on the timer when an input $i$ occurs in state $q$.
+When $\tau(q,i) \in\nat^{>0}$ then we say that input $i$ \emph{starts} the timer in state $q$,
+when $\tau(q,i) = \infty$ then $i$ \emph{stops} the timer, and
+when $\tau(q,i) = \perp$ then $i$ \emph{does not affect} the timer.
+We require that, for each state $q$, $\tau(q,\mathit{to}) \neq\perp$, that is, 
+a timeout event either starts or stops the timer.
+
+Suppose $\delta(q,i) = q'$ and $\lambda(q,i)= o$.
+Then we write $q \xrightarrow{i/o,n} q'$ if $\tau(q,i) =n \in \nat^{>0} \cup \{ \infty \}$, 
+and $q \xrightarrow{i/o} q'$ or $q \xrightarrow{i/o, \perp} q'$ if $\tau(q,i) = \perp$.
+\end{definition}
+
+\begin{example}
+%As a first running example, 
+The MM1T of Figure~\ref{fig:abp} presents a simplified model of the sender from 
+the alternating-bit protocol, adapted from \cite[Figure 3.15]{KR13}.
+\begin{figure}[h]
+\centering
+\vspace{-2 em}
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
+  \node[initial, state] (1) {$q_0$};
+  \node[state] (2) [right of=1] {$q_1$};
+  \node[state] (3) [below of=2] {$q_2$};
+  \node[state] (4) [below of=1] {$q_3$};
+
+  \path[every node/.style={font=\sffamily\scriptsize}]
+    (1) edge [text width=1.5cm] node {$\mathit{in}/\mathit{send0}$ \\ $\mathit{start\_timer(3)}$} (2)
+    (2) edge [text width=1.5cm] node {$\mathit{ack0}/\Lambda$ \\ $\mathit{stop\_timer}$} (3)
+        edge [loop right, text width=1.5cm] node {$\mathit{to}/\mathit{send0}$\\ $\mathit{start\_timer}(3)$ } (2)
+    (3) edge [text width=1.5cm] node {$\mathit{in}/\mathit{send1}$ \\ $\mathit{start\_timer(3)}$} (4)
+    (4) edge [text width=1.5cm] node {$\mathit{ack1}/\Lambda$ \\ $\mathit{stop\_timer}$} (1)
+        edge [loop left, text width=2cm] node {$\mathit{to}/\mathit{send1}$\\ $\mathit{start\_timer(3)}$} (4);
+\end{tikzpicture}
+\caption{MM1T model of alternating-bit protocol sender}
+\label{fig:abp}
+\end{figure}
+In the diagram we write $\mathit{start\_timer(n)}$ on a transition if this transition starts the
+timer with value $n \in\nat^{>0}$, and we write $\mathit{stop\_timer}$ if the transition stops the timer.
+We omit trivial self-loops: if some state $q$ does not have an outgoing $i$-transition in the diagram
+then implicitly there is a transition $q \xrightarrow{i/\Lambda} q$.
+
+In the model, input $\mathit{in}$ corresponds to a request from the upper layer to transmit data.
+Initially, upon receipt of such a request, the sender builds a packet from the data and a sequence number $0$,
+sends the packet over the network (output $\mathit{send0}$), and starts the timer with timeout value $3$.
+If the sender receives an acknowledgement with the right sequence number $0$ (input $\mathit{ack0}$) 
+then it stops the timer and jumps to state $q_2$.
+Acknowledgement with the incorrect sequence number (input $\mathit{ack1}$) are ignored.
+If no $\mathit{ack0}$ input arrives within $3$ timeunits, a timeout occurs and the same packet is sent again.
+The behavior in states $q_2$ and state $q_3$ is analogous to that in states $q_0$ and $q_1$, respectively,
+with the roles of sequence numbers $0$ and $1$ swapped.
+\end{example}
+
+\paragraph{Semantics.}
+We give two semantics for MM1Ts, an untimed and a timed one.
+
+Functions $\delta$, $\lambda$ and $\tau$ are extended to sequences of inputs in the usual way.
+We define, for all $q \in Q$, $i \in I$ and $\sigma \in I^{\ast}$:
+\begin{eqnarray*}
+\delta(q, \epsilon) = q & , & \delta (q, i \; \sigma) = \delta(\delta(q,i), \sigma),\\
+\lambda(q, \epsilon) = \epsilon & ,& \lambda(q, i \;\sigma) = \lambda(q,i) \; \lambda(\delta(q,i),\sigma),\\
+\tau(q, \epsilon) = \epsilon &, & \tau(q, i \;\sigma) = \tau(q,i) \; \tau(\delta(q,i),\sigma).
+\end{eqnarray*}
+The untimed semantics of a MM1T $\M$ is given by the function $U_{\M}$ that assigns to each input sequence $\sigma \in I^{\ast}$
+the pair $U_{\M}(\sigma) = (\lambda(q_0, \sigma), \tau(q_0, \sigma))$.
+MM1Ts $\M$ and $\N$ are \emph{untimed equivalent}, written $\M \approx_{\mathit{untimed}} \N$, iff $U_{\M} = U_{\N}$.
+%
+Let $\sigma = i_1 \cdots i_k \in I^{\ast}$,
+$\lambda(q_0, \sigma) = o_1 \cdots o_k$, and
+$\tau(q_0, \sigma) = n_1 \cdots n_k$.
+Then we say the sequence $i_1 o_1 n_1 i_2 o_2 n_2 \cdots i_k o_k n_k$ is a \emph{trace} of $\M$.
+It is easy to see that $\M$ and $\N$ are untimed equivalent iff they have the same traces.
+
+The timed semantics, which is slightly more involved, describes the real-time behavior of a MM1RT.
+This semantics is defined by associating an infinite state transition system to a MM1T that describes all possible
+configurations and transitions between them.
+A \emph{configuration} of a MM1T is a pair $(q,t)$, where $q \in Q$ is a state and $t \in \bbbr^{\geq 0} \cup \{\infty\}$ 
+specifies the value of the timer. We refer to the pair $(q_0, \infty)$ as the \emph{initial configuration}.
+If $t = \infty$ then we say that the timer has been \emph{stopped}, otherwise it is \emph{running}.
+Using four rules we define a transition relation that describes how one configuration may evolve into another.
+For all $q, q' \in Q$, $i \in I$, $o \in O$, $t \in \bbbr^{\geq 0} \cup \{\infty\}$, $d \in \bbbr^{>0}$, and
+$n \in \nat^{>0} \cup \{ \infty \}$,
+\[
+\frac{d \leq t}{(q,t) \xrightarrow{d} (q,t-d)} \hspace{1em}
+\frac{q \xrightarrow{\mathit{to}/o,n} q'}{(q,0) \xrightarrow{\mathit{to}/o} (q',n)} \hspace{1em}
+\frac{i \neq \mathit{to} ,~  q \xrightarrow{i/o,n} q'}{(q,t) \xrightarrow{i/o} (q',n)} \hspace{1em}
+\frac{q\xrightarrow{i/o} q'}{(q,t) \xrightarrow{i/o} (q',t)}
+\]
+The first rule states that the value of the timer decreases when time advances, and
+time can advance as long as the value of the timer is nonzero.
+Here we use the convention that $\infty - d = \infty$, for any $d \in \bbbr$. This implies that when the
+timer has been stopped time may advance indefinitely.
+The second rule says that a timeout event occurs as soon as the timer has reached value $0$.
+The third rule describes the transitions in response to a regular input, which may either start or stop the timer,
+and the fourth rule describe transitions in which the timer is not affected.
+A \emph{timed word} over inputs $I$ and outputs $O$ is a sequence $w = (i_0, o_0, t_0), (i_1, o_1, t_1) \cdots (i_k, o_k, t_k)$, where each $i_j \in I$, each $o_j \in O$, and each $t_j \in \bbbr^{\geq 0}$.
+For a timed word $w = (i_0, o_0, t_0), (i_1, o_1, t_1) \cdots (i_k, o_k, t_k)$, a \emph{run} of MM1T $\M$ over $w$ is
+a sequence 
+\begin{eqnarray*}
+\alpha & = & C_0 \xrightarrow{t_0} C'_0 \xrightarrow{i_0/o_0} C_1 \xrightarrow{t_1} C'_1 \xrightarrow{i_1/o_1} C_2 \cdots
+\xrightarrow{t_k} C'_k \xrightarrow{i_k/o_k} C_{k+1}
+\end{eqnarray*}
+of transitions of $\M$ such that each $C_j, C'_j$ is a configuration of $\M$ and $C_0$ is the initial configuration.
+Note that, since MM1Ts are deterministic, for each timed word $w$ there exists at most one run over $w$.
+We say $w$ is a timed word of $\M$ if there exists a run of $\M$ over $w$.
+Two MM1Ts $\M$ and $\N$ with the same sets of inputs are \emph{timed equivalent}, denoted $\M \approx_{\mathit{timed}} \N$, iff 
+they have the same sets of observations.
+
+\paragraph{Note}
+The timed semantics is an idealization of the behavior of a real SUT: in a real system an input/output
+interaction will always take a bit of time and will thus not be instantaneous.
+This issue will be discussed in more detail in Section XX.
+Note that a MM1T can be viewed as a very restricted type of timed automaton.
+
+Although the definitions are quite different, it turns out that timed and untimed equivalence are almost the same.
+
+\begin{theorem}
+\label{untimedimpliestimed}
+$\M \approx_{\mathit{untimed}} \N$
+implies
+$\M \approx_{\mathit{timed}} \N$.
+\end{theorem}
+\begin{proof}
+Assume $\M \approx_{\mathit{untimed}} \N$ and assume
+$w = (i_0, o_0, t_0), (i_1, o_1, t_1) \cdots (i_k, o_k, t_k)$ is an observation of $\M$.
+Since $\approx_{\mathit{untimed}}$ is symmetric, it suffices to prove that $w$ is an observation of $\N$.
+
+Because $w$ is an observation of $\M$, $\M$ has a run over $w$:
+\[
+C_0 \xrightarrow{t_0} C'_0 \xrightarrow{i_0/o_0} C_1 \xrightarrow{t_1} C'_1 \xrightarrow{i_1/o_1} C_2 \cdots
+\xrightarrow{t_k} C'_k \xrightarrow{i_k/o_k} C_{k+1}
+\]
+Let $C_j = (q_j, u_i)$ and $C'_j = (q_j, u'_j)$, for all $j$.
+Then $\M$ has a corresponding sequence of transitions:
+\[
+q_0 \xrightarrow{i_0/o_0, n_0} q_1 \xrightarrow{i_1/o_1, n_1} \cdots \xrightarrow{i_k/o_k, n_k} q_{k+1} .
+\]
+Let $\sigma = i_0 \cdots i_k$. Since $\M \approx_{\mathit{untimed}} \N$, $U_\M (\sigma) = U_\N (\sigma)$.
+Therefore, $\N$ has a sequence of transitions:
+\[
+r_0 \xrightarrow{i_0/o_0, n_0} r_1 \xrightarrow{i_1/o_1, n_1} \cdots \xrightarrow{i_k/o_k, n_k} r_{k+1} .
+\]
+with all $r_j$ states of $\N$ and $r_0$ the initial state of $\N$. 
+Let $D_j = (r_j, u_i)$ and $D'_j = (r_j, u'_j)$, for all $j$.
+Then it is routine to check that
+\[
+D_0 \xrightarrow{t_0} D'_0 \xrightarrow{i_0/o_0} D_1 \xrightarrow{t_1} D'_1 \xrightarrow{i_1/o_1} D_2 \cdots
+\xrightarrow{t_k} D'_k \xrightarrow{i_k/o_k} D_{k+1}
+\]
+is a run over $w$ of $\N$.
+Thus $w$ is an observation of $\N$, as required.
+\end{proof}
+
+The converse of the implication of Theorem~\ref{untimedimpliestimed} does not hold, due to two technical problems.
+The first problem is that in the timed semantics there can never be a timeout
+in configurations where the timer is stopped, whereas in the untimed semantics a timeout is possible in every state.
+The second problem is that in configurations where the timer is stopped, there is no observable difference between transitions that stop the timer and transitions that do not affect the timer.
+In order to deal with these problems, we introduce the subclass of well-formed MM1Ts.
+We show that
+(a) for every MM1T there is a well-formed MM1T that is timed equivalent to it, and
+(b) on well-formed MM1Ts the timed and the untimed semantics agree.
+
+A MM1T is \emph{well-formed} if there exists a function $\mathit{timer}: Q \rightarrow \{ \mathit{on}, \mathit{off} \}$
+such that:
+\begin{enumerate}
+\item
+$\mathit{timer}(q_0) =  \mathit{off}$,
+\item
+if $q \xrightarrow{i/o, n} q'$ and $n \in \nat^{>0}$ then $\mathit{timer}(q') = \mathit{on}$,
+\item
+if $\mathit{timer}(q) =  \mathit{off}$ then $q \xrightarrow{\mathit{to}, \Lambda} q$,
+\item
+if $q \xrightarrow{i/o, \infty} q'$ then $\mathit{timer}(q) = \mathit{on}$ and $\mathit{timer}(q') = \mathit{off}$, and
+\item
+if $q \xrightarrow{i/o} q'$ then $\mathit{timer}(q)= \mathit{timer}(q')$.
+\end{enumerate}
+
+\begin{theorem}
+For every MM1T $\M$ there exists a well-formed MM1T $\N$ with at most twice as many states such that 
+$\M \approx_{\mathit{timed}} \N$.
+\end{theorem}
+\begin{proof}
+Let $\M = (I, O, Q, q_0, \delta, \lambda, \tau)$ be a MM1T. 
+We construct a well-formed MM1T $\N= (I, O, Q', q'_0, \delta', \lambda', \tau')$ that is timed equivalent to $\M$ 
+by adding an extra bit to the state that records whether the timer is switched on or off.
+We define $Q' = Q \times \{ \mathit{true}, \mathit{false} \}$ and $q'_0 = (q_0, \mathit{false})$.
+Functions $\delta'$, $\lambda'$ and $\tau'$ are defined by the following five rules,
+for all $q, q' \in Q$, $i \in I$, $o \in O$, $n \in \nat^{>0}$, and $b \in \{ \mathit{true}, \mathit{false} \}$,
+\[
+\frac{q \xrightarrow{i/o, n} q' ,~ i = \mathit{to} \Rightarrow b = \mathit{true}}
+{(q,b) \xrightarrow{i/o, n} (q', \mathit{true})} \hspace{2em}
+(q, \mathit{false}) \xrightarrow {\mathit{to}, \Lambda} (q, \mathit{false})
+\]
+\[
+\frac{q \xrightarrow{i/o, \infty} q'}{(q, \mathit{true}) \xrightarrow{i/o, \infty} (q', \mathit{false})} \hspace{1em}
+\frac{q \xrightarrow{i/o, \infty} q'}{(q, \mathit{false}) \xrightarrow{i/o} (q', \mathit{false})} \hspace{1 em}
+\frac{q \xrightarrow{i/o} q'}{(q, b) \xrightarrow{i/o} (q', b)}
+\]
+The behavior of $\M$ and $\N$ is the same,
+except that all $\mathit{to}$-transitions from states where the timer is off are replaced by trivial self loops (second rule),
+and all transitions that stop the timer when it is already off are replaced by transitions that do not affect the timer (fourth rule).
+It is straightforward to check that MM1T $\N$ is well-formed (by using
+the $\mathit{timer}$ function that projects each state $(q, b)$ to its second component $b$)
+and has twice as many states as $\M$.
+
+In order to show that $\M \approx_{\mathit{timed}} \N$, we define a bisimulation relation between $\M$ and $\N$.
+Let $R$ be the relation between configurations of $\M$ and $\N$ defined by:
+\begin{eqnarray*}
+R & = & \{ ((q,t), ((q, \mathit{true}), t)) \mid q \in Q,~ t \in \bbbr^{\geq 0} \} \cup\\
+& & \{ ((q,\infty), ((q, \mathit{false}), \infty)) \mid q \in Q \}.
+\end{eqnarray*}
+Via a routine case distinction one can check that $R$ is a (strong) bisimulation relation between the infinite 
+state transition systems associated to $\M$ and $\N$.
+Clearly, strong bisimularity of transition systems implies equility of their sets of observations.
+\end{proof}
+
+Suppose that $\M = (I, O, Q, q_0, \delta, \lambda, \tau)$ is a well-formed MM1T and suppose that
+$\beta = i_0 o_0 n_0 i_1 o_1 n_1 \cdots i_k o_k n_k$ is a trace of $\M$.
+Then, by inspection of trace $\beta$, we can figure out whether the timer is on or off
+after input sequence $\sigma = i_0 \cdots i_k$.
+Define the value $\mathit{timer}(\beta) \in \{ \mathit{true}, \mathit{false} \}$ recursively as follows:
+If $k=0$ then $\mathit{timer}(\beta) = \mathit{false}$. If $k > 0$ then
+\begin{eqnarray*}
+\mathit{timer}(\beta) & = & \left\{ \begin{array}{ll} 
+\mathit{true} & \mbox{if } n_k \in\nat\\
+\mathit{false} & \mbox{if } n_k = \infty\\
+\mathit{timer}(\beta') & \mbox{if } n_k = \perp
+\end{array}\right.
+\end{eqnarray*}
+with $\beta' = i_1 o_1 n_1 i_2 o_2 n_2 \cdots i_{k-1} o_{k-1} n_{k-1}$.
+%
+The following lemma is easy to prove by induction on the length of $\beta$:
+\begin{lemma}
+\label{timer lemma}
+$\mathit{timer}(\beta) = \mathit{timer}(\delta(q_0, \sigma))$.
+\end{lemma}
+
+We call trace $\beta$ \emph{realizable} if no timeouts occur when the timer is off, that is,
+for all $l < k$,
+\begin{eqnarray*}
+i_{l+1} = \mathit{to} & \Rightarrow & \mathit{timer} (i_1 o_1 n_1 i_2 o_2 n_2 \cdots i_l o_l n_l) = \mathit{true}
+\end{eqnarray*}
+
+For each realizable trace $\beta$ we may construct a corresponding run (thence the qualification ``realizable'')
+\begin{eqnarray*}
+\alpha & = & C_0 \xrightarrow{t_0} C'_0 \xrightarrow{i_0/o_0} C_1 \xrightarrow{t_1} C'_1 \xrightarrow{i_1/o_1} C_2 \cdots
+\xrightarrow{t_k} C'_k \xrightarrow{i_k/o_k} C_{k+1}
+\end{eqnarray*}
+We call run $\alpha$ \emph{eager} if each transition is taken as soon as it is enabled, that is,
+$i_j \neq \mathit{to} \Rightarrow t_j = 0$.
+Then, in fact, for each realizable trace $\beta$ there is a unique eager run that corresponds to it.
+If $\alpha$ is eager then the value $u_j$ of the timer in configuration $C_j$ is given by $u_0 = \infty$ and, for $j>0$,
+\begin{eqnarray*}
+u_j & = & \left\{ \begin{array}{ll} 
+n_{j-1} & \mbox{if } n_{j-1} \in \nat^{>0} \cup \{\infty\}\\
+u_{j-1} & \mbox{otherwise}
+\end{array} \right.
+\end{eqnarray*}
+If $\alpha$ is eager then the timed word $w$ that corresponds to it is the sequence
+$w = (i_0, o_0, t_0), (i_1, o_1, t_1) \cdots (i_k, o_k, t_k)$,
+where, for all $j$,
+\begin{eqnarray*}
+t_j & = & \left\{ \begin{array}{ll} 
+u_j & \mbox{if } i_j = \mathit{to}\\
+0   & \mbox{otherwise}
+\end{array}\right.
+\end{eqnarray*}
+Note that trace $\beta$ contains all the information required to compute $w$.
+
+If $\beta$ is a trace of a well-formed MM1T and we insert a triple ``$\mathit{to} \; \Lambda\; \perp$'' at a point where 
+the timer is off, then the result will again be a trace of the MM1T.
+In fact, any trace from a MM1T can be obtained from a realizable trace by repeating this operation a number of times.
+This implies the following lemma:
+
+\begin{lemma}
+\label{realizable}
+Let $\M$ and $\N$ be well-formed MM1Ts with the same realizable traces.
+Then  $\M \approx_{\mathit{untimed}} \N$.
+\end{lemma}
+
+\begin{theorem}
+Let $\M$ and $\N$ be well-formed MM1Ts.
+Then  $\M \approx_{\mathit{timed}} \N$ implies $\M \approx_{\mathit{untimed}} \N$.
+\end{theorem}
+\begin{proof}
+Suppose $\M \approx_{\mathit{timed}} \N$. 
+
+By Lemma~\ref{realizable}, it suffices to prove that $\M$ and $\N$ have the same realizable traces.
+Let $\beta$ be a realizable trace of $\M$.
+We prove by induction on the length of $\beta$ that $\beta$ is a realizable trace of $\N$ (the other inclusion follows by symmetry).
+
+The base case is trivial, since the empty trace is a realizable trace of $\N$.
+
+Now suppose the length of $\beta$ is $3(k+1)$, for some $k$.
+Let $\beta = \gamma \; i \; o \; n$.
+Then $\gamma$ is the prefix of $\beta$ of length $3 k$.
+Since $\gamma$ is a realizable trace of $\M$, by induction hypothesis, $\gamma$ is a realizable trace of $\N$.
+Let $\alpha$ and $\alpha'$ be the unique eager runs that correspond to $\gamma$ in $\M$ and $\N$, respectively.
+Then both $\alpha$ and $\alpha'$ have the same timed word $w$. 
+Let $q$ and $q'$ be the final states of $\alpha$ and $\alpha'$, respectively.
+By Lemma~\ref{timer lemma}, either the timer is on both in $q$ and $q'$, or the timer is off in both $q$ and $q'$.
+Moreover, in the final configurations of both runs the timers have the same value $t$.
+
+If the last input $i$ from trace $\beta$ is different from $\mathit{to}$, then
+$w \; (i \; o \; 0)$ is a timed word of $\M$.
+Since $\M \approx_{\mathit{timed}} \N$, $w \; (i \; o \; 0)$ is also a timed word of $\N$.
+Hence $\N$ has a realizable trace $\beta' \; i \; o \; n'$, and it remains to show $n = n'$.
+We consider three cases:
+\begin{enumerate}
+\item
+If $n = \infty$, then $\M$ has timed words $w \; (i \; o \; 0) \; (i \; o' \; d)$, for some output $o'$ and for any $d \in\bbbr^{\geq 0}$.
+By well-formedness, the timer is on in state $q$, and thus it is also on in state $q'$.
+Since $\N$ has the same timed words as $\M$, and since the timer is off in $q'$, we may conclude $n' = \infty$.
+\item
+If the timer is off in $q$ and $n = \perp$, then $\M$ has timed words $w \; (i \; o \; 0) \; (i \; o' \; d)$, for some output $o'$ and for any $d \in\bbbr^{\geq 0}$.
+Since $\N$ has the same timed words as $\M$, since the timer is off in $q'$, 
+and since $\N$ is well-formed, we may conclude $n' = \perp$.
+\item 
+If the timer is on in $q$ and $n = \perp$, then $\M$ has a timed word $w \; (i \; o \; \frac{1}{2}) \; (\mathit{to} \; o' \; t- \frac{1}{2})$, for some output $o'$.
+Since $\N$ has the same timed words as $\M$, and since the value of the timer in state $q'$ is $t$, we may conclude $n' = \perp$.
+\item
+If $n \in \nat^{\geq 0}$, then $\M$ has a timed word $w \; (i \; o \; \frac{1}{2}) \; (\mathit{to} \; o' \; n)$, for some output $o'$.
+Since $\N$ has the same timed words as $\M$, and since the value of the timer in state $q'$ is $t$, we may conclude $n' = n$.
+\end{enumerate}
+If the last input $i$ from trace $\beta$ equals $\mathit{to}$, then
+$w \; (\mathit{to} \; o \; t)$ is a timed word of $\M$.
+Since $\M \approx_{\mathit{timed}} \N$, $w \; (\mathit{to} \; o \; t)$ is also a timed word of $\N$.
+Hence $\N$ has a realizable trace $\beta' \; \mathit{to} \; o \; n'$, and it remains to show $n = n'$.
+By Definition~\ref{MM1T}, a timeout event either starts or stops the timer, and thus it suffices to consider the
+following two cases:
+\begin{enumerate}
+\item
+If $n = \infty$, then $\M$ has timed words $w \; (i \; o \; 0) \; (i \; o' \; d)$, for some output $o'$ and for any $d \in\bbbr^{\geq 0}$.
+By well-formedness, the timer is on in state $q$, and thus it is also on in state $q'$.
+Since $\N$ has the same timed words as $\M$, and since the timer is off in $q'$, we may conclude $n' = \infty$.
+\end{enumerate}
+\end{proof}

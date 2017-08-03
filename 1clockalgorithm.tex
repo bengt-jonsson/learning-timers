@@ -1,0 +1,46 @@
+\section{Learning algorithm}
+In order to learn a MMTO, we may adapt a standard algorithm for learning (untimed) Mealy machines, e.g., $L^\ast$.
+We assume that the learner knows an upper bound $B$ on the possible timeout values, that is, a constant $B \in \nat$ such
+that, for each $q \in Q$, $\tau(q) < \infty$ implies $\tau(q) < B$.
+Whenever we discover a new state, that is, a prefix $\beta$ of inputs that uniquely determines a state in the MMTO,
+we may figure out the corresponding value of the timeout function as follows: by taking transitions in $\beta$ as
+fast as possible, we ensure that the value of the timer is $0$ upon arrival in the state.
+Now we just wait for $B$ time units. If an event occurs before the $B$ time units have elapsed, we record the delay after
+which this event occurs: this is the value of the timeout function for state $\beta$.
+Otherwise, if no event occurs and $B$ time units have elapsed, we know the value of the timeout function is $\infty$.
+We record the observed value of the timeout function in a separate column in the observation table.
+(Or, equivalently, we may annotate the output in the column for suffix $\mathit{to}$ with this value.)
+Now suppose we have found a state that can be reached by a prefix $\beta$, and we want to figure out
+whether the timer is reset after some input $i$.
+We can do this as follows.
+First we perform all the inputs from $\beta$ as fast as possible, ensuring that the value of the timer is $0$ in
+the resulting state.
+Now we wait $0.5$ time units.
+If a timeout has occurred during this interval then we know that the timeout value of the state after $\beta$ is $0$.
+Thus input $i$ may only occur at time $0$ and it does not make any difference whether or not the timer is reset as part
+of an $i$-transition.
+If no timeout occurs during the $0.5$ time units, then we perform the input $i$ and wait for $B$ time units.
+If no timeout occurs during this interval then we conclude that the timer is switched of after trace $\beta \; i$,
+and again it does not make a difference whether or not the timer is reset as part of the $i$-transition.
+If, however, a timeout occurs $t$ time units after the input $i$, then there are two cases:
+\begin{enumerate}
+\item
+$t$ is equal to the value of the timeout function for trace $\beta \; i$, and we may conclude that
+the timer is reset as part of the $i$-transition, or 
+\item
+$t$ is equal to the value of the timeout function for trace $\beta \; i$ \emph{minus} $0.5$, and
+we may conclude that the timer is not reset in the $i$-transition.
+\end{enumerate}
+We record the observed value of the reset function in the observation table in the entry for row $\beta$ and
+column $i$.
+
+The above algorithm can be implemented as a minor adaptation of existing implementations of $L^{\ast}$. The query
+complexity is the same as that of $L^{\ast}$. The total time of running a query will be at most $(u+1) \cdot B + 0.5$,
+where $u$ is the number of \emph{to} inputs that occur in the query.
+
+\paragraph{Research questions}
+Work out the proofs. What is the best/easiest way to implement this?
+Does it also work for register automata.
+Can we generalize these ideas to richer classes of automata (e.g. more clocks, splitting inputs and outputs into separate
+transitions, closure under composition)?
+Implement and apply this stuf, for instance to the TCP protocol.
