@@ -2,25 +2,25 @@
 \label{sec:intro}
 
 There has been much progress recently on algorithms and tools for active automata learning, with many
-applications in areas such as network/security protocols and control software \cite{Vaa16}.
+applications in areas such as network/security protocols and control software \cite{Vaa17}.
 Timing often does play a role in these applications but cannot be handled using existing tools. Hence
 timing issues have been ignored or artificially suppressed in case studies.
 There has been work on algorithms for learning event-recording automata \cite{GrinchteinJL10},
 but the complexity of these algorithms appears to be prohibitively high.
-Another problem is that the specific restrictions of event recording automata sometimes make it hard to model
+Also the specific restrictions of event recording automata sometimes make it hard to model
 certain system behaviors that occur in practice.
 For instance, a pattern that often occurs in protocols is that with $t$ time units after a first event $a$
-there should be an event $b$, or else a timeout occurs. (For instance, in TCP a SYN should be followed by a SYN-ACK
-within a specified time interval.)
+there should be an event $b$, or else a timeout occurs.
+% (For instance, in TCP a SYN should be followed by a SYN-ACK within a specified time interval.)
 In an event recording automaton a clock is associated to each event, which is reset whenever that event occurs.
 This means that upon occurrence of a second $a$ the automaton no longer remembers when the first $a$ has occurred,
 and can thus not ensure the occurence of a timeout at the required moment in time.
 
 We therefore decided to pursue a different approach. Rather than restricting the expressivity of general timed automata
-until reaching a tractable model class, we want to explore tractable extensions of untimed automata models that appear to
+until reaching a tractable model class, we explore tractable extensions of untimed automata models that appear to
 be sufficiently expressive to describe the real-time behavior of practical applications.
-
-This note is inspired by recent work of Caldwell, Cardell-Oliver and French \cite{CCF16} on time delay Mealy machines.
+%
+Our work is inspired by recent work of Caldwell, Cardell-Oliver and French \cite{CCF16} on time delay Mealy machines.
 We describe a simple variant of their model, Mealy machines with timers (MMTs), that 
 (a) is able to model the timing behavior of a wide variety of communication protocols, and
 (b) can be learned efficiently.
