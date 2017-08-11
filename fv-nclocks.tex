@@ -339,7 +339,7 @@ Suppose $\beta$ is a behavior. Then $\beta$ is feasible iff $\Post_{\beta} \neq 
 Straightforward by induction on the length of $\beta$.
 \end{proof}
 
-The next two lemma's will be used in the following subsection.
+The next four lemma's will be used in the following subsection.
 
 \begin{lemma}
 \label{lemma: feasibility concatenation}
@@ -360,6 +360,19 @@ appear in the DBM's that represent the sets $\Post_{\beta}$. Thus all the sets $
 collection of DBMs.
 \end{proof}
 
+\begin{lemma}
+Suppose $\beta$ is a feasible behavior and $i \in I$.
+Then there exista a feasible behavior $\beta \xrightarrow{i/o, \rho} Y$, for some $o$, $\rho$ and $Y$.
+\end{lemma}
+
+Let $\beta$ be a feasible behavior and let $x \in X$ be a timer. Then we say that $x$ is \emph{expirable} after $\beta$
+if there exists a valuation in $\Post_{\beta}$ in which $x$ is minimal.
+
+\begin{lemma}
+Suppose $\beta$ is a feasible behavior and $x \in X$.
+Then $x$ is expirable iff $\beta \xrightarrow{\toevent{x}/o, \rho} Y$ is a feasible behavior, for some $o$, $\rho$ and $Y$.
+\end{lemma}
+
 \subsection{Myhill-Nerode}  
 We present a variant of the famous Myhill-Nerode theorem for MMTs.
 We will use this theorem as a basis for an automata learning algorithm for MMTs.
@@ -377,8 +390,8 @@ $\beta \xrightarrow{i/o_1, \rho_1} X_1 \in S \wedge \beta \xrightarrow{i/o_2, \r
 $\beta \in S \wedge i \in I \Longrightarrow \exists o, \rho, Y : \beta \xrightarrow{i/o, \rho} Y \in S$,
 \item
 \emph{timeout complete}:
-$\beta \in S \wedge \Post_{\beta} \mbox{ contains valuation with } x \mbox{ minimal } \Longrightarrow
-\exists o, \rho, Y : \beta \xrightarrow{\toevent{x}/o, \rho} Y \in S$.
+$\beta \in S \wedge x \mbox{ expirable after } \beta \Longrightarrow
+\exists o, \rho, Y: \beta \xrightarrow{\toevent{x}/o, \rho} Y \in S$.
 \end{itemize}
 Behaviors $\beta, \beta' \in S$ are \emph{equivalent} for $S$, notation $\beta \equiv_S \beta'$, iff 
 $\Post_{\beta} = \Post_{\beta'}$ and for any observation
@@ -421,15 +434,15 @@ Let $\beta \in S$ and $i \in I$. Then, since $S$ is both input complete and beha
 $o$, $\rho$ and $Y$ such that $\beta' = \beta \xrightarrow{i/o, \rho} Y \in S$.
 We define $\delta([\beta],i) = [\beta']$, $\lambda([\beta],i) = o$, and $\remap([\beta],i) = \rho$.
 \item
-Let $\beta \in S$ and $x \in \Last{\beta}$ such that $\Post_{\beta}$ contains a valuation with $x$ minimal.
+Assume $\beta \in S$ and $x\in \Last{\beta}$ expirable after $\beta$. 
 Then, since $S$ is both input complete and behavior deterministic, there exist unique
 $o$, $\rho$ and $Y$ such that $\beta' = \beta \xrightarrow{\toevent{x}/o, \rho} Y \in S$.
 We define $\delta([\beta],\toevent{x}) = [\beta']$, $\lambda([\beta],\toevent{x}) = o$, and $\remap([\beta],\toevent{x}) = \rho$.
 \item
-Let $\beta \in S$ and $x \in \Last{\beta}$ such that $\Post_{\beta}$ contains no valuation with $x$ minimal.
+Assume $\beta \in S$ and $x \in \Last{\beta}$ not expirable after $\beta$.
 We define $\delta([\beta],\toevent{x}) = [\beta]$, $\lambda([\beta],\toevent{x}) = \Lambda$, and $\remap([\beta],\toevent{x}) = \rho_0$, where $\domof{\tau_0} = \emptyset$.
 \end{itemize}
-It is straightforward to verify that $M$ is a well-defined MMT whose set of feasible behaviors equals $S$.
+It is routine to verify that $M$ is a well-defined MMT whose set of feasible behaviors equals $S$.
 \end{proof}
 
 
