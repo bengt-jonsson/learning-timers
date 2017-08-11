@@ -181,7 +181,7 @@ A \emph{behavior} over inputs $I$, outputs $O$, and timers $Y \subseteq X$ is a 
 \end{eqnarray*}
 where $X_0 \subseteq Y$ and, for each $j>0$,  $i_j \in \extinputs$, $o_j \in O$, $\rho_j \in X \hookrightarrow \natplus$, and
  $X_j \setminus X_{j-1}  \subseteq \domof{\rho_j} \subseteq X_j \subseteq Y$.
-Moreover, if $i_j = \toevent{x}$, for some $j>0$ and $x \in X$, then $x \in X_{j-1}$ and $x \not\in X_j \setminus \domof{\rho_j}$.
+Moreover, if $i_j = \toevent{x}$, for some $j>0$, then $x \in X_{j-1}$ and $x \not\in X_j \setminus \domof{\rho_j}$.
 
 For any nonempty sequence $\sigma$, $\Head{\sigma}$ denotes the first element of $\sigma$, $\Tail{\sigma}$ denotes the sequence obtained by removing the first element from $\sigma$, and $\Last{\sigma}$ denotes the last element of $\sigma$.
 Suppose $\beta, \beta'$ are behaviors over $I$, $O$ and $Y$ such that $\Last{\beta} = \Head{\beta'}$.
@@ -361,16 +361,18 @@ collection of DBMs.
 \end{proof}
 
 \begin{lemma}
-Suppose $\beta$ is a feasible behavior and $i \in I$.
-Then there exista a feasible behavior $\beta \xrightarrow{i/o, \rho} Y$, for some $o$, $\rho$ and $Y$.
+Suppose $\beta$ is a feasible behavior and $Y \xrightarrow{i/o, \rho} Y'$ is a behavior,
+with $Y = \Last{\beta}$ and $i \in I$.
+Then $\beta \xrightarrow{i/o, \rho} Y'$ is a feasible behavior.
 \end{lemma}
 
 Let $\beta$ be a feasible behavior and let $x \in X$ be a timer. Then we say that $x$ is \emph{expirable} after $\beta$
 if there exists a valuation in $\Post_{\beta}$ in which $x$ is minimal.
 
 \begin{lemma}
-Suppose $\beta$ is a feasible behavior and $x \in X$.
-Then $x$ is expirable iff $\beta \xrightarrow{\toevent{x}/o, \rho} Y$ is a feasible behavior, for some $o$, $\rho$ and $Y$.
+Suppose $\beta$ is a feasible behavior and $Y \xrightarrow{\toevent{x}/o, \rho} Y'$ is a behavior 
+with $Y = \Last{\beta}$.
+Then $x$ is expirable iff $\beta \xrightarrow{\toevent{x}/o, \rho} Y'$ is feasible.
 \end{lemma}
 
 \subsection{Myhill-Nerode}  
@@ -420,7 +422,7 @@ $\{ \Post_{\beta} \mid \beta \mbox{ is a feasible behavior of } \M \}$ is finite
 $\equiv_S$ has finite index.
 
 ``$\Leftarrow$'' Suppose $S$ is nonempty, etc.
-We define an MMT $\M = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$ as follows:
+We define MMT $\M = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$ as follows:
 \begin{itemize}
 \item
 $Q$ is the set of equivalence classes of $\equiv_S$,
@@ -440,7 +442,7 @@ $o$, $\rho$ and $Y$ such that $\beta' = \beta \xrightarrow{\toevent{x}/o, \rho} 
 We define $\delta([\beta],\toevent{x}) = [\beta']$, $\lambda([\beta],\toevent{x}) = o$, and $\remap([\beta],\toevent{x}) = \rho$.
 \item
 Assume $\beta \in S$ and $x \in \Last{\beta}$ not expirable after $\beta$.
-We define $\delta([\beta],\toevent{x}) = [\beta]$, $\lambda([\beta],\toevent{x}) = \Lambda$, and $\remap([\beta],\toevent{x}) = \rho_0$, where $\domof{\tau_0} = \emptyset$.
+We define $\delta([\beta],\toevent{x}) = [\beta]$, $\lambda([\beta],\toevent{x}) = \Lambda$, and $\remap([\beta],\toevent{x}) = \rho_0$, where $\domof{\rho_0} = \emptyset$.
 \end{itemize}
 It is routine to verify that $M$ is a well-defined MMT whose set of feasible behaviors equals $S$.
 \end{proof}
