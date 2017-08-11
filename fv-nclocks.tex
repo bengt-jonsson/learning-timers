@@ -1,17 +1,22 @@
 \newcommand{\natplus}{\nat^{>0}}
 \newcommand{\realsplus}{\bbbr^{\geq 0}}
+\newcommand{\delays}{\bbbr^{> 0}}
 \newcommand{\stoptimer}{\mathit{kill}}
 \newcommand{\tosymbol}{\mathit{to}}
 \newcommand{\toevent}[1]{\mathit{to}[#1]}
 \newcommand{\toevents}{\mbox{\sl TO}}
 \newcommand{\extinputs}{\hat{I}}
 \newcommand{\acttimers}{\mathit{active}}
+\newcommand{\Head}[1]{\mathsf{Head}({#1})}
+\newcommand{\Tail}[1]{\mathsf{Tail}({#1})}
+\newcommand{\Last}[1]{\mathsf{Last}({#1})}
 \newcommand{\expirable}{\mathit{expirable}}
 \newcommand{\tvals}{\kappa}
+\newcommand{\Vals}[1]{\mathit{Val}({#1})}
 \newcommand{\delay}[2]{t_{[#1:#2]}}
 \newcommand{\timerof}[2]{x_{#1}^{#2}}
 \newcommand{\constrof}[1]{\phi_{#1}}
-\newcommand{\post}{\mathit{post}}
+\newcommand{\Post}{\mathsf{Post}}
 \newcommand{\beh}{\mathit{beh}}
 
 \newcommand{\conc}{\cdot}
@@ -49,9 +54,11 @@
 \section{General Treatment for Arbitrary Number of Timers}
 
 It is now time to consider the general case of
-Mealy machines with an arbitrary number of timers (MMnT). 
+Mealy machines with an arbitrary number of timers (MMT). 
 These just generalize MM1Ts in that they have a set of timers that
 can be manipulated in the same way as the timer of a MM1T.
+
+\subsection{MMTs}
 We assume an unbounded set $X$ of {\em timers};
 we use $x$, $x_1$, $x_2$, etc.\ to range over timers.
 Let $\toevents$ be the set of {\em timeout events} of form
@@ -63,13 +70,13 @@ For arbitrary functions $f$ and $g$, $f [g]$ is the function with domain $\domof
 on $\domof{f} \setminus \domof{g}$ and like $g$ on $\domof{f} \cap \domof{g}$.
 
 \begin{definition}
-\label{def:MMnT}
-A \emph{Mealy machine with timers (MMnT)} is a tuple
+\label{def:MMT}
+A \emph{Mealy machine with timers (MMT)} is a tuple
 \\
 $\M = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$, where
 \begin{itemize}
 \item
-$I$ is a finite set of inputs,
+$I$ is a finite set of input events,
 \item
 $O$ is a finite set of outputs, containing a special default output $\Lambda$,
 \item
@@ -84,80 +91,63 @@ $\delta: Q \times \extinputs \hookrightarrow  Q$ is a transition function,
 \item
 $\lambda: Q \times \extinputs \hookrightarrow O$ is an output function, 
 \item
-$\remap : Q \times \extinputs \hookrightarrow (X \hookrightarrow \natplus)$ is a (re)start function.
+$\remap : Q \times \extinputs \hookrightarrow (X \hookrightarrow \natplus)$ is a timer initialization function.
 Let $q \in Q$, $i \in \extinputs$, $q'=\delta(q,i)$ and $\rho=\remap(q,i)$. 
 We require that $\rho$ is injective and $\varsof{q'} \setminus \varsof{q} \subseteq \domof{\rho} \subseteq\varsof{q'}$. Moreover
-  if $i=\toevent{x}$, for some $x \in\varsof{q}$, then $x \not\in \varsof{q'} \setminus \domof{\rho}$.
-  \marginpar{Explain injectivity is required for determinism}
+  if $i=\toevent{x}$, for some $x$, then $x \not\in \varsof{q'} \setminus \domof{\rho}$.
 \end{itemize}
-We require that inputs are always enabled and timeout events can only occur for timers that are active in the current state:
+We require that input events are always enabled and timeout events are only enabled
+for timers that are active in the current state:
+\marginpar{Explain injectivity is required for determinism}
 for $q \in Q$ and $i \in \extinputs$,  $\delta(q,i)$, $\lambda(q,i)$ and $\pi(q,i)$ are defined iff either
 $i \in I$ or $i=\toevent{x}$, for some $x \in\varsof{q}$.
+We write $q \xrightarrow{i/o,\rho} q'$ if $\delta(q,i) = q'$, $\lambda(q,i)= o$ and $\remap(q,i) = \rho$.
 \end{definition}
-Mapping $\remap$ specifies how timers are affected when an event $i$ occurs in state $q$.
+The restart function $\remap$ determines how timers are affected when an event $i$ occurs in state $q$.
+Basically, there are four things that may happen.
+\marginpar{Add Venn diagram to illustrate situation.}
 Let $q \in Q$, $i \in \extinputs$, $\delta(q,i)=q'$ and $\remap(q,i)=\rho$.
-If $x \in\varsof{q} \setminus \varsof{q'}$ then we say that input $i$ \emph{stops} timer $x$.
-Conversely, if $x \in \varsof{q'} \setminus \varsof{q}$ then $i$ \emph{starts} timer $x$.
-In this case, the value of $x$ is set to $\rho(x)$.
-If $x \in \varsof{q} \cap \domof{\rho}$ then timer $x$ is \emph{restarted} and set to value $\rho(x)$.
-Finally, if $x \in \varsof{q'} \setminus \domof{\rho}$ then the value of timer $x$ is \emph{not affected} by input $i$.
-We require that upon occurrence of a timeout event $\toevent{x}$, for $x \in \varsof{q}$, timer $x$ is either stopped or restarted.
-\marginnote{Add a Venn diagram to illustrate situation.}
-
-Suppose $\delta(q,i) = q'$, $\lambda(q,i)= o$, and $\remap(q,i) = \rho$.
-Then we write $q \xrightarrow{i/o,\rho} q'$.
+\begin{enumerate}
+\item
+If $x \in\varsof{q} \setminus \varsof{q'}$ then input $i$ \emph{stops} timer $x$.
+\item
+If $x \in \varsof{q'} \setminus \varsof{q}$ then $i$ \emph{starts} timer $x$ with value $\rho(x)$.
+\item
+If $x \in \varsof{q} \cap \domof{\rho}$ then $i$ \emph{restarts} timer $x$ with value $\rho(x)$.
+\item
+Finally, if $x \in \varsof{q'} \setminus \domof{\rho}$ then timer $x$ is \emph{unaffected} by input $i$.
+\end{enumerate}
+Hence, when timer $x$ expires (i.e., event $\toevent{x}$ occurs) it is either stopped or restarted.
 
 \paragraph{Semantics.}
-%We give two semantics for MMnTs, an untimed and a timed one. Let us
-%first consider the untimed semantics.
-%
-%A \emph{trace} of $\M$ is a sequence of
-%triples
-%$\tuple{i_1,o_1,\remapinst_1}\tuple{i_2,o_2,\remapinst_2}
-%\cdots\tuple{i_n,o_n,\remapinst_n}$ such that there is a sequence 
-%\[
-%q_0 \xrightarrow{i_1/o_1,\remapinst_1} q_1
-%\xrightarrow{i_2/o_2,\remapinst_2}
-%\cdots
-%q_{n-1} \xrightarrow{i_n/o_n,\remapinst_n} q_n
-%\]
-%of $\M$.
-%Note that the set of timers $\varsof{q_j}$ can be obtained from the trace,
-%since it is the same as $\domof{\remapinst_j}$.
-%We would, intuitively, like to let the untimed semantics of $\M$ be the set
-%of its traces. However, it would then depend heavily on the names of
-%timers. Therefore, we define a normalization operation on traces, which
-%renames timers to canonical names. This definition is found in
-%Section XXX.
-
-The timed semantics is defined by associating an infinite state transition system to a MMnT that describes all possible
+The semantics of MMT $\M = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$ is defined via an infinite state transition system that describes all possible
 configurations and transitions between them.
 A \emph{valuation} is a partial function
-$\tvals : X \rightarrow \realsplus$ that assigns nonnegative real numbers as values to timers.
-A \emph{configuration} of a MMnT is a pair $(q,\tvals)$, where $q \in Q$ is a state and $\tvals$ is a valuation
-with $\domof{\tvals} =  \varsof{q}$.
+$\tvals : X \hookrightarrow \realsplus$ that assigns nonnegative real numbers as values to timers.
+We write $\Vals{Y}$ for the set of valuations with domain $Y \subseteq X$.
+A \emph{configuration} of a MMT is a pair $(q,\tvals)$, where $q \in Q$ is a state and $\tvals\in\Vals{\varsof{q}}$ is a valuation.
 The \emph{initial configuration} is the pair $(q_0, \tvals_0)$, where $\tvals_0$ is the empty function.
-Valuations and configurations can be modified by the occurrence of inputs, timeout events and passage of time.
+Valuations and configurations can be modified by the occurrence of events (inputs or timeouts) and delays.
 If $\tvals$ is a valuation in which all timers
-have a value of at least $d$, then $d$ units of time may pass. As a result the value of all the timers is decremented by $d$.
-Formally, we define for $\tvals, \tvals'$ valuations and delay $d \in \realsplus$,
-\marginpar{The whole robustness analysis would become easy/trivial if we would assume $d>0$, because then there would be
-a time delay preceding each input, allowing us to fidget with the timing of this input. Argument against this change is that
+have a value of at least $d$, then $d$ units of time may pass. As a result this delay the value of all the timers is decremented by $d$.
+Formally, we define for $\tvals, \tvals'$ valuations and delay $d \in \delays$,
+\marginpar{The whole robustness analysis becomes easy/trivial if we assume $d>0$, because then 
+a time delay precedes each input, allowing us to fidget with the timing of this input. Argument against this change is that
 in a concurrent setting we may not exclude simulaneous inputs.}
 \begin{eqnarray*}
 \tvals \xrightarrow{d} \tvals' & \Leftrightarrow & [\domof{\tvals} = \domof{\tvals'} \wedge \forall x \in\domof{\tvals} : \tvals'(x) = \tvals(x) - d ].
 \end{eqnarray*}
 If the current valuation is $\tvals$, then a timeout event $\toevent{x}$ may occur only if $\tvals(x)=0$.
-If an input or a timeout transition occurs, a valuation is updated as specified by (re)start function $\rho$.
-Timers that are not affected by $\rho$ remain unchanged.
+If an input or a timeout event occurs, a valuation is updated as specified by timer initialization function $\rho$.
+The values of timers that are not affected by $\rho$ remain unchanged.
 Formally, we define for $\tvals, \tvals'$ valuations, $i \in \extinputs$, $o \in O$ and $\rho \in X \hookrightarrow \natplus$,
 \begin{eqnarray*}
 \tvals \xrightarrow{i/o, \rho}  \tvals' & \Leftrightarrow & [ \domof{\tvals'} \setminus \domof{\tvals}  \subseteq \domof{\rho} \subseteq \domof{\tvals'} ~ \wedge\\
 && \tvals' =  \tvals'[\tvals][\rho] ~ \wedge \\
-&& \forall x \in X : i=\toevent{x} \Rightarrow \tvals(x) = 0].
+&& \forall x \in X : i=\toevent{x} \Rightarrow (\tvals(x) = 0 \wedge x \not\in\domof{\tvals'} \setminus \domof{\rho})].
 \end{eqnarray*}
 Transition predicates $\xrightarrow{d}$ and $\xrightarrow{i/o, \rho}$ can be easily lifted to configurations.
-For all configurations $(q, \tvals)$, $(q', \tvals')$ of an MMnT,
+For all configurations $(q, \tvals)$, $(q', \tvals')$ of an MMT $\M$,
 \[
 \frac{q = q' \quad \tvals \xrightarrow{d} \tvals'}{(q,\tvals) \xrightarrow{d} (q',\tvals')}
 \quad\quad
@@ -165,32 +155,40 @@ For all configurations $(q, \tvals)$, $(q', \tvals')$ of an MMnT,
 \]
 A \emph{timed word} over inputs $\extinputs$ and outputs $O$ is a sequence
 \begin{eqnarray*}
-w & = &  (i_1, o_1, d_1), (i_2, o_2, d_2) \cdots (i_k, o_k, d_k),
+w & = &  (i_1, o_1, d_1) (i_2, o_2, d_2) \cdots (i_k, o_k, d_k),
 \end{eqnarray*}
-where each $i_j \in \extinputs$, each $o_j \in O$, and each $d_j \in \realsplus$.
-A \emph{run} of MM1T $\M$ over $w$ is a sequence 
+where each $i_j \in \extinputs$, each $o_j \in O$, and each $d_j \in \delays$.
+A \emph{timed run} of $\M$ over $w$ is a sequence 
 \begin{eqnarray*}
 \alpha & = & C_0 \xrightarrow{d_1} C'_0 \xrightarrow{i_1/o_1} C_1 \xrightarrow{d_2} C'_1 \xrightarrow{i_2/o_2} C_2 \cdots
 \xrightarrow{d_k} C'_{k-1} \xrightarrow{i_k/o_k} C_{k}
 \end{eqnarray*}
-of transitions between configurations of $\M$ such that each $C_j, C'_j$ is a configuration of $\M$ and $C_0$ is the initial configuration.
-%Note that, since MMnTs are deterministic (if we allow to observe the
+of transitions between configurations $C_j, C'_j$ of $\M$, where $C_0$ is the initial configuration.
+%Note that, since MMTs are deterministic (if we allow to observe the
 %identities of timers in timeout events),
 %for each timed word $w$ there exists at most one run over $w$.
-We say $w$ is a timed word of $\M$ if there exists a run of $\M$ over $w$.
-Two MMnTs $\M$ and $\N$ with the same sets of inputs are \emph{timed equivalent}, denoted $\M \approx_{\mathit{timed}} \N$, iff 
+We say $w$ is a timed word of $\M$ if $\M$ has a timed run over $w$.
+
+Two MMTs $\M$ and $\N$ with the same sets of inputs are \emph{timed equivalent}, denoted $\M \approx_{\mathit{timed}} \N$, iff 
 they have the same sets of timed words.
 
 \marginpar{Conjecture: Just being allowed to start just one timer on a transition does not reduce expressivity.}
 
-\paragraph{Symbolic semantics.}
-A \emph{behavior} over inputs $\extinputs$ and outputs $O$ is a sequence 
+\subsection{Untimed semantics}
+A \emph{behavior} over inputs $I$, outputs $O$, and timers $Y \subseteq X$ is a sequence 
 \begin{eqnarray*}
 \beta & = & X_0 \xrightarrow{i_1/o_1, \rho_1} X_1  \xrightarrow{i_2/o_2, \rho_2} X_2 \cdots \xrightarrow{i_k/o_k, \rho_k} X_{k},
 \end{eqnarray*}
-where each $i_j \in \extinputs$, each $o_j \in O$, each $\rho_j \in X \hookrightarrow \natplus$, each $X_j \subseteq X$, and
-for all $j>0$, $X_j \setminus X_{j-1}  \subseteq \domof{\rho_j} \subseteq X_j$.
-Behavior $\beta$ is \emph{feasible} if there exist $d_j \in \realsplus$ and valuations $\tvals_j, \tvals'_j$ 
+where $X_0 \subseteq Y$ and, for each $j>0$,  $i_j \in \extinputs$, $o_j \in O$, $\rho_j \in X \hookrightarrow \natplus$, and
+ $X_j \setminus X_{j-1}  \subseteq \domof{\rho_j} \subseteq X_j \subseteq Y$.
+Moreover, if $i_j = \toevent{x}$, for some $j>0$ and $x \in X$, then $x \in X_{j-1}$ and $x \not\in X_j \setminus \domof{\rho_j}$.
+
+For any nonempty sequence $\sigma$, $\Head{\sigma}$ denotes the first element of $\sigma$, $\Tail{\sigma}$ denotes the sequence obtained by removing the first element from $\sigma$, and $\Last{\sigma}$ denotes the last element of $\sigma$.
+Suppose $\beta, \beta'$ are behaviors over $I$, $O$ and $Y$ such that $\Last{\beta} = \Head{\beta'}$.
+Then $\beta \cdot \beta'$, the \emph{sequential composition} of $\beta$ and $\beta'$, is the behavior $\beta \Tail{\beta'}$.
+Behavior $\beta$ is a \emph{prefix} of behavior $\gamma$ if there exists a behavior $\beta'$ such that $\gamma = \beta \cdot \beta'$.
+
+Behavior $\beta$ is \emph{feasible} if there exist $d_j \in \delays$ and valuations $\tvals_j, \tvals'_j$ 
 with $\domof{\tvals_j} = \domof{\tvals'_j} = X_j$ such that
 \[
 \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \xrightarrow{d_2} \tvals'_1 \xrightarrow{i_2/o_2, \rho_2} \tvals_2 \cdots
@@ -214,42 +212,42 @@ Note that if $\beta$ and $\beta'$ are isomorphic, then $\beta$ is feasible iff $
 Two sets of behaviors $A$ and $B$ are \emph{isomorphic} if for each behavior of $A$ there is an isomorphic behavior in $B$,
 and vice versa.
 
-A \emph{symbolic run} of $\M$ is a sequence
+An \emph{untimed run} of $\M$ is a sequence
 \begin{eqnarray*}
 \gamma & = & q_0 \xrightarrow{i_1/o_1, \rho_1} q_1  \xrightarrow{i_2/o_2, \rho_2} q_2 \cdots \xrightarrow{i_k/o_k, \rho_k} q_k
 \end{eqnarray*}
 of transitions of $\M$ that starts with the initial state $q_0$. 
-To each symbolic run $\gamma$ we can associate a corresponding behavior by simply replacing all
+To each untimed run $\gamma$ we can associate a corresponding behavior by simply replacing all
 states by their sets of timers:
 \begin{eqnarray*}
 \beh(\gamma) & = & \vars(q_0) \xrightarrow{i_1/o_1, \rho_1} \vars(q_1)  \xrightarrow{i_2/o_2, \rho_2} \vars(q_2) \cdots \xrightarrow{i_k/o_k, \rho_k} \vars(q_k).
 \end{eqnarray*}
-We say that $\beta$ is a behavior of $\M$ if $\M$ has a symbolic run $\gamma$ with $\beh(\gamma) = \beta$.
+We say that $\beta$ is a behavior of $\M$ if $\M$ has an untimed run $\gamma$ with $\beh(\gamma) = \beta$.
 Note that the initial timer set of any behavior of $\M$ is empty,
 
-Two MMnTs $\M$ and $\N$ with the same sets of inputs are \emph{symbolically equivalent}, denoted $\M \approx_{\mathit{symbolic}} \N$, iff their sets of feasible behaviors are isomorphic.
+Two MMTs $\M$ and $\N$ with the same sets of inputs are \emph{untimed equivalent}, denoted $\M \approx_{\mathit{untimed}} \N$, iff their sets of feasible behaviors are isomorphic.
 
 \marginpar{Here an extensive example!}
 
 \begin{theorem}
-\label{symbolicimpliestimed}
-$\M \approx_{\mathit{symbolic}} \N$
+\label{untimedimpliestimed}
+$\M \approx_{\mathit{untimed}} \N$
 implies
 $\M \approx_{\mathit{timed}} \N$.
 \end{theorem}
 \begin{proof}
-Assume $\M \approx_{\mathit{symbolic}} \N$ and $w$ is a timed word of $\M$.
+Assume $\M \approx_{\mathit{untimed}} \N$ and $w$ is a timed word of $\M$.
 Since $\approx_{\mathit{timed}}$ is symmetric, it suffices to prove that $w$ is a timed word of $\N$.
 Let
 \begin{eqnarray*}
 w & = &  (i_1, o_1, d_1), (i_2, o_2, d_2) \cdots (i_k, o_k, d_k).
 \end{eqnarray*}
-Then there exists a run $\alpha$ of $\M$ over $w$. Let 
+Then there exists a timed run $\alpha$ of $\M$ over $w$. Let 
 \begin{eqnarray*}
 \alpha & = & (q_0, \tvals_0) \xrightarrow{d_1} (q_0, \tvals'_0) \xrightarrow{i_1/o_1} (q_1, \tvals_1) \xrightarrow{d_2} (q_1, \tvals'_1)  \cdots
  \xrightarrow{i_k/o_k} (q_k, \tvals_k).
 \end{eqnarray*}
-This implies that $\M$ has a symbolic run
+This implies that $\M$ has an untimed run
 \begin{eqnarray*}
 \gamma & = & q_0 \xrightarrow{i_1/o_1, \rho_1} q_1  \xrightarrow{i_2/o_2, \rho_2} q_2 \cdots \xrightarrow{i_k/o_k, \rho_k} q_k
 \end{eqnarray*}
@@ -263,7 +261,7 @@ Let $X_j = \varsof{q_j}$, for all $j$. Then it follows that
 \beta & = & X_0 \xrightarrow{i_1/o_1, \rho_1} X_1  \xrightarrow{i_2/o_2, \rho_2} X_2 \cdots \xrightarrow{i_k/o_k, \rho_k} X_{k},
 \end{eqnarray*}
 is a feasible behavior of $\M$ with $X_0 = \emptyset$.
-Since  $\M \approx_{\mathit{symbolic}} \N$, $\N$ has a feasible behavior $\beta'$ that is isomorphic to $\beta$.
+Since  $\M \approx_{\mathit{untimed}} \N$, $\N$ has a feasible behavior $\beta'$ that is isomorphic to $\beta$.
 Let
 \begin{eqnarray*}
 \beta' & = & Y_0 \xrightarrow{i_1/o_1, \tau_1} Y_1  \xrightarrow{i_2/o_2, \tau_2} Y_2 \cdots \xrightarrow{i_k/o_k, \tau_k} Y_{k}.
@@ -275,12 +273,12 @@ Let $\lambda_j = \tvals_j \circ f_j^{-1}$ and $\lambda'_j = \tvals'_j \circ f_j^
 \lambda_0 \xrightarrow{d_1} \lambda'_0 \xrightarrow{i_1/o_1, \tau_1} \lambda_1 \xrightarrow{d_2} \lambda'_1 \xrightarrow{i_2/o_2, \rho_2} \lambda_2 \cdots
 \xrightarrow{d_k} \lambda'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \lambda_{k}.
 \]
-Since $\N$ has behavior $\beta'$, $\N$ has a symbolic run
+Since $\N$ has behavior $\beta'$, $\N$ has an untimed run
 \begin{eqnarray*}
 \gamma' & = & r_0 \xrightarrow{i_1/o_1, \tau_1} r_1  \xrightarrow{i_2/o_2, \tau_2} r_2 \cdots \xrightarrow{i_k/o_k, \tau_k} r_k
 \end{eqnarray*}
 with $\beh(\gamma') = \beta'$.
-This means that $\N$ has a run
+This permits us to construct the following timed run of $\N$ 
 \begin{eqnarray*}
 \alpha' & = & (r_0, \lambda_0) \xrightarrow{d_1} (r_0, \lambda'_0) \xrightarrow{i_1/o_1} (r_1, \lambda_1) \xrightarrow{d_2} (r_1, \lambda'_1)  \cdots
  \xrightarrow{i_k/o_k} (r_k, \lambda_k).
@@ -288,102 +286,156 @@ This means that $\N$ has a run
 Hence $\N$ has timed word $w$, as required.
 \end{proof}
 
-The converse of Theorem~\ref{symbolicimpliestimed} does not hold: if two MMnTs are timed equivalent then they need not
-be symbolic equivalent. This is due to the fact that an MMnT may have timers that are always stopped or restarted before
+The converse of Theorem~\ref{untimedimpliestimed} does not hold: if two MMTs are timed equivalent then they need not
+be untimed equivalent. This is due to the fact that an MMT may have timers that are always stopped or restarted before
 they expire.
 \marginpar{Give some examples here; timer liveness is not enough! Need: at most one timer started on each transition, timer liveness, and some robustness / fidget space.}
 
+Let $\M$ be an MMT. Then we say that $\M$ is \emph{timer live} if, for each time run $\alpha$ and for each timer $x$
+\marginpar{How can we decide timer liveness?}
+of the final configuration of $\alpha$, there exists an extension $\alpha'$ of $\alpha$ in which timer $x$ 
+remains unaffected until it expires.
+
 \begin{theorem}
-\label{timedimpliessymbolic}
-Suppose that $\M$ and $\N$ are timer live, robust MMnTs in which at most one timer is started on each transition. Then
+\label{timedimpliesuntimed}
+Suppose that $\M$ and $\N$ are timer live MMTs in which at most one timer is started on each transition. Then
 $\M \approx_{\mathit{timed}} \N$
 implies
-$\M \approx_{\mathit{symbolic}} \N$.
+$\M \approx_{\mathit{untimed}} \N$.
 \end{theorem}
 
-\paragraph{Note:}
-We will assume the following semantic requirements on MMnTs. At this point,
-we just formulate them informally, and leave the precise formalization to
-a later section.
+\subsection{Reachability analysis}
+It is not difficult to translate an MMTs to a timed automaton \cite{AD94,BengtssonY03} that accepts the same timed words.
+Through such a translation, verification and analysis tools for timed automata, such as Uppaal \cite{Uppaal4.0}
+become available for MMTs.
+MMTs are strictly less expressive than timed automata. MMTs, for instance, do not contain time deadlocks or zeno loops that
+may prevent time from progressing.
+
+MMTs have infinitely (in fact even uncountably) many configurations and it is thus necessary to use symbolic representations
+for reachability analysis. Given a behavior $\beta$ we want to compute its effect on a set of valuations. 
+If $\beta =X_0$ and $K \subseteq\Vals{X_0}$ then we define $\Post_{\beta}(K) = K$.
+If $\beta = X_0 \xrightarrow{i_1/o_1, \rho_1} X_1$ and
+$K \subseteq\Vals{X_0}$ then
+\begin{eqnarray*}
+\Post_{\beta}(K) & = & \{ \tvals'' \in\Vals{X_1} \mid \exists \tvals \in K \exists d >0 \exists \tvals' \in\Vals{X_0} :
+ \tvals \xrightarrow{d} \tvals' \xrightarrow{i_1/o_1, \rho_1} \tvals'' \}.
+\end{eqnarray*}
+The definition of $\Post_{\beta}(K)$ is extended inductively to arbitrary $\beta$ by 
+$\Post_{\gamma \cdot \gamma'}(K) = \Post_{\gamma'} (\Post_{\gamma}(K))$, where $\gamma \cdot \gamma'$ is the decomposition of
+$\beta$ into a behavior $\gamma$ of length one and a behavior $\gamma'$.
+We write $\Post_{\beta}$ as abbreviation for $\Post_{\beta}(\Vals{\Head{\beta}})$.
+
+For any behavior $\beta$, the set $\Post_{\beta}$ can be symbolically represented and computed using a Difference Bound Matrices (DBMs)
+ \cite{Di89},  as the transition predicates $\xrightarrow{d}$ and $\xrightarrow{i_1/o_1, \rho_1}$ can be easily decomposed 
+into elementary operations that have been defined
+on DBMs such as reset, conjunction, and delay successors \cite{BengtssonY03}.
+
+Since emptiness of DBMs is also decidable, the following lemma allows us to compute whether or not a behavior is feasible.
+
+\begin{lemma}
+Suppose $\beta$ is a behavior. Then $\beta$ is feasible iff $\Post_{\beta} \neq \emptyset$.
+\end{lemma}
+\begin{proof}
+Straightforward by induction on the length of $\beta$.
+\end{proof}
+
+The next two lemma's will be used in the following subsection.
+
+\begin{lemma}
+\label{lemma: feasibility concatenation}
+Suppose $\beta, \beta'$ are behaviors with
+% $\Last{\beta} = \Last{\beta'} = X_1$ and 
+$\Post_{\beta} = Post_{\beta'}$. Let $\gamma$ be any behavior.
+Then $\beta \cdot \gamma$ is feasible iff $\beta' \cdot \gamma$ is feasible.
+\end{lemma}
+
+\begin{lemma}
+\label{lemma finitely many zones}
+Let $\M$ be an MMT. Then the set
+$\{ \Post_{\beta} \mid \beta \mbox{ is a feasible behavior of } \M \}$ is finite.
+\end{lemma}
+\begin{proof}
+All the sets $\Post_{\beta}$ can be represented using DBMs. Since an MMT only has a finite number of timers that can only be set to a finite number of integer values. Since in an MMT the values of timers can only decrease, only finitely many numbers may
+appear in the DBM's that represent the sets $\Post_{\beta}$. Thus all the sets $\Post_{\beta}$ can be represented by a finite
+collection of DBMs.
+\end{proof}
+
+\subsection{Myhill-Nerode}  
+We present a variant of the famous Myhill-Nerode theorem for MMTs.
+We will use this theorem as a basis for an automata learning algorithm for MMTs.
+
+\begin{definition}
+Let $S$ be a set of feasible behaviors over $I$, $O$ and $Y$. Then $S$ is
 \begin{itemize}
 \item
-    {\em Timer-liveness}, which says that whenever $x \in \varsof{q}$, then
-  there is a sequence of transitions from some reachable $(q,\tvals)$ to some
-  transition where $x$ expires.
+\emph{prefix closed}: $\beta \beta' \in S \Longrightarrow \beta \in S$,
 \item
-  {\em Robustness}, which says that any sequence of transitions does not
-  depend on precise timing. Roughtly, it means that we can slightly change
-  some delay and still obtain the same untimed behavior.
+\emph{behavior deterministic}:
+$\beta \xrightarrow{i/o_1, \rho_1} X_1 \in S \wedge \beta \xrightarrow{i/o_2, \rho_2} X_2 \in S \Longrightarrow o_1 = o_2 \wedge \rho_1 = \rho_2 \wedge X_1 = X_2$,
+\item
+\emph{input complete}:
+$\beta \in S \wedge i \in I \Longrightarrow \exists o, \rho, Y : \beta \xrightarrow{i/o, \rho} Y \in S$,
+\item
+\emph{timeout complete}:
+$\beta \in S \wedge \Post_{\beta} \mbox{ contains valuation with } x \mbox{ minimal } \Longrightarrow
+\exists o, \rho, Y : \beta \xrightarrow{\toevent{x}/o, \rho} Y \in S$.
 \end{itemize}
-%Also, A design decision has to be made regarding priorities between timers. I.e.,
-%to determine what should happen when several timers reach $0$ simultaneously.
-%We take the point that the choice of timer is nondeterministic, and that
-%expiration of one timer may still leave the other timers unaffected so that
-%they can also expire. A consequence is that the behavior is then deterministic
-%only if we can observer the identity of timers. This issue will be resolved
-%by assuming that MMnTs are robust, which implies that wee need not consider
-%timed behaviors where two timers may expire at the same time.
+Behaviors $\beta, \beta' \in S$ are \emph{equivalent} for $S$, notation $\beta \equiv_S \beta'$, iff 
+$\Post_{\beta} = \Post_{\beta'}$ and for any observation
+$\gamma$ over $I$, $O$ and $Y$, $\beta \cdot \gamma \in S \Leftrightarrow \beta' \cdot \gamma \in S$.
+We write $[\beta]$ to denote the equivalence class of $\beta$ with respect to $\equiv_S$.
+\end{definition}
 
-\subsection{A Closer Look at Traces, and Nerode Equivalence}  
-In this section, we will more precisely define a semantics of MMnT,
-defined in terms of traces, which is canonical. We first need to look more
-closely at traces.
+\begin{theorem}
+Let $S$ be a set of feasible behaviors over finite sets of inputs $I$, outputs $O$, and timers $Y$.
+Then $S$ is the set of feasible behaviors of an MMT $\M$ iff $S$ is nonempty, all behaviors in $S$
+start with the empty set of timers, $S$ is prefix closed, behavior deterministic, input complete, timeout complete,
+and $\equiv_S$ has only finitely many equivalence classes (finite index).
+\end{theorem}
+\begin{proof}
 
-A {\em suffix trace}
-is a sequence
-$\strace = \tuple{i_1,o_1,\remapinst_1}\cdots\tuple{i_n,o_n,\remapinst_n}$,
-such that for $j = 1, \ldots , n$, we have $i_j \in \extinputs$, $o_j \in O$ and
-$\remapinst_j: X \rightarrow (X \cup \natplus)$ is a mapping from timers to
-timers and natural numbers, such that 
-$\ranof{\remapinst_j} \subseteq (\domof{\remapinst_{j-1}} \cup \natplus)$ and
-$y \not\in \ran(\remapinst_j)$ if $i_j$ is $\toevent{y}$ for
-$j = 2, \ldots, n$. Define
-$\domof{\strace} = \domof{\remapinst_n}$ and
-  $\ranof{\strace} = \ranof{\remapinst_1}$.
-For two suffix traces 
-$\strace = \tuple{i_1,o_1,\remapinst_1}\cdots\tuple{i_n,o_n,\remapinst_n}$ and
-$\strace' = \tuple{i_1,o_1,\remapinst_1'}\cdots\tuple{i_n,o_n,\remapinst_n'}$
-with the same sequences of (extended) inputs and outputs, which
-are consistent (i.e., $\remapinst_j$ and $\remapinst_j'$ agree on the intersection of their domains), we define 
-$\strace \sqcup \strace' = \tuple{i_1,o_1,\remapinst_1 \cup \remapinst_1'}\cdots\tuple{i_n,o_n,\remapinst_n\cup\remapinst_n'}$.
+``$\Rightarrow$'' Let $\M$ be an MMT and let $S$ be the set of its feasible behaviors.
+Then it is immediate from the definitions that $S$ is nonempty, all behaviors in $S$
+start with the empty set of timers, $S$ is prefix closed, behavior deterministic, input complete, and timeout complete.
+Suppose that feasible behaviors $\beta$ and $\beta'$ lead to the same state $q$ and moreover $\Post_{\beta} = \Post_{\beta'}$.
+Then, 
+by Lemma~\ref{lemma: feasibility concatenation},
+for any behavior $\gamma$, $\beta \cdot \gamma \in S \Leftrightarrow \beta' \cdot \gamma \in S$, and thus
+$\beta \equiv_S \beta'$.
+Since $\M$ only has finitely many states and by Lemma~\ref{lemma finitely many zones} the set
+$\{ \Post_{\beta} \mid \beta \mbox{ is a feasible behavior of } \M \}$ is finite, this means that
+$\equiv_S$ has finite index.
 
-A {\em trace} is a suffix trace $\uttrace$ with $\ranof{\uttrace} = \natplus$.
+``$\Leftarrow$'' Suppose $S$ is nonempty, etc.
+We define an MMT $\M = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$ as follows:
+\begin{itemize}
+\item
+$Q$ is the set of equivalence classes of $\equiv_S$,
+\item
+$q_0 = [\emptyset]$. (Note that $\emptyset \in S$ since $S$ is nonempty, prefix closed, and all behaviors in $S$ start
+with the empty set of timers.)
+\item
+$\varsof{[\beta]} = \Last{\beta}$.
+\item
+Let $\beta \in S$ and $i \in I$. Then, since $S$ is both input complete and behavior deterministic, there exist unique
+$o$, $\rho$ and $Y$ such that $\beta' = \beta \xrightarrow{i/o, \rho} Y \in S$.
+We define $\delta([\beta],i) = [\beta']$, $\lambda([\beta],i) = o$, and $\remap([\beta],i) = \rho$.
+\item
+Let $\beta \in S$ and $x \in \Last{\beta}$ such that $\Post_{\beta}$ contains a valuation with $x$ minimal.
+Then, since $S$ is both input complete and behavior deterministic, there exist unique
+$o$, $\rho$ and $Y$ such that $\beta' = \beta \xrightarrow{\toevent{x}/o, \rho} Y \in S$.
+We define $\delta([\beta],\toevent{x}) = [\beta']$, $\lambda([\beta],\toevent{x}) = o$, and $\remap([\beta],\toevent{x}) = \rho$.
+\item
+Let $\beta \in S$ and $x \in \Last{\beta}$ such that $\Post_{\beta}$ contains no valuation with $x$ minimal.
+We define $\delta([\beta],\toevent{x}) = [\beta]$, $\lambda([\beta],\toevent{x}) = \Lambda$, and $\remap([\beta],\toevent{x}) = \rho_0$, where $\domof{\tau_0} = \emptyset$.
+\end{itemize}
+It is straightforward to verify that $M$ is a well-defined MMT whose set of feasible behaviors equals $S$.
+\end{proof}
 
 
 
-This untimed semantics can also be used to define a Nerode equivalence on
-MMnTs.
-
-For a suffix trace $\strace$ and a bijection $\timerbij$ on $X$ let
-$\timerbij(\strace)$ denote the result of renaming timers in $\uttrace$
-according to $\timerbij$.
-Extend $\timerbij$ to sets of traces in the natural way.
-Let $X_A, X_B$ be finite sets of timers
-For a bijection $\timerequiv: X_A \rightarrow X_B$, let
-$\timerequiv \extendedby\timerbij$ denote that $\timerequiv$ is the restriction
-of $\timerbij$ to $X_A$.
-
-Let $\uttrace$ and $\uttrace'$ be two normalized traces of $\M$.  Define the
-following adaptation of the Nerode congruence.
-Let $\uttrace \equiv^{\timerequiv} \uttrace'$ denote that
-$\timerequiv: \domof{\uttrace} \rightarrow \domof{\uttrace'}$ is a bijection
-such that there is a bijection $\timerbij$ on $X$ with
-$\timerequiv \extendedby\timerbij$ such that
-\[
-\uttrace\conc \strace \in \uttracesof{\M}
-\qquad \mbox{if and only if} \qquad
-\uttrace'\conc \timerequiv(\strace) \in \uttracesof{\M}
-\]
-Let $\uttrace \equiv_{\M} \uttrace'$ denote that 
-$\uttrace \equiv^{\timerequiv} \uttrace'$ for some bijection
-$\timerequiv: \domof{\uttrace} \rightarrow \domof{\uttrace'}$.
-The equivalence $\equiv_{\M}$ can now be used to minimize $\M$, define
-canonical forms, equivalence between MMnTs, etc., using standard techniques
-(see, e.g.,~\cite{LeeY96}).
-We would also want to use it as a basis for an automata learning algorithm.
-
-\section{Automata Learning for MMnTs}
-In this section, we present an algorithm for automata learning for MMnTs.
+\section{Automata Learning for MMTs}
+In this section, we present an algorithm for automata learning for MMTs.
 It is based on the Nerode equivalence $\equiv_{\M}$, which is used to adapt
 the standard paradigm for automata learing, using $L^*$, which is also adapted
 to register automata in~\cite{CasselHJS16}. 
@@ -391,7 +443,7 @@ to register automata in~\cite{CasselHJS16}.
 Thus, two tasks must be accomplised in order to design the algorithm.
 \begin{itemize}
   \item
-    One task is to infer untimed traces of am MMnT.
+    One task is to infer untimed traces of am MMT.
     This is done by supplying membership queries, in the form of inputs
     with specific timing.
 \item
@@ -406,7 +458,7 @@ happens. We cannot directly observe the setting of timers, or the identity
 of the timer in a timeout event. However, whenever a timeout event, we
 can infer where it was set, by supplying a small sequence of membership queries
 with slightly perturbed timing. This is a consequence of the fact that we
-assume MMnTs to be robust, implying that we can always include ``slack'' in
+assume MMTs to be robust, implying that we can always include ``slack'' in
 the timing of inputs. The normalized name of the timer follows after inferring
 in which transition it was set.
 
@@ -667,18 +719,18 @@ or by a so-far undetected timer that can expire because the membership
 query exposes a new timing pattern. In either case, the new detected timer
 is added to the word, and the procedure restarts.
 
-\paragraph{Generating MMnTs}
+\paragraph{Generating MMTs}
 Having solved the problem of inferring untimed traces, we can now
 define our generalization of $L^*$, which is based on the
 Nerode equivalence defined earlier
-%% We can now present our algorithm for active learning of MMnTs.
+%% We can now present our algorithm for active learning of MMTs.
 %% The main structure of the algorithm is inherited from other active
 %% algorithms: it builds on a Nerode equivalence, which is defined based on
-%% the set of (untimed) traces of an MMnT.
+%% the set of (untimed) traces of an MMT.
 %% Thus, the algorithm has two nontrivial parts.
 %% \begin{itemize}
 %%   \item
-%%     One part is to infer untimed traces of am MMnT, essentially building
+%%     One part is to infer untimed traces of am MMT, essentially building
 %%     a prefix tree of untimed traces. This is done by supplying membership
 %%     queries, following the ideas of the previous section.
 %% \item
@@ -738,7 +790,7 @@ $ui \in U^+$ there is a short prefix $u' \in U$ and a $\timerbij$ such that
 $ui \equiv_{\smap}^{\timerequiv} u'$.
 
 A closed observation table $\tuple{U,U^+,V,\smap}$ can be used to construct
-a hypothesis  MMnT $\M = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$, where
+a hypothesis  MMT $\M = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$, where
 \begin{itemize}
 \item
   $Q = U$ and $q_0 = \emptyword$,
