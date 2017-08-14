@@ -18,6 +18,8 @@
 \newcommand{\constrof}[1]{\phi_{#1}}
 \newcommand{\Post}{\mathsf{Post}}
 \newcommand{\beh}{\mathit{beh}}
+\newcommand{\run}{\mathit{run}}
+\newcommand{\timedword}{\mathit{tw}}
 
 \newcommand{\conc}{\cdot}
 \newcommand{\tuple}[1]{\langle #1\rangle}
@@ -115,7 +117,7 @@ If $x \in \varsof{q'} \setminus \varsof{q}$ then $i$ \emph{starts} timer $x$ wit
 \item
 If $x \in \varsof{q} \cap \domof{\rho}$ then $i$ \emph{restarts} timer $x$ with value $\rho(x)$.
 \item
-Finally, if $x \in \varsof{q'} \setminus \domof{\rho}$ then timer $x$ is \emph{unaffected} by input $i$.
+Finally, if $x \in \varsof{q'} \setminus \domof{\rho}$ then timer $x$ is \emph{unaffected} by $i$.
 \end{enumerate}
 Hence, when timer $x$ expires (i.e., event $\toevent{x}$ occurs) it is either stopped or restarted.
 
@@ -167,14 +169,18 @@ of transitions between configurations $C_j, C'_j$ of $\M$, where $C_0$ is the in
 %Note that, since MMTs are deterministic (if we allow to observe the
 %identities of timers in timeout events),
 %for each timed word $w$ there exists at most one run over $w$.
-We say $w$ is a timed word of $\M$ if $\M$ has a timed run over $w$.
+To each timed run $\alpha$ we can associate a timed word by forgetting the configurations:
+\begin{eqnarray*}
+\timedword(\alpha) & = & (i_1, o_1, d_1) (i_2, o_2, d_2) \cdots (i_k, o_k, d_k).
+\end{eqnarray*}
+We say $w$ is a timed word of $\M$ if $\M$ has a timed run $\alpha$ with $w = \timedword(\alpha)$.
 
 Two MMTs $\M$ and $\N$ with the same sets of inputs are \emph{timed equivalent}, denoted $\M \approx_{\mathit{timed}} \N$, iff 
 they have the same sets of timed words.
 
 \marginpar{Conjecture: Just being allowed to start just one timer on a transition does not reduce expressivity.}
 
-\subsection{Untimed semantics}
+\subsection{A product construction}
 A \emph{behavior} over inputs $I$, outputs $O$, and timers $Y \subseteq X$ is a sequence 
 \begin{eqnarray*}
 \beta & = & X_0 \xrightarrow{i_1/o_1, \rho_1} X_1  \xrightarrow{i_2/o_2, \rho_2} X_2 \cdots \xrightarrow{i_k/o_k, \rho_k} X_{k},
@@ -183,36 +189,7 @@ where $X_0 \subseteq Y$ and, for each $j>0$,  $i_j \in \extinputs$, $o_j \in O$,
  $X_j \setminus X_{j-1}  \subseteq \domof{\rho_j} \subseteq X_j \subseteq Y$.
 Moreover, if $i_j = \toevent{x}$, for some $j>0$, then $x \in X_{j-1}$ and $x \not\in X_j \setminus \domof{\rho_j}$.
 
-For any nonempty sequence $\sigma$, $\Head{\sigma}$ denotes the first element of $\sigma$, $\Tail{\sigma}$ denotes the sequence obtained by removing the first element from $\sigma$, and $\Last{\sigma}$ denotes the last element of $\sigma$.
-Suppose $\beta, \beta'$ are behaviors over $I$, $O$ and $Y$ such that $\Last{\beta} = \Head{\beta'}$.
-Then $\beta \cdot \beta'$, the \emph{sequential composition} of $\beta$ and $\beta'$, is the behavior $\beta \Tail{\beta'}$.
-Behavior $\beta$ is a \emph{prefix} of behavior $\gamma$ if there exists a behavior $\beta'$ such that $\gamma = \beta \cdot \beta'$.
-
-Behavior $\beta$ is \emph{feasible} if there exist $d_j \in \delays$ and valuations $\tvals_j, \tvals'_j$ 
-with $\domof{\tvals_j} = \domof{\tvals'_j} = X_j$ such that
-\[
-\tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \xrightarrow{d_2} \tvals'_1 \xrightarrow{i_2/o_2, \rho_2} \tvals_2 \cdots
-\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}.
-\]
-Two behaviors are \emph{isomorphic} if they only differ in the names of their timers. Formally, behavior $\beta$
-is isomorphic to behavior
-\begin{eqnarray*}
-\beta' & = & Y_0 \xrightarrow{i_1/o_1, \tau_1} Y_1  \xrightarrow{i_2/o_2, \tau_2} Y_2 \cdots \xrightarrow{i_k/o_k, \tau_k} Y_{k}
-\end{eqnarray*}
-if there exist bijections $f_j : X_j \rightarrow Y_j$, for all $j$, such that, for all $j>0$, $\domof{\tau_j} = f_j(\domof{\rho_j})$ and, for all $x \in\domof{\rho_j}$,
-$\rho_j(x) = \tau_j (f_j(x))$ and, for all $x \in X_j \setminus \domof{\rho_j}$, $f_j(x) = f_{j-1}(x)$.
-\marginpar{Proof?}
-Note that if $\beta$ and $\beta'$ are isomorphic, then $\beta$ is feasible iff $\beta'$ is feasible.
-%For each behavior $\beta$ we may construct an isomorphic behavior $\beta'$ in which timers have canonical
-%names, except for the timers in the initial set $X_0$.
-%Intuitively, a timer which is set to $p$ at the $j$th element of the trace
-%(i.e., in response to input $i_j$) is given the name $\timerof jp$. 
-%Formally, if $x$ is a timer in the domain of $\rho_j$, we define $f_j(x) = x^{\rho_j(x)}_j$.
-%If $X_0 = \emptyset$ then this condition uniquely defines bijections $f_0 ,\ldots, f_k$ and thereby behavior $\beta'$.
-Two sets of behaviors $A$ and $B$ are \emph{isomorphic} if for each behavior of $A$ there is an isomorphic behavior in $B$,
-and vice versa.
-
-An \emph{untimed run} of $\M$ is a sequence
+An \emph{untimed run} of an MMT $\M$ is a sequence
 \begin{eqnarray*}
 \gamma & = & q_0 \xrightarrow{i_1/o_1, \rho_1} q_1  \xrightarrow{i_2/o_2, \rho_2} q_2 \cdots \xrightarrow{i_k/o_k, \rho_k} q_k
 \end{eqnarray*}
@@ -223,7 +200,100 @@ states by their sets of timers:
 \beh(\gamma) & = & \vars(q_0) \xrightarrow{i_1/o_1, \rho_1} \vars(q_1)  \xrightarrow{i_2/o_2, \rho_2} \vars(q_2) \cdots \xrightarrow{i_k/o_k, \rho_k} \vars(q_k).
 \end{eqnarray*}
 We say that $\beta$ is a behavior of $\M$ if $\M$ has an untimed run $\gamma$ with $\beh(\gamma) = \beta$.
-Note that the initial timer set of any behavior of $\M$ is empty,
+Note that the initial timer set of any behavior of $\M$ is empty.
+
+A \emph{valuation sequence} over inputs $I$, outputs $O$, and timers $Y \subseteq X$ is an alternating sequence
+\begin{eqnarray*}
+\sigma & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \xrightarrow{d_2} \tvals'_1 \xrightarrow{i_2/o_2, \rho_2} \tvals_2 \cdots
+\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}
+\end{eqnarray*}
+of delay predicates and event predicates with, for each $j$,
+$\tvals_j, \tvals'_j$ valuations
+with $\domof{\tvals_j} = \domof{\tvals'_j} \subseteq Y$ and,
+for each $j>0$,  $d_j \in \delays$, $i_j \in \extinputs$, $o_j \in O$, and $\rho_j \in Y \hookrightarrow \natplus$.
+To each valuation sequence $\sigma$ we can associate a corresponding behavior by forgetting the time
+delays and by replacing valuations by their domain:
+\begin{eqnarray*}
+\beh(\sigma) & = & \domof{\tvals_0} \xrightarrow{i_1/o_1, \rho_1} \domof{\tvals_1}  \xrightarrow{i_2/o_2, \rho_2} \domof{\tvals_2} \cdots \xrightarrow{i_k/o_k, \rho_k} \domof{\tvals_k}.
+\end{eqnarray*}
+We say that behavior $\beta$ is \emph{feasible} if there exists a valuation sequence $\sigma$ such that $\beh(\sigma) = \beta$.
+We can also associate a timed word to valuation sequence $\sigma$ by forgetting the valuations and the initialization functions:
+\begin{eqnarray*}
+\timedword(\sigma) & = & (i_1, o_1, d_1) (i_2, o_2, d_2) \cdots (i_k, o_k, d_k).
+\end{eqnarray*} 
+Let $\alpha$ be a timed run of an MMT $\M$: 
+\begin{eqnarray*}
+\alpha & = & (q_0, \tvals_0) \xrightarrow{d_1} (q_0, \tvals'_0) \xrightarrow{i_1/o_1} (q_1, \tvals_1) \xrightarrow{d_2} (q_1, \tvals'_1)  \cdots
+ \xrightarrow{i_k/o_k} (q_k, \tvals_k).
+\end{eqnarray*}
+Then $\alpha$ can be projected both to an untimed run of $\M$
+\begin{eqnarray*}
+\pi_1 (\alpha) & = & q_0 \xrightarrow{i_1/o_1, \rho_1} q_1  \xrightarrow{i_2/o_2, \rho_2} q_2 \cdots \xrightarrow{i_k/o_k, \rho_k} q_k
+\end{eqnarray*}
+(note that the $\rho_j$ are uniquely determined since $\M$ is deterministic) and to a valuation sequence
+\begin{eqnarray*}
+\pi_2(\alpha) & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \xrightarrow{d_2} \tvals'_1 \xrightarrow{i_2/o_2, \rho_2} \tvals_2 \cdots
+\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}.
+\end{eqnarray*}
+Note that $\beh(\pi_1(\alpha))=\beh(\pi_2(\alpha))$ and $\timedword(\alpha) = \timedword(\pi_2(\alpha))$.
+Conversely, if $\gamma$ is an untimed run  of $\M$ and $\sigma$ is a valuation sequence such that $\beh(\gamma) = \beh(\sigma)$,
+then there exists a unique timed run $\alpha$ of $\M$ with $\pi_1(\alpha) = \gamma$ and $\pi_2(\alpha) = \sigma$.
+We refer to $\alpha$ as $\run(\gamma,\sigma)$.
+\marginpar{Add a commuting diagram to summarize.}
+
+\subsection{Untimed semantics}
+We would, intuitively, like to let the untimed semantics of an MMT $\M$ be the set of its feasible behaviors.
+However, it would then depend heavily on the names of the timers. Therefore, we define an equivalence relation
+on behaviors, which deems two behaviors equivalent if there is a consistent renaming of timers that transforms
+one behavior into the other.
+
+Let $X_0,\ldots, X_k$ be a sequence of sets $X_j \subseteq X$ of timers.
+An \emph{isomorphism} for $X_0,\ldots, X_k$ is a sequence $f = f_0 ,\ldots, f_k$ of bijections $f_j : X_j \rightarrow Y_j$ such that,
+for all $j>0$, $f_j \lceil X_{j-1} = f_{j-1} \lceil X_j$ and $f_j (X_j \setminus X_{j-1}) \cap Y_{j-1} = \emptyset$.
+If $f = f_0 ,\ldots, f_k$ is an isomorphism with $f_j : X_j \rightarrow Y_j$ and
+\begin{eqnarray*}
+\beta & = & X_0 \xrightarrow{i_1/o_1, \rho_1} X_1  \xrightarrow{i_2/o_2, \rho_2} X_2 \cdots \xrightarrow{i_k/o_k, \rho_k} X_{k}
+\end{eqnarray*}
+is a behavior then $f(\beta)$ is defined as the behavior
+\begin{eqnarray*}
+f(\beta) & = & Y_0 \xrightarrow{i'_1/o_1, \rho'_1} Y_1  \xrightarrow{i'_2/o_2, \rho'_2} Y_2 \cdots \xrightarrow{i'_k/o_k, \rho'_k} Y_{k},
+\end{eqnarray*}
+where 
+$i'_j = i_j$ if $i_j \in I$ and $i'_j = \toevent{f_{j-1}(x)}$ if $i_j = \toevent{x}$, for $j>0$ and $x \in X_{j-1}$, and
+$\rho'_j$ is the function with $\domof{\rho'_j} = f(\domof{\rho_j})$ and
+$\rho'_j(x) = \rho_j ( f_j^{-1}(x))$, for all $j>0$ and $x\in\domof{\rho'_j}$.
+(The reader may check that $f(\beta)$ is a behavior indeed.)
+Two behaviors $\beta$ and $\beta'$ are \emph{isomorphic} if there exists an isomorphism $f$ such that
+$\beta' = f(\beta)$.
+Two sets of behaviors $A$ and $B$ are \emph{isomorphic} if for each behavior of $A$ there is an isomorphic behavior in $B$,
+and vice versa.
+
+Isomorphisms are lifted to valuation sequences in the obvious way. If $f = f_0 ,\ldots, f_k$ is an isomorphism and
+\begin{eqnarray*}
+\sigma & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \xrightarrow{d_2} \tvals'_1 \xrightarrow{i_2/o_2, \rho_2} \tvals_2 \cdots
+\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}
+\end{eqnarray*}
+is a valuation sequence with $\domof{\tvals_j} = \domof{\tvals'_j} = \domof{f_j}$, for all $j$, then $f(\sigma)$ is
+the valuation sequence
+\begin{eqnarray*}
+f(\sigma) & = & \lambda_0 \xrightarrow{d_1} \lambda'_0 \xrightarrow{i'_1/o_1, \rho'_1} \lambda_1 \xrightarrow{d_2} \lambda'_1 \xrightarrow{i'_2/o_2, \rho'_2} \lambda_2 \cdots
+\xrightarrow{d_k} \lambda'_{k-1} \xrightarrow{i'_k/o_k, \rho'_k} \lambda_{k}
+\end{eqnarray*}
+where $i'_j$ and $\rho'_j$ are defined in the same way as for behaviors, and
+$\lambda_j = \kappa_j \circ f_j^{-1}$ and $\lambda'_j = \kappa'_j \circ f_j^{-1}$, for all $j$.
+Two valuation sequences $\sigma$ and $\sigma'$ are \emph{isomorphic} if there exists an isomorphism $f$ such that
+$\sigma' = f(\sigma)$.
+Note that isomorphic valuation sequences induce the same timed words.
+
+The following lemmas follow directly from the definitions:
+\begin{lemma}
+\label{lemma isomorphism}
+Let $\sigma$ be a valuation sequence and let $f$ be an isomorphism for $\sigma$.
+Then $\beh(f(\sigma)) = f(\beh(\sigma))$.
+\end{lemma}
+\begin{lemma}
+If $\beta$ and $\beta'$ are isomorphic, then $\beta$ is feasible iff $\beta'$ is feasible.
+\end{lemma}
 
 Two MMTs $\M$ and $\N$ with the same sets of inputs are \emph{untimed equivalent}, denoted $\M \approx_{\mathit{untimed}} \N$, iff their sets of feasible behaviors are isomorphic.
 
@@ -238,51 +308,19 @@ $\M \approx_{\mathit{timed}} \N$.
 \begin{proof}
 Assume $\M \approx_{\mathit{untimed}} \N$ and $w$ is a timed word of $\M$.
 Since $\approx_{\mathit{timed}}$ is symmetric, it suffices to prove that $w$ is a timed word of $\N$.
-Let
-\begin{eqnarray*}
-w & = &  (i_1, o_1, d_1), (i_2, o_2, d_2) \cdots (i_k, o_k, d_k).
-\end{eqnarray*}
-Then there exists a timed run $\alpha$ of $\M$ over $w$. Let 
-\begin{eqnarray*}
-\alpha & = & (q_0, \tvals_0) \xrightarrow{d_1} (q_0, \tvals'_0) \xrightarrow{i_1/o_1} (q_1, \tvals_1) \xrightarrow{d_2} (q_1, \tvals'_1)  \cdots
- \xrightarrow{i_k/o_k} (q_k, \tvals_k).
-\end{eqnarray*}
-This implies that $\M$ has an untimed run
-\begin{eqnarray*}
-\gamma & = & q_0 \xrightarrow{i_1/o_1, \rho_1} q_1  \xrightarrow{i_2/o_2, \rho_2} q_2 \cdots \xrightarrow{i_k/o_k, \rho_k} q_k
-\end{eqnarray*}
-and
-\[
-\tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \xrightarrow{d_2} \tvals'_1 \xrightarrow{i_2/o_2, \rho_2} \tvals_2 \cdots
-\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}.
-\]
-Let $X_j = \varsof{q_j}$, for all $j$. Then it follows that
-\begin{eqnarray*}
-\beta & = & X_0 \xrightarrow{i_1/o_1, \rho_1} X_1  \xrightarrow{i_2/o_2, \rho_2} X_2 \cdots \xrightarrow{i_k/o_k, \rho_k} X_{k},
-\end{eqnarray*}
-is a feasible behavior of $\M$ with $X_0 = \emptyset$.
-Since  $\M \approx_{\mathit{untimed}} \N$, $\N$ has a feasible behavior $\beta'$ that is isomorphic to $\beta$.
-Let
-\begin{eqnarray*}
-\beta' & = & Y_0 \xrightarrow{i_1/o_1, \tau_1} Y_1  \xrightarrow{i_2/o_2, \tau_2} Y_2 \cdots \xrightarrow{i_k/o_k, \tau_k} Y_{k}.
-\end{eqnarray*}
-There exist bijections $f_j : X_j \rightarrow Y_j$, for all $j$, such that, for all $j>0$, $\domof{\tau_j} = f_j(\domof{\rho_j})$ and, for all $x \in\domof{\rho_j}$,
-$\rho_j(x) = \tau_j (f_j(x))$ and, for all $x \in X_j \setminus \domof{\rho_j}$, $f_j(x) = f_{j-1}(x)$.
-Let $\lambda_j = \tvals_j \circ f_j^{-1}$ and $\lambda'_j = \tvals'_j \circ f_j^{-1}$, for all $j$. Then
-\[
-\lambda_0 \xrightarrow{d_1} \lambda'_0 \xrightarrow{i_1/o_1, \tau_1} \lambda_1 \xrightarrow{d_2} \lambda'_1 \xrightarrow{i_2/o_2, \rho_2} \lambda_2 \cdots
-\xrightarrow{d_k} \lambda'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \lambda_{k}.
-\]
-Since $\N$ has behavior $\beta'$, $\N$ has an untimed run
-\begin{eqnarray*}
-\gamma' & = & r_0 \xrightarrow{i_1/o_1, \tau_1} r_1  \xrightarrow{i_2/o_2, \tau_2} r_2 \cdots \xrightarrow{i_k/o_k, \tau_k} r_k
-\end{eqnarray*}
-with $\beh(\gamma') = \beta'$.
-This permits us to construct the following timed run of $\N$ 
-\begin{eqnarray*}
-\alpha' & = & (r_0, \lambda_0) \xrightarrow{d_1} (r_0, \lambda'_0) \xrightarrow{i_1/o_1} (r_1, \lambda_1) \xrightarrow{d_2} (r_1, \lambda'_1)  \cdots
- \xrightarrow{i_k/o_k} (r_k, \lambda_k).
-\end{eqnarray*}
+Since $w$ is a timed word of $\M$,
+there exists a timed run $\alpha$ of $\M$ with $\timedword(\alpha) = w$. 
+Let $\sigma = \pi_2(\alpha)$ and $\beta = \beh(\sigma)$. 
+Then $\beta$ is a feasible behavior of $\M$ and $\timedword(\sigma) = w$.
+Since  $\M \approx_{\mathit{untimed}} \N$, there exists an isomorphism $f$ such that 
+$\beta' = f(\beta)$ is a feasible behavior of $\N$.
+Hence $\N$ has an untimed run $\gamma'$ such that $\beh(\gamma') = \beta'$.
+Let $\sigma' = f(\sigma)$.
+By Lemma~\ref{lemma isomorphism}, $\sigma'$ is a valuation sequence with 
+$\beh(\sigma') = \beh(f(\sigma)) = f(\beh(\sigma)) = f(\beta) = \beta'$.
+Since $\beh(\gamma') = \beh(\sigma') = \beta'$, $\N$ has a timed run $\alpha' = \run(\gamma',\sigma')$ with
+$\pi_2(\alpha') = \sigma'$.
+Note that $\timedword(\alpha') = \timedword(\sigma') = \timedword(f(\sigma)) = \timedword(\sigma) = w$.
 Hence $\N$ has timed word $w$, as required.
 \end{proof}
 
@@ -296,6 +334,11 @@ Let $\M$ be an MMT. Then we say that $\M$ is \emph{timer live} if, for each time
 of the final configuration of $\alpha$, there exists an extension $\alpha'$ of $\alpha$ in which timer $x$ 
 remains unaffected until it expires.
 
+Alternative: 
+\marginpar{Alternative definition is more general and it should be easier to decide. Need to  reorder paper.}
+Let $\M$ be an MMT. Then we say that $\M$ is \emph{timer live} if, for each feasible behavior $\beta$ with $\Last{\beta} = Y$ and for each timer $x \in Y$, there exists a behavior $\beta'$ with $\Head{\beta'} = Y$ that only contains
+transitions that leave $x$ unaffected such that $x$ is expirable after $\beta$.
+
 \begin{theorem}
 \label{timedimpliesuntimed}
 Suppose that $\M$ and $\N$ are timer live MMTs in which at most one timer is started on each transition. Then
@@ -303,8 +346,36 @@ $\M \approx_{\mathit{timed}} \N$
 implies
 $\M \approx_{\mathit{untimed}} \N$.
 \end{theorem}
+\begin{proof}
+Suppose that $\M \approx_{\mathit{timed}} \N$.
+Let $\beta$ be a feasible behavior of $\M$.
+By induction on the number of events in $\beta$, we prove that $\N$ has a feasible behavior that is isomorphic to $\beta$.
+Since $\approx_{\mathit{untimed}}$ is symmetric, this suffices to prove the theorem.
+
+Induction base. If $\beta$ contains $0$ events then it consists of the empty set of variables $\emptyset$.
+Since $\emptyset$ is a feasible behavior of any MMT, $\beta = \emptyset$ is a feasible behavior of $\N$, as required.
+
+Induction step. Suppose $\beta$ contains $k+1$ events:
+\begin{eqnarray*}
+\beta & = & X_0 \xrightarrow{i_1/o_1, \rho_1} X_1  \xrightarrow{i_2/o_2, \rho_2} X_2 \cdots \xrightarrow{i_k/o_k, \rho_k} X_{k}
+ \xrightarrow{i_{k+1}/o_{k+1}, \rho_{k+1}} X_{k+1}.
+\end{eqnarray*}
+Let $\beta_k$ be the prefix of $\beta$ containing $k$ events. Then $\beta_k$ is also a feasible behavior and thus, by
+induction hypothesis, there exists a feasible behavior
+\begin{eqnarray*}
+\beta' & = & Y_0 \xrightarrow{i_1/o_1, \tau_1} Y_1  \xrightarrow{i_2/o_2, \tau_2} Y_2 \cdots \xrightarrow{i_k/o_k, \tau_k} Y_{k}
+\end{eqnarray*}
+of $\N$ that is isomorphic to $\beta_k$. This means
+there exist bijections $f_j : X_j \rightarrow Y_j$, for all $j \leq k$, such that, for all $j>0$, $\domof{\tau_j} = f_j(\domof{\rho_j})$ and, for all $x \in\domof{\rho_j}$,
+$\rho_j(x) = \tau_j (f_j(x))$ and, for all $x \in X_j \setminus \domof{\rho_j}$, $f_j(x) = f_{j-1}(x)$.
+\end{proof}
 
 \subsection{Reachability analysis}
+For any nonempty sequence $\sigma$, $\Head{\sigma}$ denotes the first element of $\sigma$, $\Tail{\sigma}$ denotes the sequence obtained by removing the first element from $\sigma$, and $\Last{\sigma}$ denotes the last element of $\sigma$.
+Suppose $\beta, \beta'$ are behaviors over $I$, $O$ and $Y$ such that $\Last{\beta} = \Head{\beta'}$.
+Then $\beta \cdot \beta'$, the \emph{sequential composition} of $\beta$ and $\beta'$, is the behavior $\beta \Tail{\beta'}$.
+Behavior $\beta$ is a \emph{prefix} of behavior $\gamma$ if there exists a behavior $\beta'$ such that $\gamma = \beta \cdot \beta'$.
+
 It is not difficult to translate an MMTs to a timed automaton \cite{AD94,BengtssonY03} that accepts the same timed words.
 Through such a translation, verification and analysis tools for timed automata, such as Uppaal \cite{Uppaal4.0}
 become available for MMTs.
@@ -372,7 +443,7 @@ if there exists a valuation in $\Post_{\beta}$ in which $x$ is minimal.
 \begin{lemma}
 Suppose $\beta$ is a feasible behavior and $Y \xrightarrow{\toevent{x}/o, \rho} Y'$ is a behavior 
 with $Y = \Last{\beta}$.
-Then $x$ is expirable iff $\beta \xrightarrow{\toevent{x}/o, \rho} Y'$ is feasible.
+Then $x$ is expirable after $\beta$ iff $\beta \xrightarrow{\toevent{x}/o, \rho} Y'$ is feasible.
 \end{lemma}
 
 \subsection{Myhill-Nerode}  
