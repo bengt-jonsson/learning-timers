@@ -18,6 +18,7 @@
 \newcommand{\constrof}[1]{\phi_{#1}}
 \newcommand{\Post}{\mathsf{Post}}
 \newcommand{\beh}{\mathit{beh}}
+\newcommand{\untime}{\mathit{untime}}
 \newcommand{\run}{\mathit{run}}
 \newcommand{\timedword}{\mathit{tw}}
 
@@ -68,6 +69,7 @@ $\toevent{x}$ for $x \in X$.
 For a set $I$, let $\extinputs$ be $I \cup \toevents$.
 
 We write $A \hookrightarrow B$ for the set of partial functions from $A$ to $B$.
+With $f \lceil A$ we denote the restriction of function $f$ to $\domof{f} \cap A$.
 For arbitrary functions $f$ and $g$, $f [g]$ is the function with domain $\domof{f}$ that behaves like $f$
 on $\domof{f} \setminus \domof{g}$ and like $g$ on $\domof{f} \cap \domof{g}$.
 
@@ -214,9 +216,9 @@ for each $j>0$,  $d_j \in \delays$, $i_j \in \extinputs$, $o_j \in O$, and $\rho
 To each timed behavior $\sigma$ we can associate a corresponding untimed behavior by forgetting the time
 delays and by replacing valuations by their domain:
 \begin{eqnarray*}
-\beh(\sigma) & = & \domof{\tvals_0} \xrightarrow{i_1/o_1, \rho_1} \domof{\tvals_1}  \xrightarrow{i_2/o_2, \rho_2} \domof{\tvals_2} \cdots \xrightarrow{i_k/o_k, \rho_k} \domof{\tvals_k}.
+\untime(\sigma) & = & \domof{\tvals_0} \xrightarrow{i_1/o_1, \rho_1} \domof{\tvals_1}  \xrightarrow{i_2/o_2, \rho_2} \domof{\tvals_2} \cdots \xrightarrow{i_k/o_k, \rho_k} \domof{\tvals_k}.
 \end{eqnarray*}
-We say that untimed behavior $\beta$ is \emph{feasible} if there exists a timed behavior $\sigma$ such that $\beh(\sigma) = \beta$.
+We say that untimed behavior $\beta$ is \emph{feasible} if there exists a timed behavior $\sigma$ such that $\untime(\sigma) = \beta$.
 We can also associate a timed word to timed behavior $\sigma$ by forgetting the valuations and the initialization functions:
 \begin{eqnarray*}
 \timedword(\sigma) & = & (i_1, o_1, d_1) (i_2, o_2, d_2) \cdots (i_k, o_k, d_k).
@@ -228,14 +230,14 @@ Let $\alpha$ be a timed run of an MMT $\M$:
 \end{eqnarray*}
 Then $\alpha$ can be projected both to an untimed run of $\M$
 \begin{eqnarray*}
-\pi_1 (\alpha) & = & q_0 \xrightarrow{i_1/o_1, \rho_1} q_1  \xrightarrow{i_2/o_2, \rho_2} q_2 \cdots \xrightarrow{i_k/o_k, \rho_k} q_k
+\untime (\alpha) & = & q_0 \xrightarrow{i_1/o_1, \rho_1} q_1  \xrightarrow{i_2/o_2, \rho_2} q_2 \cdots \xrightarrow{i_k/o_k, \rho_k} q_k
 \end{eqnarray*}
 (note that the $\rho_j$ are uniquely determined since $\M$ is deterministic) and to a timed behavior
 \begin{eqnarray*}
-\pi_2(\alpha) & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \xrightarrow{d_2} \tvals'_1 \xrightarrow{i_2/o_2, \rho_2} \tvals_2 \cdots
+\beh(\alpha) & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \xrightarrow{d_2} \tvals'_1 \xrightarrow{i_2/o_2, \rho_2} \tvals_2 \cdots
 \xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}.
 \end{eqnarray*}
-Note that $\beh(\pi_1(\alpha))=\beh(\pi_2(\alpha))$ and $\timedword(\alpha) = \timedword(\pi_2(\alpha))$.
+Note that $\beh(\untime(\alpha))=\untime(\beh(\alpha))$ and $\timedword(\alpha) = \timedword(\beh(\alpha))$.
 Thus the diagram of Figure~\ref{fig:diagram}, which summarizes the various types of runs and behaviors that we consider, commutes.
 \begin{figure}[h]
 \centering
@@ -247,18 +249,18 @@ Thus the diagram of Figure~\ref{fig:diagram}, which summarizes the various types
   \node[state,align=center] (5) [above of=3] {timed \\words};
 
   \path[every node/.style={font=\sffamily\scriptsize}]
-    (1) edge  node {$\pi_1$} (2)
-        edge  node {$\pi_2$} (3)
+    (1) edge  node {$\untime$} (2)
+        edge  node {$\beh$} (3)
         edge  node {$\timedword$} (5)
     (2) edge  node {$\beh$} (4)
-    (3) edge  node {$\beh$} (4)
+    (3) edge  node {$\untime$} (4)
         edge  node {$\timedword$} (5);
 \end{tikzpicture}
 \caption{Functions relating different types of runs and behaviors}
 \label{fig:diagram}
 \end{figure}
-Conversely, if $\gamma$ is an untimed run  of $\M$ and $\sigma$ is a timed behavior such that $\beh(\gamma) = \beh(\sigma)$,
-then there exists a unique timed run $\alpha$ of $\M$ with $\pi_1(\alpha) = \gamma$ and $\pi_2(\alpha) = \sigma$.
+Conversely, if $\gamma$ is an untimed run  of $\M$ and $\sigma$ is a timed behavior such that $\beh(\gamma) = \untime(\sigma)$,
+then there exists a unique timed run $\alpha$ of $\M$ with $\untime(\alpha) = \gamma$ and $\beh(\alpha) = \sigma$.
 We refer to $\alpha$ as $\run(\gamma,\sigma)$.
 \marginpar{Is this a pullback?}
 
@@ -266,7 +268,7 @@ We refer to $\alpha$ as $\run(\gamma,\sigma)$.
 We would, intuitively, like to let the untimed semantics of an MMT $\M$ be the set of its feasible untimed behaviors.
 However, it would then depend heavily on the names of the timers. Therefore, we define an equivalence relation
 on untimed behaviors, which deems two untimed behaviors equivalent if there is a consistent renaming of timers that transforms
-one untimed behavior into the other.
+the one into the other.
 
 Let $X_0,\ldots, X_k$ be a sequence of sets $X_j \subseteq X$ of timers.
 An \emph{isomorphism} for $X_0,\ldots, X_k$ is a sequence $f = f_0 ,\ldots, f_k$ of bijections $f_j : X_j \rightarrow Y_j$ such that,
@@ -275,7 +277,7 @@ If $f = f_0 ,\ldots, f_k$ is an isomorphism with $f_j : X_j \rightarrow Y_j$ and
 \begin{eqnarray*}
 \beta & = & X_0 \xrightarrow{i_1/o_1, \rho_1} X_1  \xrightarrow{i_2/o_2, \rho_2} X_2 \cdots \xrightarrow{i_k/o_k, \rho_k} X_{k}
 \end{eqnarray*}
-is an untimed behavior then $f(\beta)$ is defined as the untimed behavior
+is an untimed behavior then $f(\beta)$ is the untimed behavior given by
 \begin{eqnarray*}
 f(\beta) & = & Y_0 \xrightarrow{i'_1/o_1, \rho'_1} Y_1  \xrightarrow{i'_2/o_2, \rho'_2} Y_2 \cdots \xrightarrow{i'_k/o_k, \rho'_k} Y_{k},
 \end{eqnarray*}
@@ -311,10 +313,10 @@ The following lemmas follow directly from the definitions:
 \begin{lemma}
 \label{lemma isomorphism}
 Let $\sigma$ be a timed behavior and let $f$ be an isomorphism for $\sigma$.
-Then $\beh(f(\sigma)) = f(\beh(\sigma))$.
+Then $\untime(f(\sigma)) = f(\untime(\sigma))$.
 \end{lemma}
 \begin{lemma}
-If $\beta$ and $\beta'$ are isomorphic, then $\beta$ is feasible iff $\beta'$ is feasible.
+If untimed behaviors $\beta$ and $\beta'$ are isomorphic, then $\beta$ is feasible iff $\beta'$ is feasible.
 \end{lemma}
 
 Two MMTs $\M$ and $\N$ with the same sets of inputs are \emph{untimed equivalent}, denoted $\M \approx_{\mathit{untimed}} \N$, iff their sets of feasible untimed behaviors are isomorphic.
@@ -332,18 +334,18 @@ Assume $\M \approx_{\mathit{untimed}} \N$ and $w$ is a timed word of $\M$.
 Since $\approx_{\mathit{timed}}$ is symmetric, it suffices to prove that $w$ is a timed word of $\N$.
 Since $w$ is a timed word of $\M$,
 there exists a timed run $\alpha$ of $\M$ with $\timedword(\alpha) = w$. 
-Let $\sigma = \pi_2(\alpha)$ and $\beta = \beh(\sigma)$. 
+Let $\sigma = \beh(\alpha)$ and $\beta = \untime(\sigma)$. 
 Then $\beta$ is a feasible untimed behavior of $\M$ and $\timedword(\sigma) = w$.
 Since  $\M \approx_{\mathit{untimed}} \N$, there exists an isomorphism $f$ such that 
 $\beta' = f(\beta)$ is a feasible untimed behavior of $\N$.
-Hence $\N$ has an untimed run $\gamma'$ such that $\beh(\gamma') = \beta'$.
+Hence $\N$ has an untimed run $\gamma'$ such that $\untime(\gamma') = \beta'$.
 Let $\sigma' = f(\sigma)$.
 By Lemma~\ref{lemma isomorphism}, $\sigma'$ is a timed behavior with 
-$\beh(\sigma') = \beh(f(\sigma)) = f(\beh(\sigma)) = f(\beta) = \beta'$.
-Since $\beh(\gamma') = \beh(\sigma') = \beta'$, $\N$ has a timed run $\alpha' = \run(\gamma',\sigma')$ with
-$\pi_2(\alpha') = \sigma'$.
+$\untime(\sigma') = \untime(f(\sigma)) = f(\untime(\sigma)) = f(\beta) = \beta'$.
+Since $\beh(\gamma') = \untime(\sigma') = \beta'$, $\N$ has a timed run $\alpha' = \run(\gamma',\sigma')$ with
+$\beh(\alpha') = \sigma'$.
 Note that $\timedword(\alpha') = \timedword(\sigma') = \timedword(f(\sigma)) = \timedword(\sigma) = w$.
-Hence $\N$ has timed word $w$, as required.
+Hence $w$ is a timed word of $\N$, as required.
 \end{proof}
 
 The converse of Theorem~\ref{untimedimpliestimed} does not hold: if two MMTs are timed equivalent then they need not
