@@ -19,7 +19,7 @@
 \newcommand{\Post}{\mathsf{Post}}
 \newcommand{\beh}{\mathit{beh}}
 \newcommand{\untime}{\mathit{untime}}
-\newcommand{\run}{\mathit{run}}
+\newcommand{\run}{\mathit{pullback}}
 \newcommand{\timedword}{\mathit{tw}}
 
 \newcommand{\conc}{\cdot}
@@ -171,9 +171,9 @@ of transitions between configurations $C_j, C'_j$ of $\M$, where $C_0$ is the in
 %Note that, since MMTs are deterministic (if we allow to observe the
 %identities of timers in timeout events),
 %for each timed word $w$ there exists at most one run over $w$.
-To each timed run $\alpha$ we can associate a timed word by forgetting the configurations:
+To each timed run $\alpha$ we can associate a \emph{timed word} by forgetting the configurations:
 \begin{eqnarray*}
-\timedword(\alpha) & = & (i_1, o_1, d_1) (i_2, o_2, d_2) \cdots (i_k, o_k, d_k).
+\timedword(\alpha) & = & d_1 ~ i_1 ~ o_1 ~ d_2 ~ i_2 ~ o_2 \cdots d_k ~ i_k ~ o_k.
 \end{eqnarray*}
 We say $w$ is a timed word of $\M$ if $\M$ has a timed run $\alpha$ with $w = \timedword(\alpha)$.
 
@@ -221,7 +221,7 @@ delays and by replacing valuations by their domain:
 We say that untimed behavior $\beta$ is \emph{feasible} if there exists a timed behavior $\sigma$ such that $\untime(\sigma) = \beta$.
 We can also associate a timed word to timed behavior $\sigma$ by forgetting the valuations and the initialization functions:
 \begin{eqnarray*}
-\timedword(\sigma) & = & (i_1, o_1, d_1) (i_2, o_2, d_2) \cdots (i_k, o_k, d_k).
+\timedword(\sigma) & = & d_ 1 ~ i_1 ~ o_1 ~ i_2 ~ o_2 \cdots d_k ~ i_k ~ o_k.
 \end{eqnarray*} 
 Let $\alpha$ be a timed run of an MMT $\M$: 
 \begin{eqnarray*}
@@ -238,7 +238,8 @@ Then $\alpha$ can be projected both to an untimed run of $\M$
 \xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}.
 \end{eqnarray*}
 Note that $\beh(\untime(\alpha))=\untime(\beh(\alpha))$ and $\timedword(\alpha) = \timedword(\beh(\alpha))$.
-Thus the diagram of Figure~\ref{fig:diagram}, which summarizes the various types of runs and behaviors that we consider, commutes.
+Thus the diagram of Figure~\ref{fig:diagram}, which summarizes the various types of runs and behaviors that we consider
+in this article, commutes.
 \begin{figure}[h]
 \centering
 \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.5cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
@@ -246,12 +247,12 @@ Thus the diagram of Figure~\ref{fig:diagram}, which summarizes the various types
   \node[state,align=center] (2) [below of=1] {untimed \\ runs of\\ $\M$};
   \node[state,align=center] (3) [right of=1] {timed\\ behaviors};
   \node[state,align=center] (4) [right of=2] {untimed\\ behaviors};
-  \node[state,align=center] (5) [above of=3] {timed \\words};
+  \node[state,align=center] (5) [right of=3] {timed \\words};
 
   \path[every node/.style={font=\sffamily\scriptsize}]
     (1) edge  node {$\untime$} (2)
         edge  node {$\beh$} (3)
-        edge  node {$\timedword$} (5)
+        edge[bend left=40]  node {$\timedword$} (5)
     (2) edge  node {$\beh$} (4)
     (3) edge  node {$\untime$} (4)
         edge  node {$\timedword$} (5);
@@ -262,11 +263,10 @@ Thus the diagram of Figure~\ref{fig:diagram}, which summarizes the various types
 Conversely, if $\gamma$ is an untimed run  of $\M$ and $\sigma$ is a timed behavior such that $\beh(\gamma) = \untime(\sigma)$,
 then there exists a unique timed run $\alpha$ of $\M$ with $\untime(\alpha) = \gamma$ and $\beh(\alpha) = \sigma$.
 We refer to $\alpha$ as $\run(\gamma,\sigma)$.
-\marginpar{Is this a pullback?}
 
 \subsection{Untimed semantics}
 We would, intuitively, like to let the untimed semantics of an MMT $\M$ be the set of its feasible untimed behaviors.
-However, it would then depend heavily on the names of the timers. Therefore, we define an equivalence relation
+However, this semantics would then depend heavily on the names of the timers. Therefore, we define an equivalence relation
 on untimed behaviors, which deems two untimed behaviors equivalent if there is a consistent renaming of timers that transforms
 the one into the other.
 
@@ -291,7 +291,7 @@ $\beta' = f(\beta)$.
 Two sets of untimed behaviors $A$ and $B$ are \emph{isomorphic} if for each untimed behavior of $A$ there is an isomorphic untimed behavior in $B$,
 and vice versa.
 
-Isomorphisms are lifted to timed behaviors in the obvious way. If $f = f_0 ,\ldots, f_k$ is an isomorphism and
+Isomorphisms can be lifted to timed behaviors in the obvious way. If $f = f_0 ,\ldots, f_k$ is an isomorphism and
 \begin{eqnarray*}
 \sigma & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \xrightarrow{d_2} \tvals'_1 \xrightarrow{i_2/o_2, \rho_2} \tvals_2 \cdots
 \xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}
@@ -351,17 +351,17 @@ Hence $w$ is a timed word of $\N$, as required.
 The converse of Theorem~\ref{untimedimpliestimed} does not hold: if two MMTs are timed equivalent then they need not
 be untimed equivalent. This is due to the fact that an MMT may have timers that are always stopped or restarted before
 they expire.
-\marginpar{Give some examples here; timer liveness is not enough! Need: at most one timer started on each transition, timer liveness, and some robustness / fidget space.}
+\marginpar{Give examples here; timer liveness is not enough! Need: at most one timer started on each transition, timer liveness, and some robustness / fidget space.}
 
-Let $\M$ be an MMT. Then we say that $\M$ is \emph{timer live} if, for each time run $\alpha$ and for each timer $x$
-\marginpar{How can we decide timer liveness?}
-of the final configuration of $\alpha$, there exists an extension $\alpha'$ of $\alpha$ in which timer $x$ 
-remains unaffected until it expires.
+%Let $\M$ be an MMT. Then we say that $\M$ is \emph{timer live} if, for each time run $\alpha$ and for each timer $x$
+%\marginpar{How can we decide timer liveness?}
+%of the final configuration of $\alpha$, there exists an extension $\alpha'$ of $\alpha$ in which timer $x$ 
+%remains unaffected until it expires.
 
-Alternative: 
-\marginpar{Alternative definition is more general and it should be easier to decide. Need to  reorder paper.}
-Let $\M$ be an MMT. Then we say that $\M$ is \emph{timer live} if, for each feasible untimed behavior $\beta$ with $\Last{\beta} = Y$ and for each timer $x \in Y$, there exists an untimed behavior $\beta'$ with $\Head{\beta'} = Y$ that only contains
-transitions that leave $x$ unaffected such that $x$ is expirable after $\beta$.
+%Alternative: 
+\marginpar{Need to  reorder paper?}
+Let $\M$ be an MMT. Then we say that $\M$ is \emph{timer live} if, for each feasible untimed behavior $\beta$ with $\Last{\beta} = Y$ and for each timer $y \in Y$, there exists an untimed behavior $\beta_y$ with $\Head{\beta_y} = Y$ that only contains
+transitions that leave $y$ unaffected, except for the last one in which $y$ expires, such that $\beta \cdot \beta_y$ is feasible.
 
 \begin{theorem}
 \label{timedimpliesuntimed}
@@ -384,14 +384,12 @@ Induction step. Suppose $\beta$ contains $k+1$ events:
 \beta & = & X_0 \xrightarrow{i_1/o_1, \rho_1} X_1  \xrightarrow{i_2/o_2, \rho_2} X_2 \cdots \xrightarrow{i_k/o_k, \rho_k} X_{k}
  \xrightarrow{i_{k+1}/o_{k+1}, \rho_{k+1}} X_{k+1}.
 \end{eqnarray*}
-Let $\beta_k$ be the prefix of $\beta$ containing $k$ events. Then $\beta_k$ is also a feasible untimed behavior and thus, by
-induction hypothesis, there exists a feasible untimed behavior
+Let $\delta$ be the prefix of $\beta$ containing $k$ events. Then $\delta$ is also a feasible untimed behavior and thus, by
+induction hypothesis, there exists an isomorphism $f = f_0 ,\ldots, f_k$ and a feasible untimed behavior
 \begin{eqnarray*}
-\beta' & = & Y_0 \xrightarrow{i_1/o_1, \tau_1} Y_1  \xrightarrow{i_2/o_2, \tau_2} Y_2 \cdots \xrightarrow{i_k/o_k, \tau_k} Y_{k}
+\delta' & = & Y_0 \xrightarrow{i_1/o_1, \tau_1} Y_1  \xrightarrow{i_2/o_2, \tau_2} Y_2 \cdots \xrightarrow{i_k/o_k, \tau_k} Y_{k}
 \end{eqnarray*}
-of $\N$ that is isomorphic to $\beta_k$. This means
-there exist bijections $f_j : X_j \rightarrow Y_j$, for all $j \leq k$, such that, for all $j>0$, $\domof{\tau_j} = f_j(\domof{\rho_j})$ and, for all $x \in\domof{\rho_j}$,
-$\rho_j(x) = \tau_j (f_j(x))$ and, for all $x \in X_j \setminus \domof{\rho_j}$, $f_j(x) = f_{j-1}(x)$.
+of $\N$ such that $\delta' = f(\delta)$.
 \end{proof}
 
 \subsection{Reachability analysis}
