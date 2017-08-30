@@ -127,7 +127,7 @@ Hence, when timer $x$ expires (i.e., event $\toevent{x}$ occurs) it is either st
 The semantics of MMT $\M = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$ is defined via an infinite state transition system that describes all possible
 configurations and transitions between them.
 A \emph{valuation} is a partial function
-$\tvals : X \hookrightarrow \realsplus$ that assigns nonnegative real numbers as values to timers.
+$\tvals : X \hookrightarrow \realsplus$, defined on a finite subset of $X$, that assigns nonnegative real numbers as values to timers.
 We write $\Vals{Y}$ for the set of valuations with domain $Y \subseteq X$.
 A \emph{configuration} of a MMT is a pair $(q,\tvals)$, where $q \in Q$ is a state and $\tvals\in\Vals{\varsof{q}}$ is a valuation.
 The \emph{initial configuration} is the pair $(q_0, \tvals_0)$, where $\tvals_0$ is the empty function.
@@ -205,10 +205,11 @@ We say that $\beta$ is a untimed behavior of $\M$ if $\M$ has an untimed run $\g
 Note that the initial timer set of any untimed behavior of $\M$ is empty.
 
 A \emph{timed behavior} over inputs $I$, outputs $O$, and timers $Y \subseteq X$ is an alternating sequence
-\begin{eqnarray*}
+\begin{eqnarray}
+\label{timedbehavior}
 \sigma & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \xrightarrow{d_2} \tvals'_1 \xrightarrow{i_2/o_2, \rho_2} \tvals_2 \cdots
 \xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}
-\end{eqnarray*}
+\end{eqnarray}
 of delay predicates and event predicates with, for each $j$,
 $\tvals_j, \tvals'_j$ valuations
 with $\domof{\tvals_j} = \domof{\tvals'_j} \subseteq Y$ and,
@@ -351,14 +352,91 @@ Hence $w$ is a timed word of $\N$, as required.
 The converse of Theorem~\ref{untimedimpliestimed} does not hold: if two MMTs are timed equivalent then they need not
 be untimed equivalent. This is due to the fact that an MMT may have timers that are always stopped or restarted before
 they expire.
-\marginpar{Give examples here; timer liveness is not enough! Need: at most one timer started on each transition, timer liveness, and some robustness / fidget space.}
+\marginpar{Give examples here; timer liveness is not enough! Need: at most one timer started on each transition, timer liveness.}
 
 %Let $\M$ be an MMT. Then we say that $\M$ is \emph{timer live} if, for each time run $\alpha$ and for each timer $x$
 %\marginpar{How can we decide timer liveness?}
 %of the final configuration of $\alpha$, there exists an extension $\alpha'$ of $\alpha$ in which timer $x$ 
 %remains unaffected until it expires.
 
-%Alternative: 
+\paragraph{Wiggling}
+Often it is possible to slightly change the timing of events in a timed behavior, 
+while preserving the associated untimed behavior.
+Clearly, if we shift the timing of an input event by a small amount then we must also shift the timing of the corresponding timeout event
+by the same amount. In addition, if the timeout event starts another timer then we also need to shift the timeout event that this timer induces, etc.
+%
+Let us formalize these ideas. Consider a timed behavior $\sigma$ as in equation (\ref{timedbehavior}).
+Suppose $i_q$ is of the form $\toevent{x}$. Then we say that event $i_p$ \emph{triggers} $i_q$ if
+$p<q$, event $i_p$ starts timer $x$, and for all $p < r < q$, timer $x$ is unaffected by event $i_r$. 
+A \emph{trigger sequence} of $\sigma$ is a maximal subset of indices $T = \{ p_1 ,\ldots, p_u \}$ such that $i_{p_1} \in I$, $i_{p_1}$ triggers $i_{p_2}$, $i_{p_2}$ triggers $i_{p_3}$, etc.
+The following lemma allows us to shift all the events in a trigger sequence e by a small amount forward and backward, respectively, under the condition that all valuations are injective.
+
+\begin{lemma}[Wiggle lemma]
+\label{wiggle lemma}
+Suppose $\sigma$ is a timed behavior as in in equation (\ref{timedbehavior}) in which all valuations
+$\kappa_j, \kappa'_j$ are injective.
+Suppose $T = \{ p_1 ,\ldots, p_u \}$ is a trigger sequence of $\sigma$, and suppose
+that $\epsilon$ is a real number whose absolute is smaller than any nonzero number that occurs in $\sigma$, that is
+$\mid \epsilon \mid  < \min (\bigcup_{1 \leq j \leq k} \{ d_j \} \cup \ranof{\kappa'_j} \setminus \{ 0 \} )$.
+Then there exists a timed behavior
+\begin{eqnarray*}
+\sigma' & = & \lambda_0 \xrightarrow{e_1} \lambda'_0 \xrightarrow{i_1/o_1, \rho_1} \lambda_1 \xrightarrow{e_2} \lambda'_1 \xrightarrow{i_2/o_2, \rho_2} \lambda_2 \cdots
+\xrightarrow{e_k} \lambda'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \lambda_{k}
+\end{eqnarray*}
+such that
+$\untime(\sigma)=\untime(\sigma')$,
+$\kappa_0 = \lambda_0$, and
+\begin{eqnarray*}
+e_j & = & \left\{ \begin{array}{ll}
+d_j + \epsilon & \mbox{if } j-1 \not\in T \wedge j \in T \\
+d_j & \mbox{if } j-1 \in T \Leftrightarrow j \in T\\
+d_j - \epsilon & \mbox{if } j-1 \in T \wedge j \not\in T
+\end{array}\right.
+\end{eqnarray*}
+\end{lemma}
+Without the assumption of injectivity, Lemma~\ref{wiggle lemma} does not hold. 
+
+\begin{example}
+\label{no wiggling example}
+Consider the following timed behavior with trigger sequences $\{ 1, 3 \}$ and $\{ 4, 5 \}$:
+\[
+\emptyset \xrightarrow{7} \emptyset \xrightarrow{i_1/o_1, x \mapsto 2} (x=2) \xrightarrow{1} (x=1)
+\xrightarrow{i_2/o_2, y \mapsto 1} (x=y=1) \xrightarrow{1} (x=y=0) 
+\]
+\[
+\xrightarrow{\toevent{x}/o_3, u \mapsto 2} (u=2)
+\xrightarrow{1} (u=1)
+\xrightarrow{i_4/o_4, z \mapsto 1} (u=z=1)
+\xrightarrow{1} (u=z=0)
+\]
+\[
+\xrightarrow{\toevent{z}/o_5} (u=0).
+\]
+Not all valuations in this timed behavior are injective because $i_2$ sets $y$ to $1$ exactly when $x$ equals $1$,
+and $i_4$ sets $z$ to $1$ exactly when $u$ equals $1$.
+As a result of these ``coincidences'' we cannot wiggle the timing of trigger sequence $\{ 1, 3 \}$ by any amount:
+if $i_1$ occurs just a bit later then timer $y$ must expire before timer $x$,
+and if $i_1$ occurs just a bit earlier then timer $u$ must expire before timer $z$.
+Note that timer $y$ is stopped when timer $x$ expires.
+\end{example}
+
+Fortunately, for any timed behavior that contains valuations that are non-injective,
+an equivalent timed behavior exists in which all valuations are injective.
+We may for instance slighly modify the timed behavior of Example~\ref{no wiggling example} by letting $i_2$ occur
+a bit later and the trigger sequence $\{ 4, 5 \}$ a bit earlier.
+Then all valuations are injective and we can wiggle the timing of event $i_1$. 
+
+\begin{lemma}
+Let $\sigma$ be any timed behavior.
+Then there exists a timed behavior $\sigma'$ in which all valuations are injective such that
+$\untime(\sigma)=\untime(\sigma')$.
+\end{lemma}
+\begin{proof}
+If all valuations in $\sigma$ are injective then we set $\sigma' = \sigma$ and we are done.
+
+So assume that $\sigma$ contains a valuation that is not injective. By induction on the smallest number
+\end{proof}
+
 \marginpar{Need to  reorder paper?}
 Let $\M$ be an MMT. Then we say that $\M$ is \emph{timer live} if, for each feasible untimed behavior $\beta$ with $\Last{\beta} = Y$ and for each timer $y \in Y$, there exists an untimed behavior $\beta_y$ with $\Head{\beta_y} = Y$ that only contains
 transitions that leave $y$ unaffected, except for the last one in which $y$ expires, such that $\beta \cdot \beta_y$ is feasible.
