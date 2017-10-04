@@ -54,12 +54,47 @@
 \newcommand{\smapsuf}{{\cal O_s}}
 \newcommand{\obspre}{{\cal O_U}}
 
-\section{General Treatment for Arbitrary Number of Timers}
+\section{MMTs}
 
-It is now time to consider the general case of
-Mealy machines with an arbitrary number of timers (MMT). 
-These just generalize MM1Ts in that they have a set of timers that
-can be manipulated in the same way as the timer of a MM1T.
+\begin{example}
+%As a first running example, 
+The MM1T of Figure~\ref{fig:abp} presents a simplified model of the sender from 
+the alternating-bit protocol, adapted from \cite[Figure 3.15]{KR13}.
+\begin{figure}[h]
+\centering
+\vspace{-2 em}
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
+  \node[initial, state] (1) {$q_0$};
+  \node[state] (2) [right of=1] {$q_1$};
+  \node[state] (3) [below of=2] {$q_2$};
+  \node[state] (4) [below of=1] {$q_3$};
+
+  \path[every node/.style={font=\sffamily\scriptsize}]
+    (1) edge [text width=1.5cm] node {$\mathit{in}/\mathit{send0}$ \\ $\mathit{start\_timer(3)}$} (2)
+    (2) edge [text width=1.5cm] node {$\mathit{ack0}/\Lambda$ \\ $\mathit{stop\_timer}$} (3)
+        edge [loop right, text width=1.5cm] node {$\mathit{to}/\mathit{send0}$\\ $\mathit{start\_timer}(3)$ } (2)
+    (3) edge [text width=1.5cm] node {$\mathit{in}/\mathit{send1}$ \\ $\mathit{start\_timer(3)}$} (4)
+    (4) edge [text width=1.5cm] node {$\mathit{ack1}/\Lambda$ \\ $\mathit{stop\_timer}$} (1)
+        edge [loop left, text width=2cm] node {$\mathit{to}/\mathit{send1}$\\ $\mathit{start\_timer(3)}$} (4);
+\end{tikzpicture}
+\caption{MM1T model of alternating-bit protocol sender}
+\label{fig:abp}
+\end{figure}
+In the diagram we write $\mathit{start\_timer(n)}$ on a transition if this transition starts the
+timer with value $n \in\nat^{>0}$, and we write $\mathit{stop\_timer}$ if the transition stops the timer.
+We omit trivial self-loops: if some state $q$ does not have an outgoing $i$-transition in the diagram
+then implicitly there is a transition $q \xrightarrow{i/\Lambda} q$.
+
+In the model, input $\mathit{in}$ corresponds to a request from the upper layer to transmit data.
+Initially, upon receipt of such a request, the sender builds a packet from the data and a sequence number $0$,
+sends the packet over the network (output $\mathit{send0}$), and starts the timer with timeout value $3$.
+If the sender receives an acknowledgement with the right sequence number $0$ (input $\mathit{ack0}$) 
+then it stops the timer and jumps to state $q_2$.
+Acknowledgement with the incorrect sequence number (input $\mathit{ack1}$) are ignored.
+If no $\mathit{ack0}$ input arrives within $3$ timeunits, a timeout occurs and the same packet is sent again.
+The behavior in states $q_2$ and state $q_3$ is analogous to that in states $q_0$ and $q_1$, respectively,
+with the roles of sequence numbers $0$ and $1$ swapped.
+\end{example}
 
 \subsection{MMTs}
 We assume an unbounded set $X$ of {\em timers};
@@ -97,7 +132,7 @@ $\lambda: Q \times \extinputs \hookrightarrow O$ is an output function,
 \item
 $\remap : Q \times \extinputs \hookrightarrow (X \hookrightarrow \natplus)$ is a timer initialization function.
 Let $q \in Q$, $i \in \extinputs$, $q'=\delta(q,i)$ and $\rho=\remap(q,i)$. 
-We require that $\rho$ is injective and $\varsof{q'} \setminus \varsof{q} \subseteq \domof{\rho} \subseteq\varsof{q'}$. Moreover
+We require that $\varsof{q'} \setminus \varsof{q} \subseteq \domof{\rho} \subseteq\varsof{q'}$. Moreover
   if $i=\toevent{x}$, for some $x$, then $x \not\in \varsof{q'} \setminus \domof{\rho}$.
 \end{itemize}
 We require that input events are always enabled and timeout events are only enabled
@@ -129,12 +164,13 @@ configurations and transitions between them.
 A \emph{valuation} is a partial function
 $\tvals : X \hookrightarrow \realsplus$, defined on a finite subset of $X$, that assigns nonnegative real numbers as values to timers.
 We write $\Vals{Y}$ for the set of valuations with domain $Y \subseteq X$.
-A \emph{configuration} of a MMT is a pair $(q,\tvals)$, where $q \in Q$ is a state and $\tvals\in\Vals{\varsof{q}}$ is a valuation.
+A \emph{configuration} of an MMT is a pair $(q,\tvals)$, where $q \in Q$ is a state and $\tvals\in\Vals{\varsof{q}}$ is a valuation.
 The \emph{initial configuration} is the pair $(q_0, \tvals_0)$, where $\tvals_0$ is the empty function.
-Valuations and configurations can be modified by the occurrence of events (inputs or timeouts) and delays.
+Valuations and configurations can be modified by the occurrence of discrete events (inputs or timeouts) and by
+the occurrence of delays.
 If $\tvals$ is a valuation in which all timers
 have a value of at least $d$, then $d$ units of time may pass. As a result this delay the value of all the timers is decremented by $d$.
-Formally, we define for $\tvals, \tvals'$ valuations and delay $d \in \delays$,
+Formally, for $\tvals, \tvals'$ valuations and delay $d \in \delays$, we define a delay transition predicate by
 \marginpar{The whole robustness analysis becomes easy/trivial if we assume $d>0$, because then 
 a time delay precedes each input, allowing us to fidget with the timing of this input. Argument against this change is that
 in a concurrent setting we may not exclude simulaneous inputs.}
@@ -144,7 +180,8 @@ in a concurrent setting we may not exclude simulaneous inputs.}
 If the current valuation is $\tvals$, then a timeout event $\toevent{x}$ may occur only if $\tvals(x)=0$.
 If an input or a timeout event occurs, a valuation is updated as specified by timer initialization function $\rho$.
 The values of timers that are not affected by $\rho$ remain unchanged.
-Formally, we define for $\tvals, \tvals'$ valuations, $i \in \extinputs$, $o \in O$ and $\rho \in X \hookrightarrow \natplus$,
+Formally, for $\tvals, \tvals'$ valuations, $i \in \extinputs$, $o \in O$ and $\rho \in X \hookrightarrow \natplus$,
+we define a discrete transition predicate by
 \begin{eqnarray*}
 \tvals \xrightarrow{i/o, \rho}  \tvals' & \Leftrightarrow & [ \domof{\tvals'} \setminus \domof{\tvals}  \subseteq \domof{\rho} \subseteq \domof{\tvals'} ~ \wedge\\
 && \tvals' =  \tvals'[\tvals][\rho] ~ \wedge \\
@@ -157,11 +194,6 @@ For all configurations $(q, \tvals)$, $(q', \tvals')$ of an MMT $\M$,
 \quad\quad
   \frac{q \xrightarrow{i/o,\remapinst} q' \quad \tvals \xrightarrow{i/o, \rho} \tvals'}{(q,\tvals) \xrightarrow{i/o} (q',\tvals')}
 \]
-A \emph{timed word} over inputs $\extinputs$ and outputs $O$ is a sequence
-\begin{eqnarray*}
-w & = &  (i_1, o_1, d_1) (i_2, o_2, d_2) \cdots (i_k, o_k, d_k),
-\end{eqnarray*}
-where each $i_j \in \extinputs$, each $o_j \in O$, and each $d_j \in \delays$.
 A \emph{timed run} of $\M$ over $w$ is a sequence 
 \begin{eqnarray*}
 \alpha & = & C_0 \xrightarrow{d_1} C'_0 \xrightarrow{i_1/o_1} C_1 \xrightarrow{d_2} C'_1 \xrightarrow{i_2/o_2} C_2 \cdots
@@ -171,16 +203,106 @@ of transitions between configurations $C_j, C'_j$ of $\M$, where $C_0$ is the in
 %Note that, since MMTs are deterministic (if we allow to observe the
 %identities of timers in timeout events),
 %for each timed word $w$ there exists at most one run over $w$.
-To each timed run $\alpha$ we can associate a \emph{timed word} by forgetting the configurations:
+A \emph{timed word} over inputs $I$ and outputs $O$ is a sequence
 \begin{eqnarray*}
-\timedword(\alpha) & = & d_1 ~ i_1 ~ o_1 ~ d_2 ~ i_2 ~ o_2 \cdots d_k ~ i_k ~ o_k.
+w & = &  d_1 ~ i_1 ~ o_1 ~ d_2 ~ i_2 ~ o_2 \cdots d_k ~ i_k ~ o_k,
 \end{eqnarray*}
-We say $w$ is a timed word of $\M$ if $\M$ has a timed run $\alpha$ with $w = \timedword(\alpha)$.
+where $d_j \in \delays$, $i_j \in I \cup \{ \mathit{to} \}$, and $o_j \in O$.
+To each timed run $\alpha$ we can associate a \emph{timed word} by forgetting the configurations and the names of timers
+in timeout events:
+\begin{eqnarray*}
+\timedword(\alpha) & = & d_1 ~ i'_1 ~ o_1 ~ d_2 ~ i'_2 ~ o_2 \cdots d_k ~ i'_k ~ o_k, \mbox{ where for all } j\\
+i'_j & = & \left\{ \begin{array}{ll}
+i_j & \mbox{if } i_j \in I\\
+\mathit{to} & \mbox{if } i_j \in \toevents
+\end{array} \right.
+\end{eqnarray*}
+The idea is that, that when we observe an output that is not directly triggered by an input, we may
+may conclude that a timeout occurred. We cannot observe, however, which timer timed out.
 
+We say $w$ is a timed word of $\M$ if $\M$ has a timed run $\alpha$ with $w = \timedword(\alpha)$.
+%
 Two MMTs $\M$ and $\N$ with the same sets of inputs are \emph{timed equivalent}, denoted $\M \approx_{\mathit{timed}} \N$, iff 
 they have the same sets of timed words.
 
-\marginpar{Conjecture: Just being allowed to start just one timer on a transition does not reduce expressivity.}
+\paragraph{Remark.}
+Note that we assume that in a timed run each discrete transition is preceded by a nonzero delay.
+This assumption is a crucial requirement for the learning algorithm that we present in this paper.
+The idea that multiple consecutive discrete transitions may occur in zero time is a useful abstraction in synchronous
+programming and in the theory of timed automata, but unfortunately it appears to be incompatible with our approach.
+
+
+\paragraph{Nondeterminism.}
+Due to our assumption that we cannot observe the name of the timer in a timeout event, an MMT may exhibit nondeterministic
+behavior: even if we offer exactly the same inputs at exactly the same time, different outputs may occur in different runs. 
+The MMT of Figure~\ref{fig:nondeterminism}, for instance, accepts both the timed words
+$1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'$ and $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o''$.
+(For clarity, we omit some self-loop transitions in the state/transition diagram.)
+\begin{figure}[ht]
+\begin{center}
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.5cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
+  \node[initial, state] (1) {$q_0$};
+  \node[state] (2) [below of=1] {$q_1$};
+  \node[state] (3) [right of=2] {$q_3$};
+  \node[state] (4) [left of=2] {$q_2$};
+
+  \path[every node/.style={font=\sffamily\scriptsize}]
+    (1) edge node {$i/o$, $~x:=1$, $y:=1$} (2)  
+    (2) edge  node {$\toevent{x}/o'$} (3)
+      edge  node {$\toevent{y}/o''$} (4);
+\end{tikzpicture}
+\caption{An MMT with nondeterministic behavior}
+\label{fig:nondeterminism}
+\end{center}
+\end{figure}
+In order to rule out this type of nondeterminism, it is not enough to require that the timer initializations are injective,
+that is, it is not allowed to assign the same value to multiple timers in a single transition.
+This is illustrated by the MMT of Figure~\ref{fig:nondeterminism2}, which accepts both the timed words
+$1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'~ 1 ~ \mathit{to} ~ o'$ and $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o' ~ 1 ~ \mathit{to} ~ o''$.
+\begin{figure}[ht]
+\begin{center}
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.5cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
+  \node[initial, state] (1) {$q_0$};
+  \node[state] (2) [below of=1] {$q_1$};
+  \node[state] (4) [left of=2] {$q_2$};
+
+  \path[every node/.style={font=\sffamily\scriptsize}]
+    (1) edge node {$i/o$, $~x:=1$, $y:=2$} (2)  
+    (2) edge  node {$\toevent{y}/o''$} (4)
+      edge  [loop right] node {$\toevent{x}/o'$, $~x:=1$} (2);
+\end{tikzpicture}
+\caption{Another MMT with nondeterministic behavior}
+\label{fig:nondeterminism2}
+\end{center}
+\end{figure}
+
+The nondeterminism of the MMTs of Figures~\ref{fig:nondeterminism} and \ref{fig:nondeterminism2} is ``uncontrollable'' in the
+sense that it occurs after any (nonempty) input sequence.
+Figure~\ref{fig:nondeterminism3} gives an example of an MMT that exhibits nondeterminism when the second input occurs \emph{exactly} one timeunit after the first input: the MMT accepts behaviors
+$7 ~ i ~ o ~ 1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'$ and $7 ~ i ~ o ~ 1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o''$.
+This type of nondeterminism is ``controllable'' in the sense that no nondeterminism will occur if we are careful
+when selecting the timing of inputs.
+\begin{figure}[ht]
+\begin{center}
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.5cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
+  \node[initial, state] (1) {$q_0$};
+  \node[state] (2) [right of=1] {$q_1$};
+  \node[state] (3) [right of=2] {$q_2$};
+
+  \path[every node/.style={font=\sffamily\scriptsize}]
+    (1) edge node {$i/o$, $~x:=2$} (2)  
+    (2) edge  node {$i/o$, $~y:=1$} (3)
+      edge  [loop below] node {$\toevent{x}/o$, $~x:=2$} (2)
+   (3) edge  [loop below] node {$\toevent{x}/o'$} (3)
+   edge  [loop above] node {$\toevent{y}/o''$} (3);
+\end{tikzpicture}
+\caption{An MMT with ``controllable'' nondeterministic behavior}
+\label{fig:nondeterminism3}
+\end{center}
+\end{figure}
+Our learning algorithm applies to MMTs in which at most one timer is (re)started on each transition. Such MMTs do not
+exhibit uncontrollable nondeterminism. The algorithm chooses the timing of the input events in such a way that no
+nondeterministic behavior may arise.
 
 \subsection{A product construction}
 An \emph{untimed behavior} over inputs $I$, outputs $O$, and timers $Y \subseteq X$ is a sequence 
@@ -322,8 +444,6 @@ If untimed behaviors $\beta$ and $\beta'$ are isomorphic, then $\beta$ is feasib
 
 Two MMTs $\M$ and $\N$ with the same sets of inputs are \emph{untimed equivalent}, denoted $\M \approx_{\mathit{untimed}} \N$, iff their sets of feasible untimed behaviors are isomorphic.
 
-\marginpar{Here an extensive example!}
-
 \begin{theorem}
 \label{untimedimpliestimed}
 $\M \approx_{\mathit{untimed}} \N$
@@ -349,15 +469,110 @@ Note that $\timedword(\alpha') = \timedword(\sigma') = \timedword(f(\sigma)) = \
 Hence $w$ is a timed word of $\N$, as required.
 \end{proof}
 
-The converse of Theorem~\ref{untimedimpliestimed} does not hold: if two MMTs are timed equivalent then they need not
-be untimed equivalent. This is due to the fact that an MMT may have timers that are always stopped or restarted before
-they expire.
-\marginpar{Give examples here; timer liveness is not enough! Need: at most one timer started on each transition, timer liveness.}
+The converse of Theorem~\ref{untimedimpliestimed} does not hold, that is,
+if two MMTs are timed equivalent then they need not be untimed equivalent. 
+The two MMTs of Figure~\ref{fig:twoequivalentone}, for instance,
+are timed equivalent but not untimed equivalent,
+because the top MMT has an untimed behavior
+$ \emptyset \xrightarrow{i/o,~ x, y:=1,2 } \{ x, y \}$, for which the bottom MMT has no isomorphic behavior.
+\begin{figure}
+\begin{center}
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
+  \node[initial, state] (1) {$q_0$};
+  \node[state] (2) [right of=1] {$q_1$};
+  \node[state] (3) [right of=2] {$q_2$};
+  \node[state] (4) [right of=3] {$q_3$};
 
+  \path[every node/.style={font=\sffamily\scriptsize}]
+    (1) edge node {$i/o$, $x, y:=1,2$} (2)  
+    (2) edge  node {$\toevent{x}/o'$} (3)
+   (3) edge node {$\toevent{y}/o''$} (4);
+\end{tikzpicture}
+
+\vspace{1 em}
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
+  \node[initial, state] (1) {$q_0$};
+  \node[state] (2) [right of=1] {$q_1$};
+  \node[state] (3) [right of=2] {$q_2$};
+  \node[state] (4) [right of=3] {$q_3$};
+
+  \path[every node/.style={font=\sffamily\scriptsize}]
+    (1) edge node {$i/o$, $x:=1$} (2)  
+    (2) edge  node {$\toevent{x}/o'$, $x:=1$} (3)
+   (3) edge node {$\toevent{x}/o''$} (4);
+\end{tikzpicture}
+\caption{Timed equivalent but not untimed equivalent}
+\label{fig:twoequivalentone}
+\end{center}
+\end{figure}
+For this reason, we will restrict ourselves in the rest of this article to MMTs in which at most
+one clock can be (re)set in a single transition. This restriction has the additional advantage that it
+eliminates the uncontrollable nondeterminism
+of the MMTs of Figures~\ref{fig:nondeterminism} and \ref{fig:nondeterminism2}.
+Provided there is no uncontrollable nondeterminism, most MMTs
+have an equivalent MMT that (re)sets at most one timer per transition:
+if multiple timers are started simultaneously then we can often encode this by just
+starting the timer $x$ with the smallest value $d_0$, and recording the set of remaining timers in the discrete state.
+Then, when $x$ expires, we start the next timer (with timeout value decremented by $d_0$), etc.
+However, such an encoding is not always possible. 
+Figure~\ref{fig:counterexample} presents an example of an MMT for which no equivalent MMT exists
+in which at most one timer is (re)set per transition.
+\begin{figure}
+\begin{center}
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.7cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
+  \node[initial, state] (1) {$q_0$};
+  \node[state] (2) [right of=1] {$q_1$};
+  \node[state] (3) [right of=2] {$q_2$};
+  \node[state] (4) [right of=3] {$q_3$};
+  \node[state] (5) [below of=2] {$q_4$};
+
+  \path[every node/.style={font=\sffamily\scriptsize}]
+    (1) edge node {$i/o$, $x, y:=1,2$} (2)  
+    (2) edge  node {$i/o$} (3)
+   (3) edge node {$\toevent{y}/o''$} (4)
+   (2) edge node {$\toevent{x}/o'$} (5);
+\end{tikzpicture}
+\caption{Starting more than one timer on a transition increases expressivity}
+\label{fig:counterexample}
+\end{center}
+\end{figure}
+
+Even when we restrict to MMTs that may (re)set at most one timer per transition, there is a difference
+between the timed and the untimed semantics.
+This is due to the fact that an MMT may have timers that are always stopped or restarted before
+they expire. Such ``ghost'' timers are visible in the untimed semantics but cannot be observed in the timed semantics.
+Figure~\ref{fig:ghosttimers} gives an example of an MMT with a ghost timer. The MMT is equivalent to the MMT obtained by 
+omitting the update $y :=60$ on the transition from $q_1$ to $q_2$.
+\begin{figure}
+\begin{center}
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.7cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
+  \node[initial, state] (1) {$q_0$};
+  \node[state] (2) [right of=1] {$q_1$};
+  \node[state] (3) [right of=2] {$q_2$};
+  \node[state] (4) [right of=3] {$q_3$};
+  \node[state] (5) [below of=2] {$q_4$};
+
+  \path[every node/.style={font=\sffamily\scriptsize}]
+    (1) edge node {$i/o$, $x:=1$} (2)  
+    (2) edge  node {$i/o$, $y:=60$} (3)
+   (3) edge node {$\toevent{x}/o''$} (4)
+   (2) edge node {$\toevent{x}/o'$} (5);
+\end{tikzpicture}
+\caption{MMT with a ghost timer $y$}
+\label{fig:ghosttimers}
+\end{center}
+\end{figure}
 %Let $\M$ be an MMT. Then we say that $\M$ is \emph{timer live} if, for each time run $\alpha$ and for each timer $x$
 %\marginpar{How can we decide timer liveness?}
 %of the final configuration of $\alpha$, there exists an extension $\alpha'$ of $\alpha$ in which timer $x$ 
 %remains unaffected until it expires.
+
+We say that an MMT $\M$ is \emph{timer live} if, for each feasible untimed behavior $\beta$ and for each timer $y$ that is running after $\beta$, there exists an untimed behavior $\beta_y$ consisting of transitions that leave $y$ unaffected, except for the last one in which $y$ expires, and such that $\beta \cdot \beta_y$ is feasible.
+Clearly, the MMT of Figure~\ref{fig:ghosttimers} is not timer live, as there is no way to extend the feasible untimed
+behavior $\emptyset \xrightarrow{i/o,~ x:=1 } \{ x\} \xrightarrow{i/o,~ y:=60 } \{ x, y\}$ to an untimed behavior in which
+timer $y$ expires.
+
+We will prove that the timed semantics and the untimed semantics coincide for timer live MMTs in which at most one timer is (re)started on each transition. However, before we can prove this result we need to do some prepatory work.
 
 \paragraph{Wiggling}
 Often it is possible to slightly change the timing of events in a timed behavior, 
@@ -366,10 +581,13 @@ Clearly, if we shift the timing of an input event by a small amount then we must
 by the same amount. In addition, if the timeout event starts another timer then we also need to shift the timeout event that this timer induces, etc.
 %
 Let us formalize these ideas. Consider a timed behavior $\sigma$ as in equation (\ref{timedbehavior}).
-Suppose $i_q$ is of the form $\toevent{x}$. Then we say that event $i_p$ \emph{triggers} $i_q$ if
-$p<q$, event $i_p$ starts timer $x$, and for all $p < r < q$, timer $x$ is unaffected by event $i_r$. 
-A \emph{trigger sequence} of $\sigma$ is a maximal subset of indices $T = \{ p_1 ,\ldots, p_u \}$ such that $i_{p_1} \in I$, $i_{p_1}$ triggers $i_{p_2}$, $i_{p_2}$ triggers $i_{p_3}$, etc.
-The following lemma allows us to shift all the events in a trigger sequence e by a small amount forward and backward, respectively, under the condition that all valuations are injective.
+We say that event $i_p$ \emph{triggers} $i_q$ if $p<q$ and there exists a timer $x$ such that:
+(a) event $i_p$ starts $x$, 
+(b) for all $p < r < q$, $x$ is unaffected by event $i_r$, and
+(c) $i_q = \toevent{x}$.
+A \emph{trigger sequence} of $\sigma$ is a maximal subset of indices $T = \{ p_1 ,\ldots, p_u \}$ such that $i_{p_1} \in T$, $i_{p_1}$ triggers $i_{p_2}$, $i_{p_2}$ triggers $i_{p_3}$, etc.
+The following lemma allows us to shift all the events in a trigger sequence forward and backward by a small amount, 
+under the condition that all valuations are injective, that is, distinct timers have distinct values.
 
 \begin{lemma}[Wiggle lemma]
 \label{wiggle lemma}
@@ -383,7 +601,7 @@ Then there exists a timed behavior
 \sigma' & = & \lambda_0 \xrightarrow{e_1} \lambda'_0 \xrightarrow{i_1/o_1, \rho_1} \lambda_1 \xrightarrow{e_2} \lambda'_1 \xrightarrow{i_2/o_2, \rho_2} \lambda_2 \cdots
 \xrightarrow{e_k} \lambda'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \lambda_{k}
 \end{eqnarray*}
-such that
+in which all valuations are injective such that
 $\untime(\sigma)=\untime(\sigma')$,
 $\kappa_0 = \lambda_0$, and
 \begin{eqnarray*}
@@ -394,11 +612,11 @@ d_j - \epsilon & \mbox{if } j-1 \in T \wedge j \not\in T
 \end{array}\right.
 \end{eqnarray*}
 \end{lemma}
-Without the assumption of injectivity, Lemma~\ref{wiggle lemma} does not hold. 
+The next example shows that, without the assumption of injectivity, Lemma~\ref{wiggle lemma} does not hold. 
 
 \begin{example}
 \label{no wiggling example}
-Consider the following timed behavior with trigger sequences $\{ 1, 3 \}$ and $\{ 4, 5 \}$:
+Consider the following timed behavior with trigger sequences $\{ 1, 3 \}$, $\{ 2 \}$, and $\{ 4, 5 \}$:
 \[
 \emptyset \xrightarrow{7} \emptyset \xrightarrow{i_1/o_1, x \mapsto 2} (x=2) \xrightarrow{1} (x=1)
 \xrightarrow{i_2/o_2, y \mapsto 1} (x=y=1) \xrightarrow{1} (x=y=0) 
@@ -417,7 +635,7 @@ and $i_4$ sets $z$ to $1$ exactly when $u$ equals $1$.
 As a result of these ``coincidences'' we cannot wiggle the timing of trigger sequence $\{ 1, 3 \}$ by any amount:
 if $i_1$ occurs just a bit later then timer $y$ must expire before timer $x$,
 and if $i_1$ occurs just a bit earlier then timer $u$ must expire before timer $z$.
-Note that timer $y$ is stopped when timer $x$ expires.
+Note that when timer $x$ expires timer $y$ is stopped.
 \end{example}
 
 Fortunately, for any timed behavior that contains valuations that are non-injective,
@@ -432,14 +650,9 @@ Then there exists a timed behavior $\sigma'$ in which all valuations are injecti
 $\untime(\sigma)=\untime(\sigma')$.
 \end{lemma}
 \begin{proof}
-If all valuations in $\sigma$ are injective then we set $\sigma' = \sigma$ and we are done.
-
-So assume that $\sigma$ contains a valuation that is not injective. By induction on the smallest number
+Assume that $\sigma$ contains a valuation that is not injective. By induction on the smallest number
 \end{proof}
 
-\marginpar{Need to  reorder paper?}
-Let $\M$ be an MMT. Then we say that $\M$ is \emph{timer live} if, for each feasible untimed behavior $\beta$ with $\Last{\beta} = Y$ and for each timer $y \in Y$, there exists an untimed behavior $\beta_y$ with $\Head{\beta_y} = Y$ that only contains
-transitions that leave $y$ unaffected, except for the last one in which $y$ expires, such that $\beta \cdot \beta_y$ is feasible.
 
 \begin{theorem}
 \label{timedimpliesuntimed}

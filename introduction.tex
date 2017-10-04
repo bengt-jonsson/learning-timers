@@ -1,12 +1,15 @@
 \section{Introduction}
 \label{sec:intro}
 
-There has been much progress recently on algorithms and tools for active automata learning, with many
-applications in areas such as network/security protocols and control software \cite{Vaa17}.
-Timing often does play a role in these applications but cannot be handled using existing tools. Hence
-timing issues have been ignored or artificially suppressed in case studies.
-There has been work on algorithms for learning event-recording automata \cite{GrinchteinJL10},
-but the complexity of these algorithms appears to be prohibitively high.
+Active automata learning is emerging as an effective bug-finding technique, with applications in banking cards,
+network protocols, and legacy software \cite{Vaa17}.
+Using active automata learning, for instance, standard violations have been found in multiple implementations of
+major network protocols such as TLS \cite{dRP15}, TCP \cite{FJV16} and SSH \cite{FiterauEtAl17}.
+Timing often plays a crucial role in these applications but cannot be handled using existing tools.
+Hence timing issues have been artificially suppressed in case studies.
+
+There has been work on algorithms for learning timed systems, e.g., \cite{GrinchteinJL10,MensM15,CCF16},
+but these approaches have complexity of these algorithms appears to be prohibitively high.
 Also the specific restrictions of event recording automata sometimes make it hard to model
 certain system behaviors that occur in practice.
 For instance, a pattern that often occurs in protocols is that with $t$ time units after a first event $a$
