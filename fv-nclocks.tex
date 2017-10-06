@@ -21,6 +21,7 @@
 \newcommand{\untime}{\mathit{untime}}
 \newcommand{\run}{\mathit{pullback}}
 \newcommand{\timedword}{\mathit{tw}}
+\newcommand{\startedby}{\mathit{startedby}}
 
 \newcommand{\conc}{\cdot}
 \newcommand{\tuple}[1]{\langle #1\rangle}
@@ -229,7 +230,7 @@ they have the same sets of timed words.
 Note that we assume that in a timed run each discrete transition is preceded by a nonzero delay.
 This assumption is a crucial requirement for the learning algorithm that we present in this paper.
 The idea that multiple consecutive discrete transitions may occur in zero time is a useful abstraction in synchronous
-programming and in the theory of timed automata, but unfortunately it appears to be incompatible with our approach.
+programming and in the theory of timed automata, but nonzero delays are essential in our learning approach.
 
 
 \paragraph{Nondeterminism.}
@@ -574,26 +575,49 @@ timer $y$ expires.
 
 We will prove that the timed semantics and the untimed semantics coincide for timer live MMTs in which at most one timer is (re)started on each transition. However, before we can prove this result we need to do some prepatory work.
 
-\paragraph{Wiggling}
+\paragraph{Wiggling.}
 Often it is possible to slightly change the timing of events in a timed behavior, 
 while preserving the associated untimed behavior.
-Clearly, if we shift the timing of an input event by a small amount then we must also shift the timing of the corresponding timeout event
-by the same amount. In addition, if the timeout event starts another timer then we also need to shift the timeout event that this timer induces, etc.
+Consider, for instance, if a timed behavior 
+\[
+\tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \cdots
+\xrightarrow{d_j} \tvals'_{j-1} \xrightarrow{i_j/o_j, \rho_j} \tvals_j  \xrightarrow{d_{j+1}} \cdots
+\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}
+\]
+that contains an $i_j$-transition that is not a timeout and does not (re)start any timer.
+We can then schedule this transition slightly earlier.
+More precisely, if $0 < e < d_j$ and $e' = d_j + d_{j+1}- e $ then we can find $\tvals, \tvals'$ such that
+\[
+\tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \cdots
+\xrightarrow{e} \tvals' \xrightarrow{i_j/o_j, \rho_j} \tvals  \xrightarrow{e'} \cdots
+\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}
+\]
+is a timed behavior with the same underlying untimed behavior.
+
+We may also be able to wiggle the timing of timeouts and transitions that (re)start a timer,
+but here we have to be more careful.
+If we shift the timing of an input event by a small amount then we must also shift the timing of a subsequent timeout
+that is triggered by this input.
+In addition, if the timeout starts another timer then we also need to shift the timeout event that this timer induces, etc.
 %
-Let us formalize these ideas. Consider a timed behavior $\sigma$ as in equation (\ref{timedbehavior}).
-We say that event $i_p$ \emph{triggers} $i_q$ if $p<q$ and there exists a timer $x$ such that:
+Let us formalize these ideas. Consider a timed behavior $\sigma$ as in equation (\ref{timedbehavior})
+with events $i_p$ and $i_q$ with $p < q$.
+Then we say that event $i_p$ \emph{triggers} event $i_q$ if there exists a timer $x$ such that:
 (a) event $i_p$ starts $x$, 
 (b) for all $p < r < q$, $x$ is unaffected by event $i_r$, and
 (c) $i_q = \toevent{x}$.
-A \emph{trigger sequence} of $\sigma$ is a maximal subset of indices $T = \{ p_1 ,\ldots, p_u \}$ such that $i_{p_1} \in T$, $i_{p_1}$ triggers $i_{p_2}$, $i_{p_2}$ triggers $i_{p_3}$, etc.
-The following lemma allows us to shift all the events in a trigger sequence forward and backward by a small amount, 
-under the condition that all valuations are injective, that is, distinct timers have distinct values.
+A \emph{block} of $\sigma$ is a maximal subset of indices $B = \{ p_1 ,\ldots, p_u \}$ such that $i_{p_1}$ triggers $i_{p_2}$, $i_{p_2}$ triggers $i_{p_3}$, etc.
+Note that the collection of blocks of $\sigma$ partitions the set of indices $\{ 1 ,\ldots, k \}$.
+We refer to this partition as $\Pi_{\sigma}$.
+We say that timed behavior $\sigma$ contains a \emph{race} if there is some index $j>0$ and some timer $x$  
+such that $\kappa'_{j-1}(x) = 0$ and $i_j \neq \toevent{x}$.
+The following lemma allows us to shift all the events in a block simultaneously forward or backward by a small amount, 
+under the condition that there are no races.
 
 \begin{lemma}[Wiggle lemma]
 \label{wiggle lemma}
-Suppose $\sigma$ is a timed behavior as in in equation (\ref{timedbehavior}) in which all valuations
-$\kappa_j, \kappa'_j$ are injective.
-Suppose $T = \{ p_1 ,\ldots, p_u \}$ is a trigger sequence of $\sigma$, and suppose
+Suppose $\sigma$ is a timed behavior as in equation (\ref{timedbehavior}) without races.
+Suppose $B = \{ p_1 ,\ldots, p_u \}$ is a block of $\sigma$, and suppose
 that $\epsilon$ is a real number whose absolute is smaller than any nonzero number that occurs in $\sigma$, that is
 $\mid \epsilon \mid  < \min (\bigcup_{1 \leq j \leq k} \{ d_j \} \cup \ranof{\kappa'_j} \setminus \{ 0 \} )$.
 Then there exists a timed behavior
@@ -601,7 +625,7 @@ Then there exists a timed behavior
 \sigma' & = & \lambda_0 \xrightarrow{e_1} \lambda'_0 \xrightarrow{i_1/o_1, \rho_1} \lambda_1 \xrightarrow{e_2} \lambda'_1 \xrightarrow{i_2/o_2, \rho_2} \lambda_2 \cdots
 \xrightarrow{e_k} \lambda'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \lambda_{k}
 \end{eqnarray*}
-in which all valuations are injective such that
+such that
 $\untime(\sigma)=\untime(\sigma')$,
 $\kappa_0 = \lambda_0$, and
 \begin{eqnarray*}
@@ -612,11 +636,12 @@ d_j - \epsilon & \mbox{if } j-1 \in T \wedge j \not\in T
 \end{array}\right.
 \end{eqnarray*}
 \end{lemma}
-The next example shows that, without the assumption of injectivity, Lemma~\ref{wiggle lemma} does not hold. 
+The next example shows that, in the presence of races, Lemma~\ref{wiggle lemma} does not hold. 
 
 \begin{example}
 \label{no wiggling example}
-Consider the following timed behavior with trigger sequences $\{ 1, 3 \}$, $\{ 2 \}$, and $\{ 4, 5 \}$:
+Consider the following timed behavior with blocks $\{ 1, 3 \}$, $\{ 2 \}$, and $\{ 4, 5 \}$,
+visualized in Figure~\ref{fig:races}:
 \[
 \emptyset \xrightarrow{7} \emptyset \xrightarrow{i_1/o_1, x \mapsto 2} (x=2) \xrightarrow{1} (x=1)
 \xrightarrow{i_2/o_2, y \mapsto 1} (x=y=1) \xrightarrow{1} (x=y=0) 
@@ -630,27 +655,62 @@ Consider the following timed behavior with trigger sequences $\{ 1, 3 \}$, $\{ 2
 \[
 \xrightarrow{\toevent{z}/o_5} (u=0).
 \]
-Not all valuations in this timed behavior are injective because $i_2$ sets $y$ to $1$ exactly when $x$ equals $1$,
-and $i_4$ sets $z$ to $1$ exactly when $u$ equals $1$.
-As a result of these ``coincidences'' we cannot wiggle the timing of trigger sequence $\{ 1, 3 \}$ by any amount:
+\begin{figure}
+\begin{center}
+\includegraphics[width=.8\textwidth]{wiggling.jpg}
+\end{center}
+\caption{A timed behavior with two races}
+\label{fig:races}
+\end{figure}
+
+This timed behavior contains two races, after two and four time units, respectively.
+The first races is won by block $\{ 1, 3 \}$, and the second race is won by block $\{ 4, 5 \}$.
+As a result of these races we cannot wiggle the timing of block $\{ 1, 3 \}$ by any amount:
 if $i_1$ occurs just a bit later then timer $y$ must expire before timer $x$,
 and if $i_1$ occurs just a bit earlier then timer $u$ must expire before timer $z$.
 Note that when timer $x$ expires timer $y$ is stopped.
 \end{example}
 
-Fortunately, for any timed behavior that contains valuations that are non-injective,
-an equivalent timed behavior exists in which all valuations are injective.
-We may for instance slighly modify the timed behavior of Example~\ref{no wiggling example} by letting $i_2$ occur
-a bit later and the trigger sequence $\{ 4, 5 \}$ a bit earlier.
-Then all valuations are injective and we can wiggle the timing of event $i_1$. 
+The scenario of Figure~\ref{fig:races} is somewhat similar to the well-known Rush Hour puzzle game,
+in which one has to slide blocking vehicles out of the way to find a path for one specific red car to exit
+The following lemma asserts that we can always solve the puzzle for MMTs: for any timed behavior that contains races,
+an equivalent timed behavior exists without races.
+We may for instance slighly modify the timed behavior of Figure~\ref{fig:races} by scheduling block $\{ 2  \}$
+a bit later and block $\{ 4, 5 \}$ a bit earlier.
+Then all races have been eliminated and we can wiggle the timing of block $\{ 1, 3 \}$.
+
+%We call a valuation $\tvals$ \emph{fraction-injective} if, for all distinct timers $x$ and $y$ in the domain of $\tvals$,
+%the fractional parts of $x$ and $y$ are different.
+%Note the any fraction-injective valuation is also injective.
 
 \begin{lemma}
 Let $\sigma$ be any timed behavior.
-Then there exists a timed behavior $\sigma'$ in which all valuations are injective such that
-$\untime(\sigma)=\untime(\sigma')$.
+Then there exists a timed behavior $\sigma'$ without races such that $\untime(\sigma)=\untime(\sigma')$.
 \end{lemma}
 \begin{proof}
-Assume that $\sigma$ contains a valuation that is not injective. By induction on the smallest number
+(Sketch) Let
+\begin{eqnarray*}
+\sigma & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \xrightarrow{d_2} \tvals'_1 \xrightarrow{i_2/o_2, \rho_2} \tvals_2 \cdots
+\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}.
+\end{eqnarray*}
+be a timed behavior.
+%
+For each index $j$, each timer in the domain of $\kappa_j$ has been started by some preceding event.
+Let $\startedby_j : \domof{\kappa_j} \rightarrow \Pi_\sigma$ be the function that maps each timer in
+the domain of $\kappa_j$ to the block that contains the event that started this timer.
+Suppose that $\sigma$ contains a race, that is, there is an index $j>0$ and a timer $x$  
+such that $\kappa'_{j-1}(x) = 0$ and $i_j \neq \toevent{x}$.
+Let $B \in \Pi_\sigma$ be the block containing $j$. Then we say that block $B$ is the \emph{winner} of the race and block
+$\startedby_{j-1}(x)$ is a \emph{loser}.
+Note that whenever there is a race at $j$, this race has a single winner but it may have several losers.
+Moreover, each block can be loser in at most one race.
+A block that does not win any race can be wiggled forward by a small amount (if you don't win you might as wel start later).
+If block $B$ wins a race from block $B'$, then $\max(B)>\max(B')$, that is, $B$ contains an event that occurs later
+in $\sigma$ than any event of $B'$.
+This implies that the winning relation induces a partial order on the blocks of $\Pi_\sigma$.
+Now consider the bottom elements in this partial order. These blocks do not win any race so we may wiggle them forward.
+Once we have eliminated the bottom elements we can work our way upwards in the partial order and wiggle all the blocks
+forward one by one until no more races remain.
 \end{proof}
 
 
