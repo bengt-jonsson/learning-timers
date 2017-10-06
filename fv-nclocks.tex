@@ -57,47 +57,9 @@
 
 \section{MMTs}
 
-\begin{example}
-%As a first running example, 
-The MM1T of Figure~\ref{fig:abp} presents a simplified model of the sender from 
-the alternating-bit protocol, adapted from \cite[Figure 3.15]{KR13}.
-\begin{figure}[h]
-\centering
-\vspace{-2 em}
-\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
-  \node[initial, state] (1) {$q_0$};
-  \node[state] (2) [right of=1] {$q_1$};
-  \node[state] (3) [below of=2] {$q_2$};
-  \node[state] (4) [below of=1] {$q_3$};
 
-  \path[every node/.style={font=\sffamily\scriptsize}]
-    (1) edge [text width=1.5cm] node {$\mathit{in}/\mathit{send0}$ \\ $\mathit{start\_timer(3)}$} (2)
-    (2) edge [text width=1.5cm] node {$\mathit{ack0}/\Lambda$ \\ $\mathit{stop\_timer}$} (3)
-        edge [loop right, text width=1.5cm] node {$\mathit{to}/\mathit{send0}$\\ $\mathit{start\_timer}(3)$ } (2)
-    (3) edge [text width=1.5cm] node {$\mathit{in}/\mathit{send1}$ \\ $\mathit{start\_timer(3)}$} (4)
-    (4) edge [text width=1.5cm] node {$\mathit{ack1}/\Lambda$ \\ $\mathit{stop\_timer}$} (1)
-        edge [loop left, text width=2cm] node {$\mathit{to}/\mathit{send1}$\\ $\mathit{start\_timer(3)}$} (4);
-\end{tikzpicture}
-\caption{MM1T model of alternating-bit protocol sender}
-\label{fig:abp}
-\end{figure}
-In the diagram we write $\mathit{start\_timer(n)}$ on a transition if this transition starts the
-timer with value $n \in\nat^{>0}$, and we write $\mathit{stop\_timer}$ if the transition stops the timer.
-We omit trivial self-loops: if some state $q$ does not have an outgoing $i$-transition in the diagram
-then implicitly there is a transition $q \xrightarrow{i/\Lambda} q$.
 
-In the model, input $\mathit{in}$ corresponds to a request from the upper layer to transmit data.
-Initially, upon receipt of such a request, the sender builds a packet from the data and a sequence number $0$,
-sends the packet over the network (output $\mathit{send0}$), and starts the timer with timeout value $3$.
-If the sender receives an acknowledgement with the right sequence number $0$ (input $\mathit{ack0}$) 
-then it stops the timer and jumps to state $q_2$.
-Acknowledgement with the incorrect sequence number (input $\mathit{ack1}$) are ignored.
-If no $\mathit{ack0}$ input arrives within $3$ timeunits, a timeout occurs and the same packet is sent again.
-The behavior in states $q_2$ and state $q_3$ is analogous to that in states $q_0$ and $q_1$, respectively,
-with the roles of sequence numbers $0$ and $1$ swapped.
-\end{example}
-
-\subsection{MMTs}
+\subsection{Definition of MMTs and their semantics}
 We assume an unbounded set $X$ of {\em timers};
 we use $x$, $x_1$, $x_2$, etc.\ to range over timers.
 Let $\toevents$ be the set of {\em timeout events} of form
@@ -136,16 +98,15 @@ Let $q \in Q$, $i \in \extinputs$, $q'=\delta(q,i)$ and $\rho=\remap(q,i)$.
 We require that $\varsof{q'} \setminus \varsof{q} \subseteq \domof{\rho} \subseteq\varsof{q'}$. Moreover
   if $i=\toevent{x}$, for some $x$, then $x \not\in \varsof{q'} \setminus \domof{\rho}$.
 \end{itemize}
-We require that input events are always enabled and timeout events are only enabled
+We require that input events are always enabled and timeout events are enabled
 for timers that are active in the current state:
-\marginpar{Explain injectivity is required for determinism}
 for $q \in Q$ and $i \in \extinputs$,  $\delta(q,i)$, $\lambda(q,i)$ and $\pi(q,i)$ are defined iff either
 $i \in I$ or $i=\toevent{x}$, for some $x \in\varsof{q}$.
 We write $q \xrightarrow{i/o,\rho} q'$ if $\delta(q,i) = q'$, $\lambda(q,i)= o$ and $\remap(q,i) = \rho$.
 \end{definition}
 The restart function $\remap$ determines how timers are affected when an event $i$ occurs in state $q$.
 Basically, there are four things that may happen.
-\marginpar{Add Venn diagram to illustrate situation.}
+%\marginpar{Add Venn diagram to illustrate situation?}
 Let $q \in Q$, $i \in \extinputs$, $\delta(q,i)=q'$ and $\remap(q,i)=\rho$.
 \begin{enumerate}
 \item
@@ -172,9 +133,6 @@ the occurrence of delays.
 If $\tvals$ is a valuation in which all timers
 have a value of at least $d$, then $d$ units of time may pass. As a result this delay the value of all the timers is decremented by $d$.
 Formally, for $\tvals, \tvals'$ valuations and delay $d \in \delays$, we define a delay transition predicate by
-\marginpar{The whole robustness analysis becomes easy/trivial if we assume $d>0$, because then 
-a time delay precedes each input, allowing us to fidget with the timing of this input. Argument against this change is that
-in a concurrent setting we may not exclude simulaneous inputs.}
 \begin{eqnarray*}
 \tvals \xrightarrow{d} \tvals' & \Leftrightarrow & [\domof{\tvals} = \domof{\tvals'} \wedge \forall x \in\domof{\tvals} : \tvals'(x) = \tvals(x) - d ].
 \end{eqnarray*}
@@ -188,6 +146,8 @@ we define a discrete transition predicate by
 && \tvals' =  \tvals'[\tvals][\rho] ~ \wedge \\
 && \forall x \in X : i=\toevent{x} \Rightarrow (\tvals(x) = 0 \wedge x \not\in\domof{\tvals'} \setminus \domof{\rho})].
 \end{eqnarray*}
+%Condition $\tvals' =  \tvals'[\tvals][\rho]$ expresses that $\tvals'$ is obtained by giving variables
+%in $\domof{\rho}$ the value specified by $\rho$, and all remaining variables the value specified by $\tvals$.
 Transition predicates $\xrightarrow{d}$ and $\xrightarrow{i/o, \rho}$ can be easily lifted to configurations.
 For all configurations $(q, \tvals)$, $(q', \tvals')$ of an MMT $\M$,
 \[
@@ -209,17 +169,18 @@ A \emph{timed word} over inputs $I$ and outputs $O$ is a sequence
 w & = &  d_1 ~ i_1 ~ o_1 ~ d_2 ~ i_2 ~ o_2 \cdots d_k ~ i_k ~ o_k,
 \end{eqnarray*}
 where $d_j \in \delays$, $i_j \in I \cup \{ \mathit{to} \}$, and $o_j \in O$.
-To each timed run $\alpha$ we can associate a \emph{timed word} by forgetting the configurations and the names of timers
-in timeout events:
+To each timed run $\alpha$ we associate a \emph{timed word} by forgetting the configurations and names of timers
+in timeouts:
 \begin{eqnarray*}
-\timedword(\alpha) & = & d_1 ~ i'_1 ~ o_1 ~ d_2 ~ i'_2 ~ o_2 \cdots d_k ~ i'_k ~ o_k, \mbox{ where for all } j\\
-i'_j & = & \left\{ \begin{array}{ll}
-i_j & \mbox{if } i_j \in I\\
-\mathit{to} & \mbox{if } i_j \in \toevents
+\timedword(\alpha) & = & d_1 ~ i'_1 ~ o_1 ~ d_2 ~ i'_2 ~ o_2 \cdots d_k ~ i'_k ~ o_k, \mbox{ where for all } j,
+i'_j  =  \left\{ \begin{array}{ll}
+i_j & \mbox{if } i_j \in I,\\
+\mathit{to} & \mbox{if } i_j \in \toevents.
 \end{array} \right.
 \end{eqnarray*}
-The idea is that, that when we observe an output that is not directly triggered by an input, we may
-may conclude that a timeout occurred. We cannot observe, however, which timer timed out.
+The idea is that timeouts cannot be observed directly. 
+However, when we observe an output that is not directly triggered by an input, we may
+conclude that a timeout occurred. We do not know which timer timed out.
 
 We say $w$ is a timed word of $\M$ if $\M$ has a timed run $\alpha$ with $w = \timedword(\alpha)$.
 %
@@ -227,11 +188,43 @@ Two MMTs $\M$ and $\N$ with the same sets of inputs are \emph{timed equivalent},
 they have the same sets of timed words.
 
 \paragraph{Remark.}
-Note that we assume that in a timed run each discrete transition is preceded by a nonzero delay.
-This assumption is a crucial requirement for the learning algorithm that we present in this paper.
-The idea that multiple consecutive discrete transitions may occur in zero time is a useful abstraction in synchronous
-programming and in the theory of timed automata, but nonzero delays are essential in our learning approach.
+In our semantics we assume that discrete transitions occur instantaneously and take no time. In applications, however, i/o interactions
+often take a significant amount of time. In \cite{SHV16}, for instance, a case study of an interventional X-ray system is
+described in which a single i/o interaction may take several seconds. If it is important to model such delays
+explicitly, this can be done within the MMT framework by splitting a transition with input $i$ and output $o$ into
+a pair of consecutive transitions: a first transition with input $i$ and some default output $\Lambda$ that starts
+a timer $x$, and a second transition in which $x$ times out and output $o$ is produced.
+If inputs arrive in the newly introduced intermediate state, these may either be ignored, buffered or forbidden
+(via a transition to some designated error state).
 
+\paragraph{Remark.}
+Note that we assume that in a timed run each discrete transition is preceded by a nonzero delay.
+The idea that multiple consecutive discrete transitions may occur in zero time is a useful abstraction in synchronous
+programming and in the theory of timed automata, but nonzero delays form
+a crucial requirement for the learning algorithm that we present in this paper.
+
+Disallowing zero delays creates certain complications that we have to deal with. The simple MMT of Figure~\ref{fig:timelock}, for instance,
+may reach a timelock following the timed word $1 ~ i ~ o ~ 1 ~ i ~ o$: at this point timer $x$ has value $0$, but no timeout is enabled since first a nonzero amount of time has to elapse, which is not possible since then $x$ would become negative.
+\begin{figure}[ht]
+\begin{center}
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.5cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
+  \node[initial, state] (1) {$q_0$};
+  \node[state] (2) [right of=1] {$q_1$};
+  \node[state] (3) [right of=2] {$q_2$};
+  
+  \path[every node/.style={font=\sffamily\scriptsize}]
+    (1) edge node {$i/o$, $~x:=1$} (2)  
+    (2) edge  node {$\toevent{x}/o'$} (3)
+        edge  [loop below] node {$i/o$} (2)
+    (3) edge  [loop below] node {$i/o$} (4);
+\end{tikzpicture}
+\caption{An MMT with a timelock}
+\label{fig:timelock}
+\end{center}
+\end{figure}
+Once solution would be to disable inputs in $I$ whenever a timer has become $0$. In section XX, we will elaborate
+a different approach in which we only consider runs in which no ``races'' occur. This eliminates the problematic
+behavior of the above MMT in which there is a race between the second $i$ event and the timeout.
 
 \paragraph{Nondeterminism.}
 Due to our assumption that we cannot observe the name of the timer in a timeout event, an MMT may exhibit nondeterministic
@@ -250,7 +243,7 @@ $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'$ and $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o''$.
   \path[every node/.style={font=\sffamily\scriptsize}]
     (1) edge node {$i/o$, $~x:=1$, $y:=1$} (2)  
     (2) edge  node {$\toevent{x}/o'$} (3)
-      edge  node {$\toevent{y}/o''$} (4);
+     edge  node {$\toevent{y}/o''$} (4);
 \end{tikzpicture}
 \caption{An MMT with nondeterministic behavior}
 \label{fig:nondeterminism}
@@ -304,6 +297,7 @@ when selecting the timing of inputs.
 Our learning algorithm applies to MMTs in which at most one timer is (re)started on each transition. Such MMTs do not
 exhibit uncontrollable nondeterminism. The algorithm chooses the timing of the input events in such a way that no
 nondeterministic behavior may arise.
+
 
 \subsection{A product construction}
 An \emph{untimed behavior} over inputs $I$, outputs $O$, and timers $Y \subseteq X$ is a sequence 
@@ -559,7 +553,7 @@ omitting the update $y :=60$ on the transition from $q_1$ to $q_2$.
    (3) edge node {$\toevent{x}/o''$} (4)
    (2) edge node {$\toevent{x}/o'$} (5);
 \end{tikzpicture}
-\caption{MMT with a ghost timer $y$}
+\caption{MMT with ghost timer $y$}
 \label{fig:ghosttimers}
 \end{center}
 \end{figure}
@@ -625,7 +619,7 @@ Then there exists a timed behavior
 \sigma' & = & \lambda_0 \xrightarrow{e_1} \lambda'_0 \xrightarrow{i_1/o_1, \rho_1} \lambda_1 \xrightarrow{e_2} \lambda'_1 \xrightarrow{i_2/o_2, \rho_2} \lambda_2 \cdots
 \xrightarrow{e_k} \lambda'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \lambda_{k}
 \end{eqnarray*}
-such that
+without races such that
 $\untime(\sigma)=\untime(\sigma')$,
 $\kappa_0 = \lambda_0$, and
 \begin{eqnarray*}
@@ -672,18 +666,19 @@ Note that when timer $x$ expires timer $y$ is stopped.
 \end{example}
 
 The scenario of Figure~\ref{fig:races} is somewhat similar to the well-known Rush Hour puzzle game,
-in which one has to slide blocking vehicles out of the way to find a path for one specific red car to exit
+in which one has to slide blocking vehicles out of the way to find a path for one specific red car to exit a parking lot.
 The following lemma asserts that we can always solve the puzzle for MMTs: for any timed behavior that contains races,
 an equivalent timed behavior exists without races.
-We may for instance slighly modify the timed behavior of Figure~\ref{fig:races} by scheduling block $\{ 2  \}$
+We may for instance slightly modify the timed behavior of Figure~\ref{fig:races} by scheduling block $\{ 2  \}$
 a bit later and block $\{ 4, 5 \}$ a bit earlier.
-Then all races have been eliminated and we can wiggle the timing of block $\{ 1, 3 \}$.
+Then all races have been eliminated and we can wiggle block $\{ 1, 3 \}$.
 
 %We call a valuation $\tvals$ \emph{fraction-injective} if, for all distinct timers $x$ and $y$ in the domain of $\tvals$,
 %the fractional parts of $x$ and $y$ are different.
 %Note the any fraction-injective valuation is also injective.
 
 \begin{lemma}
+\label{race elimination}
 Let $\sigma$ be any timed behavior.
 Then there exists a timed behavior $\sigma'$ without races such that $\untime(\sigma)=\untime(\sigma')$.
 \end{lemma}
@@ -704,15 +699,52 @@ Let $B \in \Pi_\sigma$ be the block containing $j$. Then we say that block $B$ i
 $\startedby_{j-1}(x)$ is a \emph{loser}.
 Note that whenever there is a race at $j$, this race has a single winner but it may have several losers.
 Moreover, each block can be loser in at most one race.
-A block that does not win any race can be wiggled forward by a small amount (if you don't win you might as wel start later).
+A block that does not win any race can be wiggled forward by a small amount (if you don't win you might as well start later).
 If block $B$ wins a race from block $B'$, then $\max(B)>\max(B')$, that is, $B$ contains an event that occurs later
 in $\sigma$ than any event of $B'$.
 This implies that the winning relation induces a partial order on the blocks of $\Pi_\sigma$.
 Now consider the bottom elements in this partial order. These blocks do not win any race so we may wiggle them forward.
-Once we have eliminated the bottom elements we can work our way upwards in the partial order and wiggle all the blocks
+Once we have eliminated the bottom elements we can work our way upwards in the partial order and wiggle all blocks
 forward one by one until no more races remain.
 \end{proof}
 
+\marginpar{Races are sort of a limit case. I would like to state a corollary here that the set of timed behaviors that contain races have ``measure'' $0$. }
+
+In a timed behavior, there is always an integer amount of time between events from the same block.
+This means that, if we consider the absolute time at which events occur, the fractional part of the absolute times
+of occurrence is the same for all events in a block.
+If a timed behavior has no races then, by Lemma~\ref{wiggle lemma},
+we can wiggle the timing of all the blocks. We can do this in such a way that
+the fractional part of the absolute times of any pair of events from different blocks is different.
+We call a timed behavior without races \emph{transparent} if it has this property.
+By Lemma~\ref{race elimination} it follows that for each feasible untimed behavior $\beta$ there exists
+a transparent timed behavior $\sigma$ such that $\beta = \untime(\sigma)$.
+
+Suppose we observe a timed word
+\begin{eqnarray*}
+w & = &  d_1 ~ i_1 ~ o_1 ~ d_2 ~ i_2 ~ o_2 \cdots d_k ~ i_k ~ o_k.
+\end{eqnarray*}
+We would like to know, for each timeout event in $w$, by which event this timeout is triggered.
+Let $T = \{ j \mid i_j = \mathit{to} \}$ be the set of indices corresponding to a timeout.
+A \emph{causality map} for $w$ is a function $c: T \rightarrow \{ 1 ,\ldots, k \}$ that satisfies the following conditions:
+\begin{enumerate}
+\item
+$c$ is injective (we assume at most one timer is started on each transition),
+\item
+for all $j$, $c(j) < j$ (a timeout is triggered by an earlier event),
+\item
+for all $j$, $\sum_{l=j+1}^{c(j)} d_l$ is an integer (timers expire after an integer delay).
+\end{enumerate}
+It is easy to see that a timed word has a causality map iff $w$ is a timed word of an MMT in which at most one timer
+is started on each transition. In general, a timed word may have more than one causality map. However, we have the following
+lemma.
+
+\begin{lemma}
+Suppose $\sigma$ is a transparent timed behavior and $w = \timedword(\sigma)$.
+Then $w$ has a unique causality map.
+\end{lemma}
+
+We are now prepared to prove the first main result of this paper:
 
 \begin{theorem}
 \label{timedimpliesuntimed}
@@ -722,6 +754,7 @@ implies
 $\M \approx_{\mathit{untimed}} \N$.
 \end{theorem}
 \begin{proof}
+\marginpar{Proof needs doing}
 Suppose that $\M \approx_{\mathit{timed}} \N$.
 Let $\beta$ be a feasible untimed behavior of $\M$.
 By induction on the number of events in $\beta$, we prove that $\N$ has a feasible untimed behavior that is isomorphic to $\beta$.
@@ -818,6 +851,8 @@ Suppose $\beta$ is a feasible untimed behavior and $Y \xrightarrow{\toevent{x}/o
 with $Y = \Last{\beta}$.
 Then $x$ is expirable after $\beta$ iff $\beta \xrightarrow{\toevent{x}/o, \rho} Y'$ is feasible.
 \end{lemma}
+
+\marginpar{What is the complexity of deciding eg timed equivalence or reachability of MMTs?}
 
 \subsection{Myhill-Nerode}  
 We present a variant of the famous Myhill-Nerode theorem for MMTs.

@@ -1,7 +1,7 @@
 \section{Introduction}
 \label{sec:intro}
 
-
+\marginpar{Intro still needs to be written}
 Using active automata learning standard violations have been found in multiple implementations of
 major network protocols such as TLS \cite{dRP15}, TCP \cite{FJV16} and SSH \cite{FiterauEtAl17}.
 Timing often plays a crucial role in these applications but cannot be handled using existing tools.
@@ -30,4 +30,42 @@ MMT's can be viewed as a formalization of the finite state machine models with c
 Kurose and Ross \cite{KR13} to explain transport layer protocols.
 Both time delay Mealy machines \cite{CCF16} and the event recording automata \cite{GrinchteinJL10} can not easily model such protocols.
 
+\begin{example}
+%As a first running example, 
+Figure~\ref{fig:abp} presents a simplified model of the sender from 
+the alternating-bit protocol, adapted from \cite[Figure 3.15]{KR13}.
+\begin{figure}[h]
+\centering
+\vspace{-2 em}
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
+  \node[initial, state] (1) {$q_0$};
+  \node[state] (2) [right of=1] {$q_1$};
+  \node[state] (3) [below of=2] {$q_2$};
+  \node[state] (4) [below of=1] {$q_3$};
 
+  \path[every node/.style={font=\sffamily\scriptsize}]
+    (1) edge [text width=1.5cm] node {$\mathit{in}/\mathit{send0}$ \\ $\mathit{start\_timer(3)}$} (2)
+    (2) edge [text width=1.5cm] node {$\mathit{ack0}/\Lambda$ \\ $\mathit{stop\_timer}$} (3)
+        edge [loop right, text width=1.5cm] node {$\mathit{to}/\mathit{send0}$\\ $\mathit{start\_timer}(3)$ } (2)
+    (3) edge [text width=1.5cm] node {$\mathit{in}/\mathit{send1}$ \\ $\mathit{start\_timer(3)}$} (4)
+    (4) edge [text width=1.5cm] node {$\mathit{ack1}/\Lambda$ \\ $\mathit{stop\_timer}$} (1)
+        edge [loop left, text width=2cm] node {$\mathit{to}/\mathit{send1}$\\ $\mathit{start\_timer(3)}$} (4);
+\end{tikzpicture}
+\caption{Mealy machine with a timer for alternating-bit protocol sender}
+\label{fig:abp}
+\end{figure}
+In the diagram we write $\mathit{start\_timer(n)}$ on a transition if this transition starts the
+timer with value $n \in\nat^{>0}$, and we write $\mathit{stop\_timer}$ if the transition stops the timer.
+We omit trivial self-loops: if some state $q$ does not have an outgoing $i$-transition in the diagram
+then implicitly there is a transition $q \xrightarrow{i/\Lambda} q$.
+
+In the model, input $\mathit{in}$ corresponds to a request from the upper layer to transmit data.
+Initially, upon receipt of such a request, the sender builds a packet from the data and a sequence number $0$,
+sends the packet over the network (output $\mathit{send0}$), and starts the timer with timeout value $3$.
+If the sender receives an acknowledgement with the right sequence number $0$ (input $\mathit{ack0}$) 
+then it stops the timer and jumps to state $q_2$.
+Acknowledgement with the incorrect sequence number (input $\mathit{ack1}$) are ignored.
+If no $\mathit{ack0}$ input arrives within $3$ timeunits, a timeout occurs and the same packet is sent again.
+The behavior in states $q_2$ and state $q_3$ is analogous to that in states $q_0$ and $q_1$, respectively,
+with the roles of sequence numbers $0$ and $1$ swapped.
+\end{example}
