@@ -80,7 +80,8 @@ $\M = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$, where
 \item
 $I$ is a finite set of input events,
 \item
-$O$ is a finite set of output events, containing a special default output $\Lambda$,
+$O$ is a finite set of output events, 
+%containing a special default output $\Lambda$,
 \item
 $Q$ is a finite set of states,
 \item
@@ -93,12 +94,13 @@ $\delta: Q \times \extinputs \hookrightarrow  Q$ is a transition function,
 \item
 $\lambda: Q \times \extinputs \hookrightarrow O$ is an output function, 
 \item
-$\remap : Q \times \extinputs \hookrightarrow (X \hookrightarrow \natplus)$ is a timer update function.\\
+$\remap : Q \times \extinputs \hookrightarrow (X \hookrightarrow \natplus)$ is a timer update function.
+\end{itemize}
 Let $q \in Q$, $i \in \extinputs$, $q'=\delta(q,i)$ and $\rho=\remap(q,i)$. 
 We require that $\varsof{q'} \setminus \varsof{q} \subseteq \domof{\rho} \subseteq\varsof{q'}$. Moreover
   if $i=\toevent{x}$, for some $x$, then $x \not\in \varsof{q'} \setminus \domof{\rho}$.
-\end{itemize}
-We require that input events are always enabled and timeout events are enabled
+%
+We also require that input events are always enabled and timeout events are enabled
 for timers that are active in the current state:
 for $q \in Q$ and $i \in \extinputs$,  $\delta(q,i)$, $\lambda(q,i)$ and $\pi(q,i)$ are defined iff either
 $i \in I$ or $i=\toevent{x}$, for some $x \in\varsof{q}$.
@@ -272,7 +274,7 @@ $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'~ 1 ~ \mathit{to} ~ o'$ and $1 ~ i ~ o ~ 1 ~ \m
 
 The nondeterminism of the MMTs of Figures~\ref{fig:nondeterminism} and \ref{fig:nondeterminism2} is ``uncontrollable'' in the
 sense that it occurs after any (nonempty) input sequence.
-Figure~\ref{fig:nondeterminism3} gives an example of an MMT that exhibits nondeterminism when the second input occurs \emph{exactly} one timeunit after the first input: the MMT accepts behaviors
+Figure~\ref{fig:nondeterminism3} gives an example of an MMT that exhibits nondeterminism when the second input occurs \emph{exactly} one timeunit after the first input: the MMT accepts timed words
 $7 ~ i ~ o ~ 1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'$ and $7 ~ i ~ o ~ 1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o''$.
 This type of nondeterminism is ``controllable'' in the sense that no nondeterminism will occur if we are careful
 when selecting the timing of inputs.
@@ -903,8 +905,8 @@ $\beta \in S \wedge x \mbox{ expirable after } \beta \Longrightarrow
 \exists o, \rho, Y: \beta \xrightarrow{\toevent{x}/o, \rho} Y \in S$.
 \end{itemize}
 Behaviors $\beta, \beta' \in S$ are \emph{equivalent} for $S$, notation $\beta \equiv_S \beta'$, iff 
-$\Post_{\beta} = \Post_{\beta'}$ and for any observation
-$\gamma$ over $I$, $O$ and $Y$, $\beta \cdot \gamma \in S \Leftrightarrow \beta' \cdot \gamma \in S$.
+$\Post_{\beta} = \Post_{\beta'}$ and for any untimed behavior
+$\gamma$, $\beta \cdot \gamma \in S \Leftrightarrow \beta' \cdot \gamma \in S$.
 We write $[\beta]$ to denote the equivalence class of $\beta$ with respect to $\equiv_S$.
 \end{definition}
 
