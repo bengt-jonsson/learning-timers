@@ -80,7 +80,7 @@ $\M = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$, where
 \item
 $I$ is a finite set of input events,
 \item
-$O$ is a finite set of outputs, containing a special default output $\Lambda$,
+$O$ is a finite set of output events, containing a special default output $\Lambda$,
 \item
 $Q$ is a finite set of states,
 \item
@@ -93,7 +93,7 @@ $\delta: Q \times \extinputs \hookrightarrow  Q$ is a transition function,
 \item
 $\lambda: Q \times \extinputs \hookrightarrow O$ is an output function, 
 \item
-$\remap : Q \times \extinputs \hookrightarrow (X \hookrightarrow \natplus)$ is a timer initialization function.
+$\remap : Q \times \extinputs \hookrightarrow (X \hookrightarrow \natplus)$ is a timer update function.\\
 Let $q \in Q$, $i \in \extinputs$, $q'=\delta(q,i)$ and $\rho=\remap(q,i)$. 
 We require that $\varsof{q'} \setminus \varsof{q} \subseteq \domof{\rho} \subseteq\varsof{q'}$. Moreover
   if $i=\toevent{x}$, for some $x$, then $x \not\in \varsof{q'} \setminus \domof{\rho}$.
@@ -104,7 +104,7 @@ for $q \in Q$ and $i \in \extinputs$,  $\delta(q,i)$, $\lambda(q,i)$ and $\pi(q,
 $i \in I$ or $i=\toevent{x}$, for some $x \in\varsof{q}$.
 We write $q \xrightarrow{i/o,\rho} q'$ if $\delta(q,i) = q'$, $\lambda(q,i)= o$ and $\remap(q,i) = \rho$.
 \end{definition}
-The restart function $\remap$ determines how timers are affected when an event $i$ occurs in state $q$.
+The update function $\remap$ determines how timers are affected when an event $i$ occurs in state $q$.
 Basically, there are four things that may happen.
 %\marginpar{Add Venn diagram to illustrate situation?}
 Let $q \in Q$, $i \in \extinputs$, $\delta(q,i)=q'$ and $\remap(q,i)=\rho$.
@@ -132,15 +132,15 @@ Valuations and configurations can be modified by the occurrence of discrete even
 the occurrence of delays.
 If $\tvals$ is a valuation in which all timers
 have a value of at least $d$, then $d$ units of time may pass. As a result this delay the value of all the timers is decremented by $d$.
-Formally, for $\tvals, \tvals'$ valuations and delay $d \in \delays$, we define a delay transition predicate by
+Formally, for $\tvals, \tvals'$ valuations and delay $d \in \delays$, we define a delay transition relation by
 \begin{eqnarray*}
 \tvals \xrightarrow{d} \tvals' & \Leftrightarrow & [\domof{\tvals} = \domof{\tvals'} \wedge \forall x \in\domof{\tvals} : \tvals'(x) = \tvals(x) - d ].
 \end{eqnarray*}
 If the current valuation is $\tvals$, then a timeout event $\toevent{x}$ may occur only if $\tvals(x)=0$.
-If an input or a timeout event occurs, a valuation is updated as specified by timer initialization function $\rho$.
+If an input or a timeout event occurs, a valuation is updated as specified by timer update function $\rho$.
 The values of timers that are not affected by $\rho$ remain unchanged.
 Formally, for $\tvals, \tvals'$ valuations, $i \in \extinputs$, $o \in O$ and $\rho \in X \hookrightarrow \natplus$,
-we define a discrete transition predicate by
+we define a discrete transition relation by
 \begin{eqnarray*}
 \tvals \xrightarrow{i/o, \rho}  \tvals' & \Leftrightarrow & [ \domof{\tvals'} \setminus \domof{\tvals}  \subseteq \domof{\rho} \subseteq \domof{\tvals'} ~ \wedge\\
 && \tvals' =  \tvals'[\tvals][\rho] ~ \wedge \\
@@ -148,7 +148,7 @@ we define a discrete transition predicate by
 \end{eqnarray*}
 %Condition $\tvals' =  \tvals'[\tvals][\rho]$ expresses that $\tvals'$ is obtained by giving variables
 %in $\domof{\rho}$ the value specified by $\rho$, and all remaining variables the value specified by $\tvals$.
-Transition predicates $\xrightarrow{d}$ and $\xrightarrow{i/o, \rho}$ can be easily lifted to configurations.
+Transition relations $\xrightarrow{d}$ and $\xrightarrow{i/o, \rho}$ can be easily lifted to configurations.
 For all configurations $(q, \tvals)$, $(q', \tvals')$ of an MMT $\M$,
 \[
 \frac{q = q' \quad \tvals \xrightarrow{d} \tvals'}{(q,\tvals) \xrightarrow{d} (q',\tvals')}
@@ -249,7 +249,7 @@ $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'$ and $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o''$.
 \label{fig:nondeterminism}
 \end{center}
 \end{figure}
-In order to rule out this type of nondeterminism, it is not enough to require that the timer initializations are injective,
+In order to rule out this type of nondeterminism, it is not enough to require that the timer update functions are injective,
 that is, it is not allowed to assign the same value to multiple timers in a single transition.
 This is illustrated by the MMT of Figure~\ref{fig:nondeterminism2}, which accepts both the timed words
 $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'~ 1 ~ \mathit{to} ~ o'$ and $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o' ~ 1 ~ \mathit{to} ~ o''$.
@@ -327,7 +327,7 @@ A \emph{timed behavior} over inputs $I$, outputs $O$, and timers $Y \subseteq X$
 \sigma & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \xrightarrow{d_2} \tvals'_1 \xrightarrow{i_2/o_2, \rho_2} \tvals_2 \cdots
 \xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}
 \end{eqnarray}
-of delay predicates and event predicates with, for each $j$,
+of delay transitions and event relations with, for each $j$,
 $\tvals_j, \tvals'_j$ valuations
 with $\domof{\tvals_j} = \domof{\tvals'_j} \subseteq Y$ and,
 for each $j>0$,  $d_j \in \delays$, $i_j \in \extinputs$, $o_j \in O$, and $\rho_j \in Y \hookrightarrow \natplus$.
@@ -337,7 +337,7 @@ delays and by replacing valuations by their domain:
 \untime(\sigma) & = & \domof{\tvals_0} \xrightarrow{i_1/o_1, \rho_1} \domof{\tvals_1}  \xrightarrow{i_2/o_2, \rho_2} \domof{\tvals_2} \cdots \xrightarrow{i_k/o_k, \rho_k} \domof{\tvals_k}.
 \end{eqnarray*}
 We say that untimed behavior $\beta$ is \emph{feasible} if there exists a timed behavior $\sigma$ such that $\untime(\sigma) = \beta$.
-We can also associate a timed word to timed behavior $\sigma$ by forgetting the valuations and the initialization functions:
+We can also associate a timed word to timed behavior $\sigma$ by forgetting the valuations and the update functions:
 \begin{eqnarray*}
 \timedword(\sigma) & = & d_ 1 ~ i_1 ~ o_1 ~ i_2 ~ o_2 \cdots d_k ~ i_k ~ o_k.
 \end{eqnarray*} 
@@ -382,7 +382,7 @@ Conversely, if $\gamma$ is an untimed run  of $\M$ and $\sigma$ is a timed behav
 then there exists a unique timed run $\alpha$ of $\M$ with $\untime(\alpha) = \gamma$ and $\beh(\alpha) = \sigma$.
 We refer to $\alpha$ as $\run(\gamma,\sigma)$.
 
-\subsection{Untimed semantics}
+\section{Untimed semantics}
 We would, intuitively, like to let the untimed semantics of an MMT $\M$ be the set of its feasible untimed behaviors.
 However, this semantics would then depend heavily on the names of the timers. Therefore, we define an equivalence relation
 on untimed behaviors, which deems two untimed behaviors equivalent if there is a consistent renaming of timers that transforms
@@ -713,12 +713,19 @@ forward one by one until no more races remain.
 In a timed behavior, there is always an integer amount of time between events from the same block.
 This means that, if we consider the absolute time at which events occur, the fractional part of the absolute times
 of occurrence is the same for all events in a block.
-If a timed behavior has no races then, by Lemma~\ref{wiggle lemma},
-we can wiggle the timing of all the blocks. We can do this in such a way that
-the fractional part of the absolute times of any pair of events from different blocks is different.
-We call a timed behavior without races \emph{transparent} if it has this property.
-By Lemma~\ref{race elimination} it follows that for each feasible untimed behavior $\beta$ there exists
+We call a timed behavior without races \emph{transparent} if the fractional part of the absolute times of any pair of events from different blocks is different.
+
+\begin{lemma}
+\label{lemma: transparent timed behavior}
+For each feasible untimed behavior $\beta$ there exists
 a transparent timed behavior $\sigma$ such that $\beta = \untime(\sigma)$.
+\end{lemma}
+\begin{proof}
+Let $\beta$ be a feasible untimed behavior.
+Then there exists a timed behavior $\sigma$ such that $\beta = \untime(\sigma)$.
+By Lemma~\ref{race elimination}, we may assume that $\sigma$ contains no races.
+By repeated application of Lemma~\ref{wiggle lemma}, we can wiggle the timing of all the blocks to make $\sigma$ transparent.
+\end{proof}
 
 Suppose we observe a timed word
 \begin{eqnarray*}
@@ -740,8 +747,20 @@ is started on each transition. In general, a timed word may have more than one c
 lemma.
 
 \begin{lemma}
+\label{lemma unique causality map}
 Suppose $\sigma$ is a transparent timed behavior and $w = \timedword(\sigma)$.
 Then $w$ has a unique causality map.
+\end{lemma}
+
+Each timed word of MMT $\M$ with a unique causality map has a unique timed run that corresponds to it.
+The causality map tells us exactly which timers time out during the trace, so we have complete information
+about the sequence of events that occurs. A timed run of $\M$ is fully determined
+by the sequence of time delays and events that occurs.
+
+\begin{lemma}
+\label{lemma unique timed run}
+Suppose $w$ is a timed word of MMT $\M$ with a unique causality map.
+Then there is a unique timed run $\alpha$ of $\M$ such that $w = \timedword(\alpha)$.
 \end{lemma}
 
 We are now prepared to prove the first main result of this paper:
@@ -757,11 +776,20 @@ $\M \approx_{\mathit{untimed}} \N$.
 \marginpar{Proof needs doing}
 Suppose that $\M \approx_{\mathit{timed}} \N$.
 Let $\beta$ be a feasible untimed behavior of $\M$.
-By induction on the number of events in $\beta$, we prove that $\N$ has a feasible untimed behavior that is isomorphic to $\beta$.
+By Lemma~\ref{lemma: transparent timed behavior}, there exists a 
+a transparent timed behavior $\sigma$ such that $\beta = \untime(\sigma)$.
+Let  $w = \timedword(\sigma)$.
+Then $w$ is a timed word of $\M$ that has a unique causality map by Lemma~\ref{lemma unique causality map}.
+Since $\M \approx_{\mathit{timed}} \N$, $w$ is also a timed word of $\N$.
+Let $\alpha$ be the unique (by Lemma~\ref{lemma unique timed run}) timed run such that $w = \timedword(\alpha)$,
+and let $\beta' = \untime(\beh(\alpha))$.
+Note that the mappings $\timedword$, $\untime$ and $\beh$ all preserve the number of events, the sequence of inputs that occur (except for the names of the timers in timeouts), and the sequence of outputs.
+
+By induction on the number of events in $\beta$ and $\beta'$, we prove that they are isomorphic.
 Since $\approx_{\mathit{untimed}}$ is symmetric, this suffices to prove the theorem.
 
-Induction base. If $\beta$ contains $0$ events then it consists of the empty set of variables $\emptyset$.
-Since $\emptyset$ is a feasible untimed behavior of any MMT, $\beta = \emptyset$ is a feasible untimed behavior of $\N$, as required.
+Induction base. If $\beta$ and $\beta'$ contain $0$ events then they are both equal to the empty set of variables $\emptyset$,
+and thus trivially isomorphic.
 
 Induction step. Suppose $\beta$ contains $k+1$ events:
 \begin{eqnarray*}
@@ -776,7 +804,7 @@ induction hypothesis, there exists an isomorphism $f = f_0 ,\ldots, f_k$ and a f
 of $\N$ such that $\delta' = f(\delta)$.
 \end{proof}
 
-\subsection{Reachability analysis}
+\section{Reachability analysis}
 For any nonempty sequence $\sigma$, $\Head{\sigma}$ denotes the first element of $\sigma$, $\Tail{\sigma}$ denotes the sequence obtained by removing the first element from $\sigma$, and $\Last{\sigma}$ denotes the last element of $\sigma$.
 Suppose $\beta, \beta'$ are untimed behaviors over $I$, $O$ and $Y$ such that $\Last{\beta} = \Head{\beta'}$.
 Then $\beta \cdot \beta'$, the \emph{sequential composition} of $\beta$ and $\beta'$, is the untimed behavior $\beta \Tail{\beta'}$.
@@ -803,7 +831,7 @@ $\beta$ into an untimed behavior $\gamma$ of length one and an untimed behavior 
 We write $\Post_{\beta}$ as abbreviation for $\Post_{\beta}(\Vals{\Head{\beta}})$.
 
 For any untimed behavior $\beta$, the set $\Post_{\beta}$ can be symbolically represented and computed using a Difference Bound Matrices (DBMs)
- \cite{Di89},  as the transition predicates $\xrightarrow{d}$ and $\xrightarrow{i_1/o_1, \rho_1}$ can be easily decomposed 
+ \cite{Di89},  as the transition relations $\xrightarrow{d}$ and $\xrightarrow{i_1/o_1, \rho_1}$ can be easily decomposed 
 into elementary operations that have been defined
 on DBMs such as reset, conjunction, and delay successors \cite{BengtssonY03}.
 
@@ -854,7 +882,7 @@ Then $x$ is expirable after $\beta$ iff $\beta \xrightarrow{\toevent{x}/o, \rho}
 
 \marginpar{What is the complexity of deciding eg timed equivalence or reachability of MMTs?}
 
-\subsection{Myhill-Nerode}  
+\section{Myhill-Nerode}  
 We present a variant of the famous Myhill-Nerode theorem for MMTs.
 We will use this theorem as a basis for an automata learning algorithm for MMTs.
 
