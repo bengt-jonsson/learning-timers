@@ -905,7 +905,7 @@ $\beta \in S \wedge x \mbox{ expirable after } \beta \Longrightarrow
 \exists o, \rho, Y: \beta \xrightarrow{\toevent{x}/o, \rho} Y \in S$.
 \end{itemize}
 Behaviors $\beta, \beta' \in S$ are \emph{equivalent} for $S$, notation $\beta \equiv_S \beta'$, iff 
-$\Post_{\beta} = \Post_{\beta'}$ and for any untimed behavior
+for any untimed behavior
 $\gamma$, $\beta \cdot \gamma \in S \Leftrightarrow \beta' \cdot \gamma \in S$.
 We write $[\beta]$ to denote the equivalence class of $\beta$ with respect to $\equiv_S$.
 \end{definition}
@@ -934,7 +934,7 @@ $\equiv_S$ has finite index.
 We define MMT $\M = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$ as follows:
 \begin{itemize}
 \item
-$Q$ is the set of equivalence classes of $\equiv_S$,
+$Q$ is the set of equivalence classes of $\equiv_S$.
 \item
 $q_0 = [\emptyset]$. (Note that $\emptyset \in S$ since $S$ is nonempty, prefix closed, and all untimed behaviors in $S$ start
 with the empty set of timers.)
@@ -946,14 +946,14 @@ $o$, $\rho$ and $Y$ such that $\beta' = \beta \xrightarrow{i/o, \rho} Y \in S$.
 We define $\delta([\beta],i) = [\beta']$, $\lambda([\beta],i) = o$, and $\remap([\beta],i) = \rho$.
 \item
 Assume $\beta \in S$ and $x\in \Last{\beta}$ expirable after $\beta$. 
-Then, since $S$ is both input complete and behavior deterministic, there exist unique
+Then, since $S$ is both timeout complete and behavior deterministic, there exist unique
 $o$, $\rho$ and $Y$ such that $\beta' = \beta \xrightarrow{\toevent{x}/o, \rho} Y \in S$.
 We define $\delta([\beta],\toevent{x}) = [\beta']$, $\lambda([\beta],\toevent{x}) = o$, and $\remap([\beta],\toevent{x}) = \rho$.
 \item
 Assume $\beta \in S$ and $x \in \Last{\beta}$ not expirable after $\beta$.
 We define $\delta([\beta],\toevent{x}) = [\beta]$, $\lambda([\beta],\toevent{x}) = \Lambda$, and $\remap([\beta],\toevent{x}) = \rho_0$, where $\domof{\rho_0} = \emptyset$.
 \end{itemize}
-It is routine to verify that $M$ is a well-defined MMT whose set of feasible untimed behaviors equals $S$.
+It is routine to verify that $\M$ is a well-defined MMT whose set of feasible untimed behaviors equals $S$.
 \end{proof}
 
 

@@ -138,7 +138,7 @@ Bengt Jonsson \and Frits Vaandrager}
 \frame{
 \frametitle{Motivation}
 
-\blue{Timing behavior}\  plays a crucial role in potential applications of model learning, but existing algorithms cannot handle it. Existing tools only work for untimed, deterministic systems. There has been some work on algorithms for timed systems, e.g.,
+\blue{Timing behavior}\  plays a crucial role in applications of model learning to network protocols and legacy software, but existing tools cannot handle it. These tools only work for untimed, deterministic systems. There has been some work on algorithms for timed systems, e.g.,
 \begin{itemize}
 \item
 Grinchtein, Jonsson \& Leucker. \green{Learning of event-recording automata}, TCS, 2010.
@@ -195,7 +195,7 @@ $Q$ is a finite set of states,
 \item
 $q_0 \in Q$ is the initial state,
 \item
-$\vars$ maps each state $q \in Q$ to a finite set of timers $\varsof{q}$, with $\varsof{q_0} = \emptyset$,
+for each $q \in Q$ a finite set of timers $\varsof{q}$, with $\varsof{q_0} = \emptyset$,
 \item
 $\delta: Q \times \extinputs \hookrightarrow  Q$ is a transition function,
 %with $\delta(q,i)$ defined iff $q \in Q$ and $i \in I \cup \{ \toevent{x} \mid x \in \varsof{q} \}$, 
@@ -207,7 +207,7 @@ $\remap : Q \times \extinputs \hookrightarrow (X \hookrightarrow \natplus)$ is a
 }
 
 \frame{
-\frametitle{Semantics}
+\frametitle{Timed Semantics (1)}
 A \red{configuration}\  of an MMT is a pair of a state and a valuation of its timers.
 When time advances, all timers decrease at the same rate; a timeout occurs when value of some timer becomes $0$.
 
@@ -223,7 +223,7 @@ of configurations, \blue{nonzero}\  delays, and discrete transitions.
 
 
 \frame{
-\frametitle{Timed Semantics}
+\frametitle{Timed Semantics (2)}
 
 A \red{timed word}\   is a sequence
 \begin{eqnarray*}
@@ -385,7 +385,7 @@ implies
 $\M \approx_{\mathit{timed}} \N$.
 
 \vspace{1 em}
-Are timed and untimed semantics equivalent if at most one timer can be updated per transition?
+Does converse implication hold if at most one timer can be updated per transition?
 
 \vspace{1 em}
 This restriction also eliminates ``uncontrollable'' nondeterminism. For most MMTs there is equivalent MMT that updates at most
@@ -474,13 +474,13 @@ $\beta \in S \wedge x \mbox{ expirable after } \beta \Longrightarrow
 \exists o, \rho, Y: \beta \xrightarrow{\toevent{x}/o, \rho} Y \in S$.
 \end{itemize}
 Behaviors $\beta, \beta' \in S$ are \red{equivalent}, notation $\beta \equiv_S \beta'$, iff 
-$\Post_{\beta} = \Post_{\beta'}$ and for any untimed behavior
+for any untimed behavior
 $\gamma$, $\beta \cdot \gamma \in S \Leftrightarrow \beta' \cdot \gamma \in S$.
 }
 
 
 \frame{
-\frametitle{Myhill-Nerode}
+\frametitle{Myhill-Nerode (2)}
 
 \red{Theorem}\\
 Let $S$ be a set of feasible untimed behaviors over finite sets of inputs $I$, outputs $O$, and timers $Y$.
