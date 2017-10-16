@@ -6,7 +6,7 @@
 \newcommand{\toevent}[1]{\mathit{to}[#1]}
 \newcommand{\toevents}{\mbox{\sl TO}}
 \newcommand{\extinputs}{\hat{I}}
-\newcommand{\acttimers}{\mathit{active}}
+%\newcommand{\acttimers}{\mathit{active}}
 \newcommand{\Head}[1]{\mathsf{Head}({#1})}
 \newcommand{\Tail}[1]{\mathsf{Tail}({#1})}
 \newcommand{\Last}[1]{\mathsf{Last}({#1})}
@@ -15,14 +15,16 @@
 \newcommand{\Vals}[1]{\mathit{Val}({#1})}
 \newcommand{\delay}[2]{t_{[#1:#2]}}
 \newcommand{\timerof}[2]{x_{#1}^{#2}}
-\newcommand{\constrof}[1]{\phi_{#1}}
+%\newcommand{\constrof}[1]{\phi_{#1}}
 \newcommand{\Post}{\mathsf{Post}}
 \newcommand{\beh}{\mathit{beh}}
 \newcommand{\untime}{\mathit{untime}}
 \newcommand{\run}{\mathit{pullback}}
 \newcommand{\timedword}{\mathit{tw}}
+\newcommand{\timedinputword}{\mathit{tiw}}
 \newcommand{\startedby}{\mathit{startedby}}
-
+\newcommand{\Mealy}{\mathit{Mealy}}
+\newcommand{\finitesubsets}[1]{\cal{P}_{\mathit{fin}}(#1)}
 \newcommand{\conc}{\cdot}
 \newcommand{\tuple}[1]{\langle #1\rangle}
 \newcommand{\set}[1]{\lbrace #1\rbrace}
@@ -35,25 +37,25 @@
 \newcommand{\ctimers}{X}
 \newcommand{\remap}{\pi}
 \newcommand{\remapinst}{\rho}
-\newcommand{\normalize}{\gamma}
-\newcommand{\normalizeof}[2]{\normalize_{#2}^{#1}}
-\newcommand{\timerbij}{\gamma}
-\newcommand{\timerequiv}{\pi}
-\newcommand{\extendedby}{\lhd}
-\newcommand{\uttrace}{\textsf{tr}}
-\newcommand{\uttraceof}[1]{\uttrace(#1)}
-\newcommand{\uttracesof}[1]{\textsf{Tr}(#1)}
-\newcommand{\strace}{\textsf{tr}_s}
-\newcommand{\ssuffix}{v_s}
-\newcommand{\suftraces}{\textsf{Tr}_s}
-\newcommand{\pinpof}[1]{\textit{inp}_p(#1)}
-\newcommand{\sinpof}[1]{\textit{inp}_s(#1)}
-\newcommand{\symbinpof}[1]{\textit{symbinp}(#1)}
-\newcommand{\word}{w}
-\newcommand{\smap}{{\cal O}}
-\newcommand{\smappre}{{\cal O_p}}
-\newcommand{\smapsuf}{{\cal O_s}}
-\newcommand{\obspre}{{\cal O_U}}
+%\newcommand{\normalize}{\gamma}
+%\newcommand{\normalizeof}[2]{\normalize_{#2}^{#1}}
+%\newcommand{\timerbij}{\gamma}
+%\newcommand{\timerequiv}{\pi}
+%\newcommand{\extendedby}{\lhd}
+%\newcommand{\uttrace}{\textsf{tr}}
+%\newcommand{\uttraceof}[1]{\uttrace(#1)}
+%\newcommand{\uttracesof}[1]{\textsf{Tr}(#1)}
+%\newcommand{\strace}{\textsf{tr}_s}
+%\newcommand{\ssuffix}{v_s}
+%\newcommand{\suftraces}{\textsf{Tr}_s}
+%\newcommand{\pinpof}[1]{\textit{inp}_p(#1)}
+%\newcommand{\sinpof}[1]{\textit{inp}_s(#1)}
+%\newcommand{\symbinpof}[1]{\textit{symbinp}(#1)}
+%\newcommand{\word}{w}
+%\newcommand{\smap}{{\cal O}}
+%\newcommand{\smappre}{{\cal O_p}}
+%\newcommand{\smapsuf}{{\cal O_s}}
+%\newcommand{\obspre}{{\cal O_U}}
 
 \section{MMTs}
 
@@ -68,8 +70,9 @@ For a set $I$, let $\extinputs$ be $I \cup \toevents$.
 
 We write $A \hookrightarrow B$ for the set of partial functions from $A$ to $B$.
 With $f \lceil A$ we denote the restriction of function $f$ to $\domof{f} \cap A$.
-For arbitrary functions $f$ and $g$, $f [g]$ is the function with domain $\domof{f}$ that behaves like $f$
-on $\domof{f} \setminus \domof{g}$ and like $g$ on $\domof{f} \cap \domof{g}$.
+%For arbitrary functions $f$ and $g$, $f [g]$ is the function with domain $\domof{f}$ that behaves like $f$
+%on $\domof{f} \setminus \domof{g}$ and like $g$ on $\domof{f} \cap \domof{g}$.
+We write $\finitesubsets{S}$ for the set of finite subsets of a set $S$.
 
 \begin{definition}
 \label{def:MMT}
@@ -87,7 +90,7 @@ $Q$ is a finite set of states,
 \item
 $q_0 \in Q$ is the initial state,
 \item
-$\vars$ maps each state $q \in Q$ to a finite set of timers $\varsof{q}$, with $\varsof{q_0} = \emptyset$,
+$\vars: Q \rightarrow \finitesubsets{X}$, with $\varsof{q_0} = \emptyset$,
 \item
 $\delta: Q \times \extinputs \hookrightarrow  Q$ is a transition function,
 %with $\delta(q,i)$ defined iff $q \in Q$ and $i \in I \cup \{ \toevent{x} \mid x \in \varsof{q} \}$, 
@@ -145,7 +148,9 @@ Formally, for $\tvals, \tvals'$ valuations, $i \in \extinputs$, $o \in O$ and $\
 we define a discrete transition relation by
 \begin{eqnarray*}
 \tvals \xrightarrow{i/o, \rho}  \tvals' & \Leftrightarrow & [ \domof{\tvals'} \setminus \domof{\tvals}  \subseteq \domof{\rho} \subseteq \domof{\tvals'} ~ \wedge\\
-&& \tvals' =  \tvals'[\tvals][\rho] ~ \wedge \\
+&& [\forall x \in\domof{\tvals'} : \tvals'(x) = \mbox{ if } x \in\domof{\rho} \mbox{ then } \rho(x) \mbox{ else } \tvals(x)] ~ \wedge\\
+%More concise but harder to understand:
+%&& \tvals' =  \tvals'[\tvals][\rho] ~ \wedge \\
 && \forall x \in X : i=\toevent{x} \Rightarrow (\tvals(x) = 0 \wedge x \not\in\domof{\tvals'} \setminus \domof{\rho})].
 \end{eqnarray*}
 %Condition $\tvals' =  \tvals'[\tvals][\rho]$ expresses that $\tvals'$ is obtained by giving variables
@@ -198,6 +203,9 @@ a pair of consecutive transitions: a first transition with input $i$ and some de
 a timer $x$, and a second transition in which $x$ times out and output $o$ is produced.
 If inputs arrive in the newly introduced intermediate state, these may either be ignored, buffered or forbidden
 (via a transition to some designated error state).
+Note that $\Lambda$ corresponds to the \emph{absence} of an observable output. For inputs $i \in I$ this is fine: if such
+an input does not trigger an observable output then we just assume that the output event is $\Lambda$. We do not allow
+$\Lambda$ as output event in timeout transitions $\toevent{x}$: since timeout events themselves are not observable, we can ony observe their occurrence indirectly through the observable output that they trigger.
 
 \paragraph{Remark.}
 Note that we assume that in a timed run each discrete transition is preceded by a nonzero delay.
@@ -251,30 +259,32 @@ $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'$ and $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o''$.
 \label{fig:nondeterminism}
 \end{center}
 \end{figure}
-In order to rule out this type of nondeterminism, it is not enough to require that the timer update functions are injective,
-that is, it is not allowed to assign the same value to multiple timers in a single transition.
-This is illustrated by the MMT of Figure~\ref{fig:nondeterminism2}, which accepts both the timed words
-$1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'~ 1 ~ \mathit{to} ~ o'$ and $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o' ~ 1 ~ \mathit{to} ~ o''$.
-\begin{figure}[ht]
-\begin{center}
-\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.5cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
-  \node[initial, state] (1) {$q_0$};
-  \node[state] (2) [below of=1] {$q_1$};
-  \node[state] (4) [left of=2] {$q_2$};
-
-  \path[every node/.style={font=\sffamily\scriptsize}]
-    (1) edge node {$i/o$, $~x:=1$, $y:=2$} (2)  
-    (2) edge  node {$\toevent{y}/o''$} (4)
-      edge  [loop right] node {$\toevent{x}/o'$, $~x:=1$} (2);
-\end{tikzpicture}
-\caption{Another MMT with nondeterministic behavior}
-\label{fig:nondeterminism2}
-\end{center}
-\end{figure}
-
-The nondeterminism of the MMTs of Figures~\ref{fig:nondeterminism} and \ref{fig:nondeterminism2} is ``uncontrollable'' in the
+%In order to rule out this type of nondeterminism, it is not enough to require that the timer update functions are injective,
+%that is, it is not allowed to assign the same value to multiple timers in a single transition.
+%This is illustrated by the MMT of Figure~\ref{fig:nondeterminism2}, which accepts both the timed words
+%$1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'~ 1 ~ \mathit{to} ~ o'$ and $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o' ~ 1 ~ \mathit{to} ~ o''$.
+%\begin{figure}[ht]
+%\begin{center}
+%\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.5cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
+%  \node[initial, state] (1) {$q_0$};
+%  \node[state] (2) [below of=1] {$q_1$};
+%  \node[state] (4) [left of=2] {$q_2$};
+%
+%  \path[every node/.style={font=\sffamily\scriptsize}]
+%    (1) edge node {$i/o$, $~x:=1$, $y:=2$} (2)  
+%    (2) edge  node {$\toevent{y}/o''$} (4)
+%      edge  [loop right] node {$\toevent{x}/o'$, $~x:=1$} (2);
+%\end{tikzpicture}
+%\caption{Another MMT with nondeterministic behavior}
+%\label{fig:nondeterminism2}
+%\end{center}
+%\end{figure}
+%
+The nondeterminism of the MMTs of Figures~\ref{fig:nondeterminism} 
+%and \ref{fig:nondeterminism2} 
+is ``uncontrollable'' in the
 sense that it occurs after any (nonempty) input sequence.
-Figure~\ref{fig:nondeterminism3} gives an example of an MMT that exhibits nondeterminism when the second input occurs \emph{exactly} one timeunit after the first input: the MMT accepts timed words
+Figure~\ref{fig:nondeterminism3} gives an example of an MMT that exhibits nondeterminism when the second input occurs \emph{exactly} one time unit after the first input: the MMT accepts timed words
 $7 ~ i ~ o ~ 1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'$ and $7 ~ i ~ o ~ 1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o''$.
 This type of nondeterminism is ``controllable'' in the sense that no nondeterminism will occur if we are careful
 when selecting the timing of inputs.
@@ -505,7 +515,8 @@ $ \emptyset \xrightarrow{i/o,~ x, y:=1,2 } \{ x, y \}$, for which the bottom MMT
 For this reason, we will restrict ourselves in the rest of this article to MMTs in which at most
 one clock can be (re)set in a single transition. This restriction has the additional advantage that it
 eliminates the uncontrollable nondeterminism
-of the MMTs of Figures~\ref{fig:nondeterminism} and \ref{fig:nondeterminism2}.
+of the MMTs of Figure~\ref{fig:nondeterminism}.
+% and \ref{fig:nondeterminism2}.
 Provided there is no uncontrollable nondeterminism, most MMTs
 have an equivalent MMT that (re)sets at most one timer per transition:
 if multiple timers are started simultaneously then we can often encode this by just
@@ -884,9 +895,75 @@ Then $x$ is expirable after $\beta$ iff $\beta \xrightarrow{\toevent{x}/o, \rho}
 
 \marginpar{What is the complexity of deciding eg timed equivalence or reachability of MMTs?}
 
-\section{Myhill-Nerode}  
-We present a variant of the famous Myhill-Nerode theorem for MMTs.
-We will use this theorem as a basis for an automata learning algorithm for MMTs.
+\section{Automata Learning for MMTs}  
+In 1987, Angluin \cite{Ang87} published a seminal paper in which she showed that finite automata can be learned using so-called \emph{membership} and \emph{equivalence queries}.
+Many (if not most) efficient active learning algorithms used
+today are designed following Angluin's approach of a \emph{minimally adequate teacher (MAT)}.
+In this apprioach, learning is viewed as a game in which a learner has to infer the behavior of
+an unknown state diagram by asking queries to a teacher.
+
+In this section, we consider three instances of the MAT framework.
+In the first setting, the teacher knows an MMT $\M$. 
+A \emph{timed learner} may perform \emph{timed experiments} to learn about the
+timed words of $\M$, and pose equivalence queries.
+In the second instance, the teacher also knows an MMT, but now an \emph{untimed learner} performs membership queries
+to learn the untimed behaviors of $\M$, and poses equivalence queries.
+The third instance is the well known setting (see e.g.\ \cite{Nie03,RSBM09}) in which a teacher knows an (untimed) Mealy machine $\A$,
+and a learner tries to learn $\A$ via membership and equivalence queries.
+
+We will show how a timed learner for MMTs can be implemented using an untimed learner for MMTs,
+and how an untimed learner for MMTs can be implemented using a Mealy machine learner.
+This will allow us to use existing algorithms for learning Mealy machines,
+as implemented for instance in LearnLib \cite{RSBM09}, as part of an algorithm to learn MMTs. 
+
+
+\subsection{A timed learner}
+%Let $\M = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$ be an MMT.
+A \emph{timed input word} over $I$ is a sequence
+$u = d_1 ~ i_1 ~ d_2 ~ i_2 \cdots d_k ~ i_k ~ d_{k+1}$, where $d_j \in \delays$ and $i_j \in I$, for all $1 \leq j \leq k$,
+and $d_{k+1} \in \realsplus$.
+A timed input word describes an experiment that may be carried out on an MMT. We provide a series of inputs at specific times, and record all the outputs that occur in response to these inputs up to and including the finishing time of the experiment, that is $\sum_{j=1}^{k+1} d_j$.
+Since we want to rule out race conditions, we require that the fractional part of the absolute times of occurrence of
+all the inputs are different.
+Let $\M$ be an MMT with inputs $I$ and outputs $O$, and
+let $w$ be a timed word of $\M$ in which the fractional part of the absolute times of occurrence of
+all the inputs are different.
+We can associate a unique timed input word $\timedinputword(w)$ to $w$ by 
+removing all the outputs events in $O$, 
+removing all occurrences of $\mathit{to}$, 
+replacing consecutive numbers by their sum, 
+and possibly placing $0$ at the end of the sequence.
+Thus, for instance,
+\begin{eqnarray*}
+\timedinputword (3 ~ i_1 ~ o_1 ~ 1.1 ~ i_2 ~ o_2 ~ 2 ~ \mathit{to} ~ o_3 ~ 2.1 ~ i_4 ~ o_4) & = & 
+3 ~ i_1 ~ 1.1 ~ i_2 ~ 4.1 ~ i_4 ~ 0.
+\end{eqnarray*}
+Note that the first input occurs at time $3$, the second at time $4.1$, and the third at time $8.2$.
+Thus the fractional part of the times of the inputs are different.
+%
+If $u$ and $u'$ are timed input words, then we write $u \propto u'$ if $u$ and $u'$ are equal, except that the final delay of $u$ is less or equal than the final delay of $u'$. Observe that,
+for any timed input word $u$ over $I$, 
+there exists a unique maximal timed word $w$ of $\M$ such that $\timedinputword(w) \propto u$.
+
+In our first learning setup, the teacher knows an MMT $\M$.
+Initially, the timed learner only knows the set $I$ of input events of $\M$.
+The task of a timed learner is to learn $\M$ through two types of queries:
+\begin{itemize}
+\item
+With a \emph{membership query}, the learner asks what the output is in response to a timed input word $u$ over $I$. 
+The teacher answers with the unique maximal timed word $w$ of $\M$ such that $\timedinputword(w) \propto u$.
+\item
+With an \emph{equivalence query (EQ)}, the learner asks if a hypothesized MMT $\CH$ is correct, that is, 
+whether $\CH \approx_{\mathit{timed}} \M$.
+The teacher answers \emph{yes} if this is the case. Otherwise she answers \emph{no} and supplies a
+\emph{counterexample}: a timed word $w$ that distinguishes $\CH$ and $\M$.
+\end{itemize}
+
+\subsection{An untimed learner}
+Given the equivalence of the timed and the untimed semantics of MMTs, it is natural to also 
+consider an untimed setting, in which a learner tries to construct an MMT based on membership queries for untimed behaviors.
+Our algorithm for an untimed learner is based on the following result, which is variant of the famous 
+Myhill-Nerode theorem for MMTs.
 
 \begin{definition}
 Let $S$ be a set of feasible untimed behaviors over $I$, $O$ and $Y$. Then $S$ is
@@ -911,6 +988,7 @@ We write $[\beta]$ to denote the equivalence class of $\beta$ with respect to $\
 \end{definition}
 
 \begin{theorem}
+\label{Nerode theorem}
 Let $S$ be a set of feasible untimed behaviors over finite sets of inputs $I$, outputs $O$, and timers $Y$.
 Then $S$ is the set of feasible untimed behaviors of an MMT $\M$ iff $S$ is nonempty, all untimed behaviors in $S$
 start with the empty set of timers, $S$ is prefix closed, behavior deterministic, input complete, timeout complete,
@@ -931,8 +1009,10 @@ $\{ \Post_{\beta} \mid \beta \mbox{ is a feasible untimed behavior of } \M \}$ i
 $\equiv_S$ has finite index.
 
 ``$\Leftarrow$'' Suppose $S$ is nonempty, etc.
-We define MMT $\M = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$ as follows:
+Let MMT $\M = (I, O \cup \{ \perp \}, Q, q_0, \vars, \delta, \lambda, \remap)$ be defined as follows:
 \begin{itemize}
+\item
+$\perp$ is a special, fresh output event.
 \item
 $Q$ is the set of equivalence classes of $\equiv_S$.
 \item
@@ -951,385 +1031,92 @@ $o$, $\rho$ and $Y$ such that $\beta' = \beta \xrightarrow{\toevent{x}/o, \rho} 
 We define $\delta([\beta],\toevent{x}) = [\beta']$, $\lambda([\beta],\toevent{x}) = o$, and $\remap([\beta],\toevent{x}) = \rho$.
 \item
 Assume $\beta \in S$ and $x \in \Last{\beta}$ not expirable after $\beta$.
-We define $\delta([\beta],\toevent{x}) = [\beta]$, $\lambda([\beta],\toevent{x}) = \Lambda$, and $\remap([\beta],\toevent{x}) = \rho_0$, where $\domof{\rho_0} = \emptyset$.
+We define $\delta([\beta],\toevent{x}) = [\beta]$, $\lambda([\beta],\toevent{x}) = \perp$, and $\remap([\beta],\toevent{x}) = \rho_0$, where $\domof{\rho_0} = \emptyset$.
 \end{itemize}
 It is routine to verify that $\M$ is a well-defined MMT whose set of feasible untimed behaviors equals $S$.
 \end{proof}
 
+The MMT $\M$ constructed in the proof of Theorem~\ref{Nerode theorem} has a special property: an untimed
+behavior of $\M$ is feasible iff it does not contain output event $\perp$. Call an MMT that satisfies this property
+\emph{transparent}. 
+We say that a timer $x$ \emph{may expire} in a state $q$ if $q$ has an outgoing $\toevent{x}$ transition with
+an output different from $\perp$.
+In a transparent MMT, a timer may expire after an untimed behavior $\beta$ iff it may expire in the
+unique state of $\M$ that is reached by $\beta$.
+%
+Note that, for any MMT $\N$ there exists an equivalent transparent MMT $\M$, since
+from the set $S$ of feasible untimed behaviors of $\N$ we may construct an equivalent transparent MMT using the construction
+of Theorem~\ref{Nerode theorem}.
 
 
-\section{Automata Learning for MMTs}
-In this section, we present an algorithm for automata learning for MMTs.
-It is based on the Nerode equivalence $\equiv_{\M}$, which is used to adapt
-the standard paradigm for automata learing, using $L^*$, which is also adapted
-to register automata in~\cite{CasselHJS16}. 
+%Let $\M = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$ be a transparent MMT with $\perp \in O$.
+%Let $Y = \bigcup_{q \in Q} \varsof{q}$ be the set of timers that appear in $\M$.
+%We associate to $\M$ a Mealy machine $\Mealy(\M) = (I', O', Q, q_0, \delta', \lambda')$ where
+%\begin{itemize}
+%\item
+%$I' = I \cup \{ \toevent{x} \mid x \in Y \}$
+%\item
+%$O' = O \times (X \hookrightarrow \natplus)$
+%\item
+%$\delta'(q,i) = \left\{ \begin{array}{ll}
+%\delta(q,i) & \mbox{if } i \in I \mbox{ or } \exists x \in \varsof{q} : i = \toevent{x} \mbox{ and } \lambda(q,i) \neq \perp\\
+%q & \mbox{otherwise}
+%\end{array} \right.$
+%\item
+%$\lambda'(q,i) = \left\{ \begin{array}{ll}
+%(\lambda(q,i), \rho(q,i), \varsof{q}) & \mbox{if } i \in I \mbox{ or } \exists x \in \varsof{q} : i = \toevent{x} \mbox{ and } \lambda(q,i) \neq \perp\\
+%(\perp,\emptyset) & \exists x \in \varsof{q} : i = \toevent{x} \mbox{ and } \lambda(q,i) = \perp\\
+%(\ast,\emptyset) & \mbox{otherwise}
+%\end{array} \right.$
+%\end{itemize}
+%
+%\begin{theorem}
+%\label{untimedequivalentmealy}
+%Let $\M$ and $\N$ be transparent MMTs.
+%Then $\M \approx_{\mathit{untimed}} \N$
+%iff
+%$\Mealy(\M) \approx \Mealy(\N)$.
+%\end{theorem}
 
-Thus, two tasks must be accomplised in order to design the algorithm.
-\begin{itemize}
-  \item
-    One task is to infer untimed traces of am MMT.
-    This is done by supplying membership queries, in the form of inputs
-    with specific timing.
-\item
-  One task is to define suitable approximations of $\equiv_\M$, which are
-  based on finite sets of suffixes. We must determine how to define suitable
-  finite sets of suffix traces, which are used to define overapproximations
-  of $\equiv_\M$.
-\end{itemize}
-We assume that we can observe
-exact timing of events and that we can observe whenever a timeout event
-happens. We cannot directly observe the setting of timers, or the identity
-of the timer in a timeout event. However, whenever a timeout event, we
-can infer where it was set, by supplying a small sequence of membership queries
-with slightly perturbed timing. This is a consequence of the fact that we
-assume MMTs to be robust, implying that we can always include ``slack'' in
-the timing of inputs. The normalized name of the timer follows after inferring
-in which transition it was set.
 
-Let us begin with the second task.
-Intuitively, we are looking for a mechanism for characterizing a finite
-set of suffixes, so that we can adapt the definition of
-$\uttrace \equiv^{\timerequiv} \uttrace'$ to consider specific subsets of
-suffixes. The natural way to do this is, like~\cite{Nie03}, to define
-finite sets of input sequences. In our setting, a complication is that
-input sequences include timer events, of form $\toevent{x}$, and that
-after different traces, timer events with different timers may or may
-not be enabled. We solve this complication by omitting the
-identity of the timer $x$ in input sequences that characterize suffixes.
+We want to reduce the problem of deciding untimed equivalence of transparent MMTs to the problem of deciding
+equivalence of Mealy machines.
 
-Let an \emph{input prefix} be a sequence of extended inputs.
-For a trace $\uttrace$, let $\pinpof{\uttrace}$ be the sequence of its
-inputs an timer events.
-Let a \emph{timeout symbol} be of form $\tosymbol$, i.e., a
-timer event without any clock.
-Let an \emph{input suffix} be a sequence of inputs and timeout symbols.
-For a suffix trace $\strace$, let $\sinpof{\strace}$ be the sequence
-of inputs and timeout symbols in $\strace$, i.e., $\sinpof{\strace}$ is the
-sequence of extended inputs, but with timers removed from timer events.
+A \emph{Mealy machine} is a tuple $\A = (I, O, Q, q_0, \delta, \lambda)$, where
+$I$ is a finite set of inputs,
+$O$ is a finite set of outputs,
+$Q$ is a finite set of states,
+$q_0 \in Q$ is the initial state,
+$\delta: Q \times I \rightarrow Q$ is a transition function, and
+$\lambda: Q \times I \rightarrow O$ is an output function.
+%
+Output function $\lambda$ is extended to sequences of inputs by defining,
+for all $q \in Q$, $i \in I$ and $\sigma \in I^{\ast}$,
+%\begin{eqnarray*}
+%\delta(q, \epsilon) = q &,~~~ & \delta(q, i \sigma) = \delta(\delta(q,i), \sigma),\\
+$\lambda(q, \epsilon) = \epsilon$ and $\lambda(q, i \sigma) = \lambda(q, i) \lambda(\delta(q, i), \sigma)$.
+%\end{eqnarray*}
+%
+The behavior of Mealy machine $\A$ is defined by function $A_\A : I^{\ast} \rightarrow O^{\ast}$ with
+$A_\A(\sigma) = \lambda (q^0, \sigma)$, for  $\sigma \in I^{\ast}$.
+Mealy machines $\A$ and $\B$ are \emph{equivalent}, denoted $\A \approx \B$, iff $A_{\A} = A_{\B}$.
 
-A central mechanism in our active learning algorithm is a procedure which
-takes  an input prefix $u$ and an input suffix $v$ and return the set of
-untimed traces of form $\uttrace\conc\strace$ such that
-$\pinpof{\uttrace} = u$ and $\sinpof{\strace} = v$. We must here take into
-consideration that we may not be able to observe all timer settings of the
-SUT; only those timer settings that can actually expire sometime during
-$\uttrace\conc\strace$ can actually be observed.
-This may further depend on the timing of transitions
-in $\uttrace\conc\strace$.
 
-%% Let us now consider the issue that timeout events are not always
-%% enabled.
-%% Consider a trace $u$ of $\M$, and assume that timer $x$ is set in the
-%% $i$th event of $u$. Then, in each state the corresponding timeout even
-%% $\toevent{x}$ may or may not be enabled; this may
-%% further depend on the timing of events in $u$, including
-%% the timing of events that precede the $i$th event.
-%% This motivates the following definitions.
-
-Motivated by these considerations,
-let $\uttrace = \tuple{i_1,o_1,\remapinst_1}\cdots\tuple{i_n,o_n,\remapinst_n}$.
-We say that $\uttrace$ is {\em feasible} if 
-there is a corresponding timed word
-$\tword = (i_1, o_1, t_1) \cdots (i_n, o_n, t_n)$ for some $\vect tn$.
-We then say that $\tword$ is {\em derived} from $\uttrace$.
-Let $\expirable(\uttrace)$ be the set of timers $x$ such that
-$\tuple{i_1,o_1,\remapinst_1}\cdots\tuple{i_n,o_n,\remapinst_n}
-\tuple{\toevent{x},o_{n+1},\remapinst_{n+1}}$
-is feasible for some $o_{n+1}$, $\remapinst_{n+1}$.
-For $u = \pinpof{\uttrace}$ we say that $u$ is feasible iff $\uttrace$ is
-feasible, and define $\expirable(u) = \expirable(\uttrace)$.
-
-%% For a sequence $u = i_1 \cdots i_n$, define $\uttraceof{u}$ as the normalized
-%% trace $\tuple{i_1,o_1,\remapinst_1}\cdots\tuple{i_n,o_n,\remapinst_n}$
-%% if it exists, otherwise $\uttraceof{u} = \bot$. We say that $u$ is {\em feasible}
-%% if $\uttraceof{u}$ is defined and is feasible. Define
-%% $\expirable(u)$ to be $\expirable(\uttraceof{u})$.
-%% It follows that $u = i_1 \cdots i_n$ is feasible if and only if whenever
-%% $i_k$ is a timeout event $\toevent{x}$ for some $k$ with $1 < k \leq n$, then
-%% $x \in \expirable(i_1 \cdots i_{k-1})$.
-%% We will later present a technique for inferring the set $\expirable(u)$.
-
-\paragraph{Membership Queries}
-The procedure for inferring untimed traces will utilize membership queries.
-We will slightly adapt the notion of membership query to make it convenient
-in our current setting.
-
-A {\em membership query} is an alternating sequence
-$t_1i_2t_2i_2 \cdots t_ni_nt_{n+1}$ of delays and inputs in $\extinputs$.
-The response to a membership query is either
+The teacher knows the state diagram, which in our setting is a Mealy machine $\M$. 
+Initially, the learner only knows the inputs $I$ of $\M$.
+The task of the learner is to learn $\M$ through two types of queries:
 \begin{itemize}
 \item
-  a sequence $o_1 o_2 \cdots o_n$ of outputs in $O$, meaning that there is
-  a corresponding timed word $(i_1, o_1, t_1) \cdots (i_n, o_n, t_n)(i_{n+1}, o_{n+1}, t_{n+1})$ for some $i_{n+1}$, $o_{n+1}$, $t_{n+1}'$ with $t_{n+1} \leq t_{n+1}'$,
-  or
+With a \emph{membership query (MQ)}, the learner asks what the output is in response to an input sequence $\sigma \in I^{\ast}$.
+The teacher answers with output sequence $A_{\M}(\sigma)$.
 \item
-  a timeout event after some prefix $t_1i_2t_2i_2 \cdots t_{k-1}i_{k-1}t_{k}'$
-  where $k \leq n+1$ and $t_k' \leq t_k$, implying that  there is
-  a corresonding timed word $(i_1, o_1, t_1) \cdots (\toevent{x}, o_k, t_k')$
-  for some timer $x$. By the assumption of robustness, it is easy to
-  determine where the timer $x$ was set. Therefore the response to the
-  membership query is the index $k$ and the normalized timer name
-  $\timerof jp$, or
-\item
-  a {\em missing timer event} after some prefix
-  $t_1i_2t_2i_2 \cdots t_{k-1}i_{k-1}t_{k}$, implying that input $i_k$, of
-  form $\toevent{x}$, does not occur at the intended time.
+With an \emph{equivalence query (EQ)}, the learner asks if a hypothesized Mealy machine $\CH$ with
+inputs $I$ and outputs $O$ is correct, that is, whether $\CH$ and $\M$ are equivalent.
+The teacher answers \emph{yes} if this is the case. Otherwise she answers \emph{no} and supplies a
+\emph{counterexample} $\sigma \in I^{\ast}$ that distinguishes $\CH$ and $\M$.
 \end{itemize}
-
-\paragraph{Inferring traces}
-We can now present a central procedure of our learning algorithm,
-which is one that 
-takes a feasible input prefix $u$ and an input suffix $v$ and returns the set of
-feasible (normalized) untimed traces of form $\uttrace\conc\strace$ such that
-$\pinpof{\uttrace} = u$ and $\sinpof{\strace} = v$.
-%% restricted to the set of timers that are in
-%% $\expirable(i_1 \cdots i_{k})$ for some $k \leq n$.
-We assume that names of timers are normalized.
-
-%% Consider a trace 
-%% $\tuple{i_1,o_1,\remapinst_1}\cdots\tuple{i_n,o_n,\remapinst_n}$.
-%% and let 
-%% $w = (i_1, o_1, t_1) \cdots (i_n, o_n, t_n)$ be a corresonding timed word.
-%% We introduce the following canonical naming convention for timers.
-%% A timer which is set to $p$ at transition $j$ (i.e., in response to
-%% input $i_j$ is given the name $\timerof jp$. This means that
-%% for a timer $\timerof jp$ we have
-%% $\remapinst_j(\timerof jp) = p$, and that 
-%% $\timerof jp \in \remapinst_k$ only if $j \leq k$ and $\timerof jp$ has
-%% not expired at or before $i_k$, and then 
-%% $\remapinst_k(\timerof jp) = \timerof jp$ if $j < k$.
-%% We also extend $w$ by a delay $t_{n+1} \in \realsplus$, which intuitively
-%% represents that time $t_{n+1}$ elapses after the trace; such a delay
-%% may be observed only if it is not interrupted by a timeout event.
-
-
-%% For each timer setting in the trace, i.e., each occurrence of
-%% a timer  $x \in \domof{\remapinst_i}$ with  $\remapinst_i(x) \in \natplus$,
-%% defined the constraint $\constrof{\word}$ as
-%% \begin{itemize}
-%% \item
-%%   if $i_k$ is the timeout event $\toevent{x}$, then
-%%   $\constrof{\word}$ is $\delay{i}{k}= \remapinst_i(x)$,
-%% \item
-%%   if the trace includes no timeout event $\toevent{x}$, then
-%%   $\constrof{\word}$ is $\delay{i}{(n+1)} \leq \remapinst_i(x)$.
-%% \end{itemize}
-%% Define $\constrof{\word}$ as
-%% the conjunction of $\constrof{\word}$ for all timer settings in the trace.
-
-The procedure must find all ways to instantiate the timeout symbols in $v$
-with actual timers to obtain a feasible instantiation of $u\conc v$, and for
-each such instantiation determine the set of timers that may expire after some
-prefix, and how they are manipulated.
-
-Our procedure considers increasing prefixes $z$ of extended inputs that
-instantiate some prefix of $u \conc v$. For each such prefix, it
-determines the set $\expirable(z)$, the constraint $\constrof{z}$
-under which $z$ can be performed without any succeeding timer event, 
-the timers that are in $\expirable(z')$ for some prefix $z'$ of $z$, and
-their manipulation.
-
-The procedure performs repeated membership queries for selected values
-of $\vect{t}{n+1}$, and gradually adds new timers to the word together
-with constraints on $\vect{t}{n+1}$ induced by these timers.
-
-Let $\delay{j}{k}$ denote $t_{j+1} + t_{j+2} + \cdots + t_k$.
-%% This means that $\remapinst_j(\timerof jp) = p$, and that 
-%% $\remapinst_l(\timerof jp) = \timerof jp$ if $j < l < k$.
-%% This means that $\timerof jp \in \domof{\remapinst_l}$ iff
-%% $j \leq l < k$, where $\remapinst_j(\timerof jp) = p$ and
-%% $\remapinst_l(\timerof jp) = \timerof jp$ for $j < l < k$.
-%% Initially, $\constrof{\word}$ is the conjunction of the constraints of form
-%% $\delay{j}{k}=m$ for each $i_k$ of form is $\toevent{\timerof jp}$.
-
-%% The procedure considers prefixes in increasing order. For each input prefix
-%% $z$, it
-%% \begin{itemize}
-%% \item determines all timers that are in $\expirable(z)$,
-%% \item gradually builds a constraint $\constrof{z}$ under which $z$ can
-%%   be performed without interruption by unexpected timer events,
-%% \item
-%%   gradually builds the mappings $\remapinst_{z'}$ for prefixes $z'$ of $z$.
-%% \end{itemize}
-
-\medskip
-\noindent{\bf Algorithm} \textsl{Infer-Traces.}
-\begin{description}
-\item[Input:] (normalized) feasible input prefix $u$ and input suffix $v$,
-\item[Returns:] set of (normalized) traces
-$\uttrace\conc\strace$ such that
-$\pinpof{\uttrace} = u$ and $\sinpof{\strace} = v$, together with
-  constraint $\constrof{\uttrace\conc\strace}$ on derived timed words.
-\item[Initialization:]
-    Let $z = \emptyword$, let $\constrof{z} = \true$;
-\item[Return:]
-    $\textsc{Infer-Traces}(\emptyword,\emptyword,\true)$
-%%     \begin{itemize}
-%% \item initialize $\vect{\remapinst}n$ by letting
-%%     $\timerof jp \in \domof{\remapinst_l}$ iff $i_k$ is $\toevent{\timerof jp}$
-%%     with $j \leq l < k$; let $\remapinst_j(\timerof jp) = p$ and
-%%     $\remapinst_l(\timerof jp) = \timerof jp$ for $j < l < k$;
-%% \item let $\constrof{\uttrace}$ be
-%%     the conjunction of the constraints of form
-%% $\delay{j}{k}=p$ for each $i_k$ of form $\toevent{\timerof jp}$.
-%%     \end{itemize}
-\end{description}
-\medskip
-\noindent{\bf Function} $\textsc{Infer-Traces}(z,\uttrace,\constrof{\uttrace})$;
-\begin{enumerate}
-\item
-  let $z = i_1 \cdots i_m$;
-  let $\uttrace = \tuple{i_1,o_1,\remapinst_1}\cdots\tuple{i_m,o_m,\remapinst_m}$;
-\item
-  {\bf for} each index $k = 1, \ldots , m$ {\bf do}:
-     \qquad \textit{// find all timers in $\expirable(z)$}
-  \begin{enumerate}
-  \item
-    find $\vect t{{m+1}}$ that maximizes $\delay{k}{(m+1)}$ given
-    $\constrof{\uttrace}$;
-  \item
-    supply membership query $t_1i_2t_2i_2 \cdots t_mi_mt_{m+1}$;
-  \item
-    {\bf if} unexpected timeout $\toevent{\timerof jp}$ occurs within at most
-    $t_{m+1}$ after $i_m$:
-    \begin{enumerate}
-    \item
-      add $\timerof jp$ to $\domof{\remapinst_l}$ iff
-$j \leq l \leq m$, where $\remapinst_j(\timerof jp) = p$ and
-      $\remapinst_l(\timerof jp) = \timerof jp$ for $j < l \leq m$;
-    \item
-      Add conjunct 
-      $\delay{j}{(m+1)} \leq p$ to $\constrof{\uttrace}$;
-      \todobj{should it be $\delay{j}{(m+1)} < p$?}
-    \item if $k \neq j$ go to (a);
-    \end{enumerate}
-    {\bf else} do nothing;
-  \end{enumerate}
-  {\bf od}
-\item
-  {\bf if} $\lengthof{z} = \lengthof{u} + \lengthof{v}$ {\bf return}
-  $\tuple{\uttrace,\constrof{\uttrace}}$;
-\item
-  {\bf if} $i_{m+1} \in \extinputs$:
-  \[  \textbf{return } \textsc{Infer-Traces}(zi_{m+1},\uttrace\tuple{i_{m+1},o_{m+1},\emptyset},\phi')
-  \]
-  where $\phi'$ is $\constrof{\uttrace}$ if $i_{m+1} \in I$, otherwise, if
-  $i_{m+1} = \toevent{\timerof jp}$, it is obtained from $\constrof{\uttrace}$
-  by replacing $\delay{j}{(m+1)} \leq p$ by $\delay{j}{(m+1)} = p$.
-  \item
-  {\bf else} \hspace*{4cm} \textit{// \ $i_{m+1}$ is the timeout symbol}
-    \[
-    \textbf{return} \mathop\bigcup_{\timerof jp \in \expirable(z)}
-     \textsc{Infer-Traces}(z\toevent{\timerof jp},\uttrace\tuple{\toevent{\timerof jp},o_{m+1},\emptyset},\phi')
-     \]
-  where  $\phi_j^p$ is obtained from $\constrof{\uttrace}$
-  by replacing $\delay{j}{(m+1)} \leq p$ by $\delay{j}{(m+1)} = p$.
-\end{enumerate}
-Intuitively, the function
-$\textsc{Infer-Traces}(z,\uttrace,\constrof{\uttrace})$ finds
-all timers in $\expirable(z)$ by testing for each $k$ whether 
-it is possible
-to set a timer at the $k$th transition that may expire after the
-$m$th transition. Any such timer expiration adds a constraint to
-$\constrof{\uttrace}$, which is included in the constraints used to find
-further timers.
-This is done by finding a timed word is found which maximises the
-time within which it is able to expire, subject to the constraints under
-which other, already detected, timers cannot expire. If no expiration is
-observed, then it is ascertained that no such timer exists.
-If such a timer may exist, then some expiration must be observed, either
-by a timer set at the $k$th transition and expiring at the $m+1$st transition,
-or by a so-far undetected timer that can expire because the membership
-query exposes a new timing pattern. In either case, the new detected timer
-is added to the word, and the procedure restarts.
-
-\paragraph{Generating MMTs}
-Having solved the problem of inferring untimed traces, we can now
-define our generalization of $L^*$, which is based on the
-Nerode equivalence defined earlier
-%% We can now present our algorithm for active learning of MMTs.
-%% The main structure of the algorithm is inherited from other active
-%% algorithms: it builds on a Nerode equivalence, which is defined based on
-%% the set of (untimed) traces of an MMT.
-%% Thus, the algorithm has two nontrivial parts.
-%% \begin{itemize}
-%%   \item
-%%     One part is to infer untimed traces of am MMT, essentially building
-%%     a prefix tree of untimed traces. This is done by supplying membership
-%%     queries, following the ideas of the previous section.
-%% \item
-%%   One part is to ``fold'' the prefix tree developed in the first part
-%%   into a MMnt. This can be done by adapting the suitable tools for active
-%%   automata learning, as found in $L^*$
-%%   (adapted for Mealy machines in~\cite{Nie03} and to automata with
-%%   data registers in~\cite{CasselHJS16}).
-%% \end{itemize}
-%% We assume that we can observe
-%% exact timing of events and that we can observe whenever a timeout eMMvent
-%% happens. On the other hand, we cannot observe the setting and resetting of
-%% timers, and we cannot observe which timer caused an observed timeout event.
-
-
-\begin{definition}[Observation Table]
-  An \emph{observation table} is a tuple
-  $\tuple{U,U^+,V,\smap}$, where
-  \begin{itemize}
-  \item $U$ is a set of (feasible) {\em input prefixes},
-  \item $U^+$ is a set of {\em extended input prefixes}, each of form $ui$ for
-    $i \in \extinputs$ (note that $U^+$ is in general not disjoint from $U$),
-  \item
-    $V$ is a set of input suffixes,
-  \item
-    $\smap$ maps each extended input prefix $u$ in $U^+$ and input suffix $v$
-    to a set of pairs $\tuple{\uttrace,\strace}$ such that 
-    $\uttrace\conc\strace$ is an untimed trace with
-$\pinpof{\uttrace} = u$ and $\sinpof{\strace} = v$.
-   We use $\smappre(u,v)$ for $\uttrace$ and 
-   $\smapsuf(u,v)$ for $\strace$.
-  \end{itemize}
-\end{definition}
-For an observation table and $u \in U^+$,
-let $\obspre(u)$ denote
-\(
-\displaystyle\mathop\sqcup_{v \in V}\smappre(u,v)
-\),
-i.e., $\obspre(u)$ includes manipulation of all timers that may be
-exposed by any of the suffixes in $V$.
-The observation table defines the following equivalence
-Let $u \equiv_{\smap}^{\timerequiv} u'$ denote that
-$\timerequiv: \domof{\obspre(u)} \rightarrow \domof{\obspre(u')}$
-is a bijection such that there is a bijection $\timerbij$ on $X$ with
-$\timerequiv \extendedby\timerbij$ such that for each $v \in V$
-\[
-\strace \in \smapsuf(u,v)
-\qquad \mbox{if and only if} \qquad
-\timerequiv(\strace) \in \smapsuf(u',v)
-\]
-Let $u \equiv_{\smap} u'$ denote that 
-$u \equiv_{\smap}^{\timerequiv} u'$ for some bijection
-$\timerequiv: \domof{\obspre(u)} \rightarrow \domof{\obspre(u')}$.
-
-Say that an observation table is {\em closed} if for each
-$ui \in U^+$ there is a short prefix $u' \in U$ and a $\timerbij$ such that
-$ui \equiv_{\smap}^{\timerequiv} u'$.
-
-A closed observation table $\tuple{U,U^+,V,\smap}$ can be used to construct
-a hypothesis  MMT $\M = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$, where
-\begin{itemize}
-\item
-  $Q = U$ and $q_0 = \emptyword$,
-\item
-  $\vars$ maps each state $u \in Q$ to $\domof{\obspre(u)}$,
-\item
-  $\delta(u,i)$ is the unique short prefix $u'$ such that
-  $ui \equiv_{\smap}^{\timerequiv} u'$. If so, then
-  $\remap(u,i) = \remap\circ\timerequiv^{-1}$,
-  where $\remap$ is the remapping of the last transition in
-  $\obspre(ui)$.
-  \item
-$\lambda$ is obtained easily from the work (To be done)
-\end{itemize}
-
+The $L^{\ast}$ algorithm of Angluin \cite{Ang87} is able to learn Mealy machine $\M$ by asking a polynomial
+number of membership and equivalence queries (polynomial in the size of the corresponding canonical Mealy machine).
 
 
 
