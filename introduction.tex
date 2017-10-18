@@ -29,9 +29,7 @@ We describe a simple variant of their model, Mealy machines with timers (MMTs), 
 MMT's can be viewed as a formalization of the finite state machine models with countdown timers that are used by
 Kurose and Ross \cite{KR13} to explain transport layer protocols.
 Both time delay Mealy machines \cite{CCF16} and the event recording automata \cite{GrinchteinJL10} can not easily model such protocols.
-
-\begin{example}
-%As a first running example, 
+ 
 Figure~\ref{fig:abp} presents a simplified model of the sender from 
 the alternating-bit protocol, adapted from \cite[Figure 3.15]{KR13}.
 \begin{figure}[h]
@@ -56,10 +54,9 @@ the alternating-bit protocol, adapted from \cite[Figure 3.15]{KR13}.
 \end{figure}
 In the diagram we write $x :=3$ to denote that a transition (re)starts a timer $x$ with value $3$,
 and we write $\mathit{stop}(x)$ if s transition stops timer $x$.
-We omit trivial self-loops: if some state $q$ does not have an outgoing $i$-transition
-then implicitly there is a self-loop with output $\Lambda$.
+For readability we have omitted trivial self-loops.
 \iflong
-Here $\Lambda$ denotes the absence of an observable output. 
+$\Lambda$ denotes the absence of an observable output. 
 
 In the model, input $\mathit{in}$ corresponds to a request from the upper layer to transmit data.
 Initially, upon receipt of such a request, the sender builds a packet from the data and a sequence number $0$,
@@ -71,4 +68,20 @@ If no $\mathit{ack0}$ input arrives within $3$ timeunits, a timeout occurs and t
 The behavior in states $q_2$ and state $q_3$ is analogous to that in states $q_0$ and $q_1$, respectively,
 with the roles of $0$ and $1$ swapped.
 \fi
-\end{example}
+
+The remainder of this article is structured as follows.
+In Section 2, we present the formal definition of MMTs and their timed semantics.
+Our timed semantics records at which (real) times inputs and outputs may occur, but we cannot observe whether some timer is started
+in response to an input. Since we assume that a timeout immediately triggers an observable output, we may observe
+(indirectly) the occurrence of a timeout, but we cannot observe which timer times out.
+In Section 3, we present a surprising result, namely that under certain assumptions the timed semantics is equivalent to an untimed
+semantics in which we can infer, for each timeout event, which previous event caused this timeout.
+Intuitively, causality of timeouts can be inferred since a slight change in the timing of an input event leads to a corresponding slight change in
+the timing of any timeouts that it induces.
+Section 4, we use some basic concepts from the theory of timed automata (zones and DBMs) to show how we can compute the set of timers that may
+timeout following some untimed run.
+Section 5 presents our learning algorithm for MMTs. The equivalence of the timed and the untimed semantics allows us to prove
+a Myhill-Nerode theorem for MMTs, which provides the basis for our learning algorithm. Our algorithm uses a learning algorithm for
+(untimed) Mealy machines as a subroutine.
+Section 6 contains some concluding remarks and lists topics for future research.
+
