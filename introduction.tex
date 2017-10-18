@@ -1,7 +1,7 @@
 \section{Introduction}
 \label{sec:intro}
 
-\marginpar{Intro still needs to be written}
+\marginpar{Intro still needs work}
 Using active automata learning standard violations have been found in multiple implementations of
 major network protocols such as TLS \cite{dRP15}, TCP \cite{FJV16} and SSH \cite{FiterauEtAl17}.
 Timing often plays a crucial role in these applications but cannot be handled using existing tools.
@@ -44,20 +44,22 @@ the alternating-bit protocol, adapted from \cite[Figure 3.15]{KR13}.
   \node[state] (4) [below of=1] {$q_3$};
 
   \path[every node/.style={font=\sffamily\scriptsize}]
-    (1) edge [text width=1.5cm] node {$\mathit{in}/\mathit{send0}$ \\ $\mathit{start\_timer(3)}$} (2)
-    (2) edge [text width=1.5cm] node {$\mathit{ack0}/\Lambda$ \\ $\mathit{stop\_timer}$} (3)
-        edge [loop right, text width=1.5cm] node {$\mathit{to}/\mathit{send0}$\\ $\mathit{start\_timer}(3)$ } (2)
-    (3) edge [text width=1.5cm] node {$\mathit{in}/\mathit{send1}$ \\ $\mathit{start\_timer(3)}$} (4)
-    (4) edge [text width=1.5cm] node {$\mathit{ack1}/\Lambda$ \\ $\mathit{stop\_timer}$} (1)
-        edge [loop left, text width=2cm] node {$\mathit{to}/\mathit{send1}$\\ $\mathit{start\_timer(3)}$} (4);
+    (1) edge [text width=1.5cm] node {$\mathit{in}/\mathit{send0}$ \\ $x := 3$} (2)
+    (2) edge [text width=1.5cm] node {$\mathit{ack0}/\Lambda$ \\ $\mathit{stop}(x)$} (3)
+        edge [loop right, text width=1.5cm] node {$\toevent{x}/\mathit{send0}$\\ $x := 3$ } (2)
+    (3) edge [text width=1.5cm] node {$\mathit{in}/\mathit{send1}$ \\ $x := 3$} (4)
+    (4) edge [text width=1cm] node {$\mathit{ack1}/\Lambda$ \\ $\mathit{stop}(x)$} (1)
+        edge [loop left, text width=1.5cm] node {$\toevent{x}/\mathit{send1}$\\ $x := 3$} (4);
 \end{tikzpicture}
 \caption{Mealy machine with a timer for alternating-bit protocol sender}
 \label{fig:abp}
 \end{figure}
-In the diagram we write $\mathit{start\_timer(n)}$ on a transition if this transition starts the
-timer with value $n \in\nat^{>0}$, and we write $\mathit{stop\_timer}$ if the transition stops the timer.
-We omit trivial self-loops: if some state $q$ does not have an outgoing $i$-transition in the diagram
-then implicitly there is a transition $q \xrightarrow{i/\Lambda} q$.
+In the diagram we write $x :=3$ to denote that a transition (re)starts a timer $x$ with value $3$,
+and we write $\mathit{stop}(x)$ if s transition stops timer $x$.
+We omit trivial self-loops: if some state $q$ does not have an outgoing $i$-transition
+then implicitly there is a self-loop with output $\Lambda$.
+\iflong
+Here $\Lambda$ denotes the absence of an observable output. 
 
 In the model, input $\mathit{in}$ corresponds to a request from the upper layer to transmit data.
 Initially, upon receipt of such a request, the sender builds a packet from the data and a sequence number $0$,
@@ -67,5 +69,6 @@ then it stops the timer and jumps to state $q_2$.
 Acknowledgement with the incorrect sequence number (input $\mathit{ack1}$) are ignored.
 If no $\mathit{ack0}$ input arrives within $3$ timeunits, a timeout occurs and the same packet is sent again.
 The behavior in states $q_2$ and state $q_3$ is analogous to that in states $q_0$ and $q_1$, respectively,
-with the roles of sequence numbers $0$ and $1$ swapped.
+with the roles of $0$ and $1$ swapped.
+\fi
 \end{example}
