@@ -1,41 +1,47 @@
 \section{Introduction}
 \label{sec:intro}
 
-\marginpar{Intro still needs work}
-Using active automata learning standard violations have been found in multiple implementations of
+Active automata learning aims to construct black-box state diagram models of software and hardware systems
+by providing inputs and observing outputs.
+Following pioneering work by \cite{Ang87,PeVaYa02,Hagerer2002,RaMeSM2009,IsHoSt2015},
+active automata learning is emerging as an effective bug finding technique.
+Using active automata learning, for instance, standard violations have been found in many implementations of
 major network protocols such as TLS \cite{dRP15}, TCP \cite{FJV16} and SSH \cite{FiterauEtAl17}.
-Timing often plays a crucial role in these applications but cannot be handled using existing tools.
-Hence timing issues have been artificially suppressed in case studies.
 
-There has been work on algorithms for learning timed systems, e.g., \cite{GrinchteinJL10,MensM15,CCF16},
-but these approaches have complexity of these algorithms appears to be prohibitively high.
-Also the specific restrictions of event recording automata sometimes make it hard to model
-certain system behaviors that occur in practice.
-For instance, a pattern that often occurs in protocols is that with $t$ time units after a first event $a$
-there should be an event $b$, or else a timeout occurs.
-% (For instance, in TCP a SYN should be followed by a SYN-ACK within a specified time interval.)
-In an event recording automaton a clock is associated to each event, which is reset whenever that event occurs.
-This means that upon occurrence of a second $a$ the automaton no longer remembers when the first $a$ has occurred,
-and can thus not ensure the occurence of a timeout at the required moment in time.
+Timing often plays a crucial role in these applications.
+A TCP implementation, for instance, may retransmit packets if they are not acknowledged within
+a specified time. Also, a timeout may occur if the implementation does not receive an acknowledgement
+after a number of retransmissions, or if it remains in certain states too long.
+Timing cannot be captured using existing learning tools, which only support learning of deterministic
+Mealy machines and related untimed models.
+In the case of TCP, we only succeeded to learn Mealy machine models by having the network adaptor ignore all retransmissions,
+and by completing our learning queries before the occurrence of certain timeouts \cite{FJV16}.
+All timing issues had to be artificially suppressed.
 
-We therefore decided to pursue a different approach. Rather than restricting the expressivity of general timed automata
-until reaching a tractable model class, we explore tractable extensions of untimed automata models that appear to
-be sufficiently expressive to describe the real-time behavior of practical applications.
+There has been some work on algorithms for learning timed systems, e.g., \cite{GrinchteinJL10,MensM15,CCF16}.
+The modeling frameworks of \cite{MensM15,CCF16} are very restrictive however: the symbolic automata of \cite{MensM15}
+are finite state, which means that timeouts can not be modeled, whereas the time delay Mealy machines of
+\cite{CCF16} only have a single timer, which is reset on every transition.
+In contrast, the event recording automata studied by \cite{GrinchteinJL10} appear to have too many degrees of freedom,
+leading to a complicated learning algorithm with a complexity that is prohibitively high.
+For learning, we would like to have a class of models where the occurrence of timing-dependent behavior
+is determined by previous behavior, that is, fewer degrees of freedom than what is supported by event-recording automata.
+
+We therefore decided to pursue a different approach. We explore tractable extensions of untimed automata models that appear to
+be sufficiently expressive to describe the real-time behavior of network protocols such as TLS, TCP and SSH, and other
+practical applications of automata learning like those described in \cite{Vaa17}.
 %
-Our work is inspired by recent work of Caldwell, Cardell-Oliver and French \cite{CCF16} on time delay Mealy machines.
-We describe a simple variant of their model, Mealy machines with timers (MMTs), that 
-(a) is able to model the timing behavior of a wide variety of communication protocols, and
-(b) can be learned efficiently.
-MMT's can be viewed as a formalization of the finite state machine models with countdown timers that are used by
+Our work is inspired by the work of \cite{CCF16} on time delay Mealy machines.
+We introduce the class of Mealy machines with timers (MMTs) that 
+is able to model the timing behavior of a wide variety of communication protocols.
+MMT's can be viewed as a formalization of the finite state models with countdown timers that are used in the textbook of
 Kurose and Ross \cite{KR13} to explain transport layer protocols.
-Both time delay Mealy machines \cite{CCF16} and the event recording automata \cite{GrinchteinJL10} can not easily model such protocols.
- 
-Figure~\ref{fig:abp} presents a simplified model of the sender from 
+Figure~\ref{fig:abp} presents an MMT model of the sender from 
 the alternating-bit protocol, adapted from \cite[Figure 3.15]{KR13}.
 \begin{figure}[h]
 \centering
 \vspace{-2 em}
-\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.5cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
   \node[initial, state] (1) {$q_0$};
   \node[state] (2) [right of=1] {$q_1$};
   \node[state] (3) [below of=2] {$q_2$};
@@ -49,11 +55,11 @@ the alternating-bit protocol, adapted from \cite[Figure 3.15]{KR13}.
     (4) edge [text width=1cm] node {$\mathit{ack1}/\Lambda$ \\ $\mathit{stop}(x)$} (1)
         edge [loop left, text width=1.5cm] node {$\toevent{x}/\mathit{send1}$\\ $x := 3$} (4);
 \end{tikzpicture}
-\caption{Mealy machine with a timer for alternating-bit protocol sender}
+\caption{MMT model for alternating-bit protocol sender}
 \label{fig:abp}
 \end{figure}
-In the diagram we write $x :=3$ to denote that a transition (re)starts a timer $x$ with value $3$,
-and we write $\mathit{stop}(x)$ if s transition stops timer $x$.
+In the diagram we write $x :=3$ to denote that a transition starts a timer $x$ with value $3$,
+and we write $\mathit{stop}(x)$ if a transition stops timer $x$.
 For readability we have omitted trivial self-loops.
 \iflong
 $\Lambda$ denotes the absence of an observable output. 
@@ -70,18 +76,26 @@ with the roles of $0$ and $1$ swapped.
 \fi
 
 The remainder of this article is structured as follows.
-In Section 2, we present the formal definition of MMTs and their timed semantics.
-Our timed semantics records at which (real) times inputs and outputs may occur, but we cannot observe whether some timer is started
-in response to an input. Since we assume that a timeout immediately triggers an observable output, we may observe
-(indirectly) the occurrence of a timeout, but we cannot observe which timer times out.
-In Section 3, we present a surprising result, namely that under certain assumptions the timed semantics is equivalent to an untimed
-semantics in which we can infer, for each timeout event, which previous event caused this timeout.
-Intuitively, causality of timeouts can be inferred since a slight change in the timing of an input event leads to a corresponding slight change in
-the timing of any timeouts that it induces.
-Section 4, we use some basic concepts from the theory of timed automata (zones and DBMs) to show how we can compute the set of timers that may
-timeout following some untimed run.
-Section 5 presents our learning algorithm for MMTs. The equivalence of the timed and the untimed semantics allows us to prove
-a Myhill-Nerode theorem for MMTs, which provides the basis for our learning algorithm. Our algorithm uses a learning algorithm for
-(untimed) Mealy machines as a subroutine.
+In Section 2, we present the definition of MMTs and their timed semantics.
+Our timed semantics is based on observations that record the timing of inputs and outputs. 
+Since we assume that each timeout immediately triggers an observable output, we may observe
+the occurrence of a timeout indirectly. In general, however, we cannot observe which timer times out.
+In Section 3, we present a surprising result, namely that under certain mild restrictions the timed semantics
+is the same as an untimed semantics in which behaviors reveal when and how timers are set and when they expire.
+Intuitively, causality of timeouts can be inferred since a slight change in the timing of an input event leads to a corresponding slight change in the timing of any timeouts that it induces.
+Section 4, we use some basic timed automata theory (zones and DBMs) to compute the set of timers that may expire  following some untimed run.
+Section 5 presents our learning algorithm for MMTs. 
+Due to the equivalence of the timed and the untimed semantics, we only need a learning algorithm for untimed behaviors.
+In fact, a Myhill-Nerode theorem for untimed behaviors allows us to reduce learning MMTs
+to the learning of (untimed) Mealy machines, meaning that we can use existing tools (such as LearnLib) and add an adapter layer.
+The main technical problem is to infer when timers are set, and whether timers that have been previously set may expire
+in the future.
+In theory, this is a very hard problem, since a timer may only expire after some long, specific sequence of inputs.
+In applications such ``combination lock'' scenarios do not arise: typically, if we just wait and provide no inputs at all,
+all the timers that have been set will expire one after the other.
+For this reason, our algorithm assumes a \emph{lookahead oracle} which, for any sequence of inputs $u$ and for any specific input
+$i$ in this sequence, tells us whether $i$ sets a timer that may still expire after $u$.
+With the strong - but in our view realistic - assumption of a lookeahead oracle, our learning algorithm can learn MMTs
+using a polynomial number of queries.
 Section 6 contains some concluding remarks and lists topics for future research.
 

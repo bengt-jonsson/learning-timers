@@ -5,7 +5,7 @@ We assume an infinite set $X = \{ x_1, x_2, x_3,\ldots \}$ of {\em timers}.
 Let $\toevents$ be the set of {\em timeout events} of the form
 $\toevent{x}$ for $x \in X$.
 For a set $I$, let $\extinputs$ be $I \cup \toevents$.
-
+%
 We write $A \hookrightarrow B$ for the set of partial functions from $A$ to $B$.
 With $f \lceil A$ we denote the restriction of function $f$ to $\domof{f} \cap A$.
 %For arbitrary functions $f$ and $g$, $f [g]$ is the function with domain $\domof{f}$ that behaves like $f$
@@ -19,14 +19,11 @@ A \emph{Mealy machine with timers (MMT)} is a tuple
 $\M = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$, where
 \begin{itemize}
 \item
-$I$ is a finite set of input events,
-\item
-$O$ is a finite set of output events, 
-%containing a special default output $\Lambda$,
+$I$ and $O$ are finite set of input events and output events, respectively,
 \item
 $Q$ is a finite set of states,
-\item
-$q_0 \in Q$ is the initial state,
+with
+$q_0 \in Q$ the initial state,
 \item
 $\vars: Q \rightarrow \finitesubsets{X}$, with $\varsof{q_0} = \emptyset$,
 \item
@@ -47,8 +44,8 @@ for $q \in Q$ and $i \in \extinputs$,  $\delta(q,i)$, $\lambda(q,i)$ and $\pi(q,
 $i \in I$ or $i=\toevent{x}$, for some $x \in\varsof{q}$.
 We write $q \xrightarrow{i/o,\rho} q'$ if $\delta(q,i) = q'$, $\lambda(q,i)= o$ and $\remap(q,i) = \rho$.
 \end{definition}
-The update function $\remap$ determines how timers are affected when an event $i$ occurs in state $q$.
-Basically, there are four things that may happen.
+Update function $\remap$ determines how timers are affected when an event occurs.
+Basically, four things may happen.
 %\marginpar{Add Venn diagram to illustrate situation?}
 Let $q \in Q$, $i \in \extinputs$, $\delta(q,i)=q'$ and $\remap(q,i)=\rho$.
 \begin{enumerate}
@@ -61,7 +58,7 @@ If $x \in \varsof{q} \cap \domof{\rho}$ then $i$ \emph{restarts} timer $x$ with 
 \item
 Finally, if $x \in \varsof{q'} \setminus \domof{\rho}$ then timer $x$ is \emph{unaffected} by $i$.
 \end{enumerate}
-Hence, when timer $x$ expires (i.e., event $\toevent{x}$ occurs) it is either stopped or restarted.
+Note that when timer $x$ expires it is either stopped or restarted.
 
 \paragraph{Semantics.}
 The semantics of MMT $\M = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$ is defined via an infinite state transition system that describes all possible
@@ -74,7 +71,7 @@ The \emph{initial configuration} is the pair $(q_0, \tvals_0)$, where $\tvals_0$
 Valuations and configurations can be modified by the occurrence of discrete events (inputs or timeouts) and by
 the occurrence of delays.
 If $\tvals$ is a valuation in which all timers
-have a value of at least $d$, then $d$ units of time may pass. As a result this delay the value of all the timers is decremented by $d$.
+have a value of at least $d$, then $d$ units of time may pass. As a result of this delay the value of all the timers is decremented by $d$.
 Formally, for $\tvals, \tvals'$ valuations and delay $d \in \delays$, we define a delay transition relation by
 \begin{eqnarray*}
 \tvals \xrightarrow{d} \tvals' & \Leftrightarrow & [\domof{\tvals} = \domof{\tvals'} \wedge \forall x \in\domof{\tvals} : \tvals'(x) = \tvals(x) - d ].
@@ -251,7 +248,7 @@ when selecting the timing of inputs.
 \end{figure}
 Our learning algorithm applies to MMTs in which at most one timer is (re)started on each transition. Such MMTs do not
 exhibit uncontrollable nondeterminism. The algorithm chooses the timing of the input events in such a way that no
-nondeterministic behavior may arise.
+nondeterministic behavior can arise.
 
 \subsection{A product construction}
 An \emph{untimed behavior} over inputs $I$ and outputs $O$ is a sequence 
@@ -540,7 +537,7 @@ We will prove that the timed semantics and the untimed semantics coincide for ti
 \paragraph{Wiggling.}
 Often it is possible to slightly change the timing of events in a timed behavior, 
 while preserving the associated untimed behavior.
-Consider, for instance, if a timed behavior 
+Consider, for instance, a timed behavior 
 \[
 \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \cdots
 \xrightarrow{d_j} \tvals'_{j-1} \xrightarrow{i_j/o_j, \rho_j} \tvals_j  \xrightarrow{d_{j+1}} \cdots
@@ -676,12 +673,14 @@ Once we have eliminated the bottom elements we can work our way upwards in the p
 forward one by one until no more races remain.
 \end{proof}
 
-\marginpar{Races are sort of a limit case. I would like to state a corollary here that the set of timed behaviors that contain races have ``measure'' $0$. }
+%\marginpar{Races are sort of a limit case. I would like to state a corollary here that the set of timed behaviors that contain races have ``measure'' $0$. }
 
 In a timed behavior, there is always an integer amount of time between events from the same block.
 This means that, if we consider the absolute time at which events occur, the fractional part of the absolute times
 of occurrence is the same for all events in a block.
-We call a timed behavior without races \emph{transparent} if the fractional part of the absolute times of any pair of events from different blocks is different.
+We call a timed behavior \emph{transparent} if the fractional part of the absolute times of any pair of events from different blocks is different. Note that a transparent timed behavior contains no races.
+We call a timed word $w$ \emph{transparent} if there exists a transparent timed behavior $\sigma$ with 
+$w = \timedword(\sigma)$.
 
 \begin{lemma}
 \label{lemma: transparent timed behavior}
@@ -711,17 +710,17 @@ for all $j$, $c(j) < j$ (a timeout is triggered by an earlier event),
 for all $j$, $\sum_{l=j+1}^{c(j)} d_l$ is an integer (timers expire after an integer delay).
 \end{enumerate}
 It is easy to see that a timed word has a causality map iff $w$ is a timed word of an MMT in which at most one timer
-is started on each transition. In general, a timed word may have more than one causality map. However, we have the following
+is started on each transition. In general, a timed word may have more than one causality map.
+ However, we have the following
 lemma.
 
 \begin{lemma}
 \label{lemma unique causality map}
-Suppose $\sigma$ is a transparent timed behavior and $w = \timedword(\sigma)$.
-Then $w$ has a unique causality map.
+A transparent timed word has a unique causality map.
 \end{lemma}
 
 Each timed word of MMT $\M$ with a unique causality map has a unique timed run that corresponds to it.
-The causality map tells us exactly which timers time out during the trace, so we have complete information
+The causality map tells us which timers time out during the trace, so we have complete information
 about the sequence of events that occurs. A timed run of $\M$ is fully determined
 by the sequence of time delays and events that occurs.
 
@@ -731,7 +730,13 @@ Suppose $w$ is a timed word of MMT $\M$ with a unique causality map.
 Then there is a unique timed run $\alpha$ of $\M$ such that $w = \timedword(\alpha)$.
 \end{lemma}
 
-We are now prepared to prove the first main result of this paper:
+We are now prepared to 
+\iflong
+prove
+\else
+state
+\fi
+the first main result of this paper:
 
 \begin{theorem}
 \label{timedimpliesuntimed}
@@ -740,6 +745,7 @@ $\M \approx_{\mathit{timed}} \N$
 implies
 $\M \approx_{\mathit{untimed}} \N$.
 \end{theorem}
+\iflong
 \begin{proof}
 \marginpar{Proof needs doing}
 Suppose that $\M \approx_{\mathit{timed}} \N$.
@@ -771,6 +777,7 @@ induction hypothesis, there exists an isomorphism $f = f_0 ,\ldots, f_k$ and a f
 \end{eqnarray*}
 of $\N$ such that $\delta' = f(\delta)$.
 \end{proof}
+\fi
 
 \section{Reachability analysis}
 For any nonempty sequence $\sigma$, $\Head{\sigma}$ denotes the first element of $\sigma$, $\Tail{\sigma}$ denotes the sequence obtained by removing the first element from $\sigma$, and $\Last{\sigma}$ denotes the last element of $\sigma$.
@@ -781,7 +788,7 @@ Behavior $\beta$ is a \emph{prefix} of untimed behavior $\gamma$ if there exists
 It is not difficult to translate an MMTs to a timed automaton \cite{AD94,BengtssonY03} that accepts the same timed words.
 Through such a translation, verification and analysis tools for timed automata, such as Uppaal \cite{Uppaal4.0}
 become available for MMTs.
-MMTs are strictly less expressive than timed automata. MMTs, for instance, do not contain time deadlocks or zeno loops that
+MMTs are less expressive than timed automata. MMTs, for instance, do not contain time deadlocks or zeno loops that
 may prevent time from progressing.
 
 MMTs have infinitely (in fact even uncountably) many configurations and it is thus necessary to use symbolic representations
@@ -812,7 +819,7 @@ Suppose $\beta$ is an untimed behavior. Then $\beta$ is feasible iff $\Post_{\be
 Straightforward by induction on the length of $\beta$.
 \end{proof}
 
-The next four lemma's will be used in the following subsection.
+The next technical lemma's are needed further on:
 
 \begin{lemma}
 \label{lemma: feasibility concatenation}
@@ -824,7 +831,7 @@ Then $\beta \cdot \gamma$ is feasible iff $\beta' \cdot \gamma$ is feasible.
 
 \begin{lemma}
 \label{lemma finitely many zones}
-Let $\M$ be an MMT. Then the set
+The set
 $\{ \Post_{\beta} \mid \beta \mbox{ is a feasible untimed behavior of } \M \}$ is finite.
 \end{lemma}
 \begin{proof}
@@ -848,7 +855,22 @@ with $Y = \Last{\beta}$.
 Then $x$ is expirable after $\beta$ iff $\beta \xrightarrow{\toevent{x}/o, \rho} Y'$ is feasible.
 \end{lemma}
 
+\begin{lemma}
+\label{not untimed}
+Suppose $\M$ and $\N$ are MMTs with $\M \not\approx_{\mathit{untimed}} \N$.
+Then there exists a feasible untimed behavior $\beta$ of $\M$ that is not isomorphic to any feasible untimed
+behavior of $\N$.
+\end{lemma}
+
+\begin{lemma}
+\label{not timed}
+Suppose $\M$ and $\N$ are MMTs with $\M \not\approx_{\mathit{timed}} \N$.
+Then there exists a transparent timed word $w$ of $\M$ that is not a timed word of $\N$.
+\end{lemma}
+
+\iflong
 \marginpar{What is the complexity of deciding eg timed equivalence or reachability of MMTs?}
+\fi
 
 \section{Learning algorithm}  
 In 1987, Angluin \cite{Ang87} published a seminal paper in which she showed that finite automata can be learned using so-called \emph{membership} and \emph{equivalence queries}.
@@ -872,18 +894,21 @@ and how an untimed learner for MMTs can be implemented using a Mealy machine lea
 %as implemented for instance in LearnLib \cite{RSBM09}, as part of an algorithm to learn MMTs. 
 
 \subsection{A timed learner}
-%Let $\M = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$ be an MMT.
-A \emph{timed input word} over $I$ is a sequence
-$u = d_1 ~ i_1 ~ d_2 ~ i_2 \cdots d_k ~ i_k ~ d_{k+1}$, where $d_j \in \delays$ and $i_j \in I$, for all $1 \leq j \leq k$,
+In our first learning setup, the teacher knows an MMT $\M$.
+Initially, the timed learner only knows the set $I$ of input events of $\M$.
+The task of a timed learner is to learn $\M$ through three types of queries: membership queries, equivalence queries,
+and lookahead queries.
+
+\paragraph{Membership queries.}
+A \emph{timed input word} is a sequence
+$u = d_1 ~ i_1 \cdots d_k ~ i_k ~ d_{k+1}$, where $d_j \in \delays$ and $i_j \in I$, for all $1 \leq j \leq k$,
 and $d_{k+1} \in \realsplus$.
 A timed input word describes an experiment that may be carried out on an MMT. We provide a series of inputs at specific times, and record all the outputs that occur in response to these inputs up to and including the finishing time of the experiment, that is $\sum_{j=1}^{k+1} d_j$.
 Since we want to rule out race conditions, we require that the fractional part of the absolute times of occurrence of
 all the inputs are different.
-Let $\M$ be an MMT with inputs $I$ and outputs $O$, and
-let $w$ be a timed word of $\M$ in which the fractional part of the absolute times of occurrence of
-all the inputs are different.
+Let $w$ be a transparent timed word of $\M$.
 We can associate a unique timed input word $\timedinputword(w)$ to $w$ by 
-removing all the outputs events in $O$, 
+removing all the outputs events, 
 removing all occurrences of $\mathit{to}$, 
 replacing consecutive numbers by their sum, 
 and possibly placing $0$ at the end of the sequence.
@@ -898,21 +923,17 @@ Thus the fractional part of the times of the inputs are different.
 If $u$ and $u'$ are timed input words, then we write $u \propto u'$ if $u$ and $u'$ are equal, except that the final delay of $u$ is less or equal than the final delay of $u'$. Observe that,
 for any timed input word $u$ over $I$, 
 there exists a unique maximal timed word $w$ of $\M$ such that $\timedinputword(w) \propto u$.
-
-In our first learning setup, the teacher knows an MMT $\M$.
-Initially, the timed learner only knows the set $I$ of input events of $\M$.
-The task of a timed learner is to learn $\M$ through two types of queries:
-\begin{itemize}
-\item
 With a \emph{membership query}, the learner asks what the output is in response to a timed input word $u$ over $I$. 
 The teacher answers with the unique maximal timed word $w$ of $\M$ such that $\timedinputword(w) \propto u$.
-\item
-With an \emph{equivalence query (EQ)}, the learner asks if a hypothesized MMT $\CH$ is correct, that is, 
+
+\paragraph{Equivalence queries.}
+With an \emph{equivalence query}, the learner asks if a hypothesized MMT $\CH$ is correct, that is, 
 whether $\CH \approx_{\mathit{timed}} \M$.
 The teacher answers \emph{yes} if this is the case. Otherwise she answers \emph{no} and supplies a
-\emph{counterexample}: a timed word $w$ that distinguishes $\CH$ and $\M$
-(with the fractional part of the absolute times of occurrence of all the inputs in $w$ different).
-\end{itemize}
+\emph{counterexample}: a transparend timed word $w$ of $\M$ that is not a timed word of $\CH$.
+(By Lemma~\ref{not timed} such a timed word exists.)
+
+\paragraph{Lookahead queries}
 
 \subsection{An untimed learner}
 Given the equivalence of the timed and the untimed semantics of MMTs, it is natural to also 
@@ -991,7 +1012,7 @@ The teacher answers \emph{yes} if this is the case. Otherwise she answers \emph{
 The $L^{\ast}$ algorithm of Angluin \cite{Ang87} is able to learn Mealy machine $\M$ by asking a polynomial
 number of membership and equivalence queries (polynomial in the size of the corresponding canonical Mealy machine).
 Efficient implementations of $L^{\ast}$ and other algorithms for learning Mealy machines are available,
-for instance in the tool \learnlib\ \cite{RSBM09,MertenSHM11}.
+for instance in the tool \learnlib\ \cite{Nie03,RSBM09,MertenSHM11}.
 
 \subsection{Algorithm for an untimed learner}
 The number of timers that may occur in canonical untimed behaviors grows unboundedly with the length of these behavior,
@@ -1165,18 +1186,19 @@ Once we have implemented the membership queries for an untimed teacher, implemen
 Suppose that the untimed teacher receives an equivalence query $\CH$.
 Then we just forward this query to the timed teacher.
 If the timed teacher answers \emph{yes} then $\CH \approx_{\mathit{timed}} \M$.
-In this case, by Theorem~\ref{timedimpliesuntimed}, we know that $\CH \approx_{\mathit{untimed}} \M$,
+In this case, by Theorem~\ref{timedimpliesuntimed}, $\CH \approx_{\mathit{untimed}} \M$,
 and thus also the untimed teacher can return a result \emph{yes}.
 If the timed teacher answers \emph{no} and returns a counterexample $w$,
-then timed word $w$ distinguishes $\CH$ and $\M$.
+then $w$ is a transparent timed word of $\M$ but not of $\CH$.
 In this case, by Theorem~\ref{untimedimpliestimed}, we may conclude that
 $\CH \not\approx_{\mathit{untimed}} \M$, and also the untimed teacher can return a result \emph{no}.
-Since $w$ is a timed word of either $\CH$ or $\M$, it follows by Lemma~\ref{lemma unique causality map}
+Since $w$ is a transparent timed word of $\M$, it follows by Lemma~\ref{lemma unique causality map}
 that $w$ has a unique causality map $c$.
-This allows us to transform $w$ into an untimed input sequence $u$: we remove all the delays and output events, and if the $j$-th
+This allows us to transform $w$ into an untimed input sequence $u$: 
+we remove all the delays and output events, and if the $j$-th
 input in $w$ equals $\mathit{to}$, we replace it by $\toevent{x_{c(j)}}$.
-We perform an untimed membership query for $u$, and let the untimed teacher return the resulting untimed behavior $\beta$ as counterexample.
-\marginpar{Here is still some minor loose ends What if the untimed membership query returns undefined? Also: if $\CH$ and $\M$ are not timed equivalent, how do we know there is a counterexample in which the fractional parts are different?}
+We perform an untimed membership query for $u$, and let the untimed teacher return the resulting 
+untimed behavior $\beta$ as counterexample.
 
 \subsection{The single timer case}
 
