@@ -121,14 +121,15 @@ i_j & \mbox{if } i_j \in I,\\
 \end{array} \right.
 \end{eqnarray*}
 The idea is that timeouts cannot be observed directly. 
-However, when we observe an output that is not directly triggered by an input, we may
-conclude that a timeout occurred. We do not know which timer timed out.
+However, when we observe an output that is not triggered by an input, we may
+conclude that a timeout occurred. In general, we do not know which timer timed out.
 
 We say $w$ is a timed word of $\M$ if $\M$ has a timed run $\alpha$ with $w = \timedword(\alpha)$.
 %
 Two MMTs $\M$ and $\N$ with the same sets of inputs are \emph{timed equivalent}, denoted $\M \approx_{\mathit{timed}} \N$, iff 
 they have the same sets of timed words.
 
+\iflong
 \paragraph{Remark.}
 In our semantics we assume that discrete transitions occur instantaneously and take no time. In applications, however, i/o interactions
 often take a significant amount of time. In \cite{SHV16}, for instance, a case study of an interventional X-ray system is
@@ -142,7 +143,6 @@ Note that $\Lambda$ corresponds to the \emph{absence} of an observable output. F
 an input does not trigger an observable output then we just assume that the output event is $\Lambda$. We do not allow
 $\Lambda$ as output event in timeout transitions $\toevent{x}$: since timeout events themselves are not observable, we can ony observe their occurrence indirectly through the observable output that they trigger.
 
-\iflong
 \paragraph{Remark.}
 Note that we assume that in a timed run each discrete transition is preceded by a nonzero delay.
 The idea that multiple consecutive discrete transitions may occur in zero time is a useful abstraction in synchronous
@@ -175,14 +175,14 @@ behavior of the above MMT in which there is a race between the second $i$ event 
 \fi
 
 \paragraph{Nondeterminism.}
-Due to our assumption that we cannot observe the name of the timer in a timeout event, an MMT may exhibit nondeterministic
+Due to our assumption that we cannot observe the identity of a timer in a timeout event, an MMT may exhibit nondeterministic
 behavior: even if we offer exactly the same inputs at exactly the same time, different outputs may occur in different runs. 
 The MMT of Figure~\ref{fig:nondeterminism}, for instance, accepts both the timed words
 $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'$ and $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o''$.
 (For clarity, we omit some self-loop transitions in the state/transition diagram.)
 \begin{figure}[ht]
 \begin{center}
-\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.5cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.5cm,main node/.style={circle,draw,font=\sffamily\large\bfsthe name of the eries}]
   \node[initial, state] (1) {$q_0$};
   \node[state] (2) [below of=1] {$q_1$};
   \node[state] (3) [right of=2] {$q_3$};
@@ -638,9 +638,9 @@ and if $i_1$ occurs just a bit earlier then timer $u$ must expire before timer $
 Note that when timer $x$ expires timer $y$ is stopped.
 \end{example}
 
-The scenario of Figure~\ref{fig:races} is somewhat similar to the well-known Rush Hour puzzle game,
+The scenario of Figure~\ref{fig:races} is similar to the well-known Rush Hour puzzle game,
 in which one has to slide blocking vehicles out of the way to find a path for one specific red car to exit a parking lot.
-The following lemma asserts that we can always solve the puzzle for MMTs: for any timed behavior that contains races,
+The next lemma asserts that we can always solve the puzzle for MMTs: for any timed behavior that contains races,
 an equivalent timed behavior exists without races.
 We may for instance slightly modify the timed behavior of Figure~\ref{fig:races} by scheduling block $\{ 2  \}$
 a bit later and block $\{ 4, 5 \}$ a bit earlier.
@@ -655,6 +655,7 @@ Then all races have been eliminated and we can wiggle block $\{ 1, 3 \}$.
 Let $\sigma$ be any timed behavior.
 Then there exists a timed behavior $\sigma'$ without races such that $\untime(\sigma)=\untime(\sigma')$.
 \end{lemma}
+\iflong
 \begin{proof}
 (Sketch) Let
 \begin{eqnarray*}
@@ -680,6 +681,7 @@ Now consider the bottom elements in this partial order. These blocks do not win 
 Once we have eliminated the bottom elements we can work our way upwards in the partial order and wiggle all blocks
 forward one by one until no more races remain.
 \end{proof}
+\fi
 
 %\marginpar{Races are sort of a limit case. I would like to state a corollary here that the set of timed behaviors that contain races have ``measure'' $0$. }
 
@@ -695,17 +697,17 @@ $w = \timedword(\sigma)$.
 For each feasible untimed behavior $\beta$ there exists
 a transparent timed behavior $\sigma$ such that $\beta = \untime(\sigma)$.
 \end{lemma}
+\iflong
 \begin{proof}
 Let $\beta$ be a feasible untimed behavior.
 Then there exists a timed behavior $\sigma$ such that $\beta = \untime(\sigma)$.
 By Lemma~\ref{race elimination}, we may assume that $\sigma$ contains no races.
 By repeated application of Lemma~\ref{wiggle lemma}, we can wiggle the timing of all the blocks to make $\sigma$ transparent.
 \end{proof}
+\fi
 
 Suppose we observe a timed word
-\begin{eqnarray*}
-w & = &  d_1 ~ i_1 ~ o_1 ~ d_2 ~ i_2 ~ o_2 \cdots d_k ~ i_k ~ o_k.
-\end{eqnarray*}
+$w  =   d_1 ~ i_1 ~ o_1 ~ d_2 ~ i_2 ~ o_2 \cdots d_k ~ i_k ~ o_k$.
 We would like to know, for each timeout event in $w$, by which event this timeout is triggered.
 Let $T = \{ j \mid i_j = \mathit{to} \}$ be the set of indices corresponding to a timeout.
 A \emph{causality map} for $w$ is a function $c: T \rightarrow \{ 1 ,\ldots, k \}$ that satisfies the following conditions:
@@ -1057,16 +1059,16 @@ Myhill-Nerode theorem for MMTs.
 Let $S$ be a set of feasible untimed behaviors over $I$ and $O$. Then $S$ is
 \begin{itemize}
 \item
-\emph{prefix closed}: $\beta \beta' \in S \Longrightarrow \beta \in S$,
+\emph{prefix closed}: $\beta \beta' \in S \Rightarrow \beta \in S$,
 \item
 \emph{behavior deterministic}:
-$\beta \xrightarrow{i/o_1, \rho_1} X_1 \in S \wedge \beta \xrightarrow{i/o_2, \rho_2} X_2 \in S \Longrightarrow o_1 = o_2 \wedge \rho_1 = \rho_2 \wedge X_1 = X_2$,
+$\beta \xrightarrow{i/o_1, \rho_1} X_1 \in S \wedge \beta \xrightarrow{i/o_2, \rho_2} X_2 \in S \Rightarrow o_1 = o_2 \wedge \rho_1 = \rho_2 \wedge X_1 = X_2$,
 \item
 \emph{input complete}:
-$\beta \in S \wedge i \in I \Longrightarrow \exists o, \rho, Y : \beta \xrightarrow{i/o, \rho} Y \in S$,
+$\beta \in S \wedge i \in I \Rightarrow \exists o, \rho, Y : \beta \xrightarrow{i/o, \rho} Y \in S$,
 \item
 \emph{timeout complete}:
-$\beta \in S \wedge x \mbox{ expirable after } \beta \Longrightarrow
+$\beta \in S \wedge x \mbox{ expirable after } \beta \Rightarrow
 \exists o, \rho, Y: \beta \xrightarrow{\toevent{x}/o, \rho} Y \in S$.
 \end{itemize}
 Behaviors $\beta, \beta' \in S$ are \emph{equivalent} for $S$, notation $\beta \equiv_S \beta'$, iff 
@@ -1128,8 +1130,14 @@ It is routine to verify that $\M$ is a well-defined MMT whose set of feasible un
 \end{proof}
 \fi
 
-The MMT $\M$ constructed in the proof of Theorem~\ref{Nerode theorem} has a special property: an untimed
-behavior of $\M$ is feasible iff it does not contain output event $\perp$. Call an MMT that satisfies this property
+The canonical MMT $\M$ constructed in the proof of Theorem~\ref{Nerode theorem} has a special property: an untimed
+behavior of $\M$ is feasible iff it does not contain
+\iflong
+the
+\else
+a
+\fi
+special output event $\perp$. Call an MMT that satisfies this property
 \emph{transparent}. 
 We say that a timer $x$ \emph{may expire} in a state $q$ if $q$ has an outgoing $\toevent{x}$ transition with
 an output different from $\perp$.
