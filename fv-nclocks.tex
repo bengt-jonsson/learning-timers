@@ -738,13 +738,7 @@ Suppose $w$ is a timed word of MMT $\M$ with a unique causality map.
 Then there is a unique timed run $\alpha$ of $\M$ such that $w = \timedword(\alpha)$.
 \end{lemma}
 
-We are now prepared to 
-\iflong
-prove
-\else
-state
-\fi
-the first main result of this paper:
+We are now prepared to prove our first main result:
 
 \begin{theorem}
 \label{timedimpliesuntimed}
@@ -786,6 +780,9 @@ induction hypothesis, there exists an isomorphism $f = f_0 ,\ldots, f_k$ and a f
 of $\N$ such that $\delta' = f(\delta)$.
 \end{proof}
 \fi
+
+In the remainder of this article, we only consider timer live MMTs in which at most one timer is started on each transition,
+which means we may assume equivalence of the timed and the untimed semantics.
 
 \section{Reachability analysis}
 For any nonempty sequence $\sigma$, $\Head{\sigma}$ denotes the first element of $\sigma$, $\Tail{\sigma}$ denotes the sequence obtained by removing the first element from $\sigma$, and $\Last{\sigma}$ denotes the last element of $\sigma$.
