@@ -17,9 +17,9 @@ setting we may need more than one experiment to figure out which event causes a 
 that slight changes in the timing of certain inputs lead to corresponding changes in the timing of certain timeouts.
 
 A third important challenge is to implement our algorithm and to apply it to practical case studies. In particular,
-it is interesting to see how easy it is to implement lookahead queries. For MMTs with a single timer this is trivial 
+it is interesting to see how we can implement lookahead queries. For MMTs with a single timer this is trivial 
 if we assume an upper bound $t$ on the value to which timer are set (just  wait for $t+1$ time units).
-But are lookahead queries also easy to implement for practical applications with multiple timers?
+But we still do not know yet whether it is always easy to implement lookahead queries for applications with multiple timers.
 
 Just like the theory of timed automata \cite{AD94} paved the way to extend untimed model checking tools to a timed
 setting, we hope that our work on MMTs will make it possible to lift untimed model learning tools to a timed setting.
