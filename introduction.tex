@@ -3,6 +3,11 @@
 
 Active automata learning aims to construct black-box state diagram models of software and hardware systems
 by providing inputs and observing outputs.
+In 1987, Angluin \cite{Ang87} published a seminal paper in which she showed that finite automata can be learned using so-called \emph{membership} and \emph{equivalence queries}.
+Many (if not most) efficient active learning algorithms used
+today are designed following Angluin's approach of a \emph{minimally adequate teacher (MAT)}.
+In this approach, learning is viewed as a game in which a learner has to infer the behavior of
+an unknown state diagram by asking queries to a teacher.
 Following pioneering work by \cite{Ang87,PeVaYa02,Hagerer2002,RaMeSM2009,IsHoSt2015},
 active automata learning is emerging as an effective bug finding technique.
 Using active automata learning, for instance, standard violations have been found in many implementations of

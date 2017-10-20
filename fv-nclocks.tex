@@ -817,15 +817,17 @@ For any untimed behavior $\beta$, the set $\Post_{\beta}$ can be symbolically re
  \cite{Di89},  as the transition relations $\xrightarrow{d}$ and $\xrightarrow{i_1/o_1, \rho_1}$ can be easily decomposed 
 into elementary operations that have been defined
 on DBMs such as reset, conjunction, and delay successors \cite{BengtssonY03}.
-
-Since emptiness of DBMs is also decidable, the following lemma allows us to compute whether or not an untimed behavior is feasible.
+%
+Since emptiness of DBMs is decidable, the following lemma allows us to compute whether or not an untimed behavior is feasible.
 
 \begin{lemma}
 Suppose $\beta$ is an untimed behavior. Then $\beta$ is feasible iff $\Post_{\beta} \neq \emptyset$.
 \end{lemma}
+\iflong
 \begin{proof}
 Straightforward by induction on the length of $\beta$.
 \end{proof}
+\fi
 
 The next technical lemma's are needed further on:
 
@@ -842,6 +844,7 @@ Then $\beta \cdot \gamma$ is feasible iff $\beta' \cdot \gamma$ is feasible.
 The set
 $\{ \Post_{\beta} \mid \beta \mbox{ is a feasible untimed behavior of } \M \}$ is finite.
 \end{lemma}
+\iflong
 \begin{proof}
 All the sets $\Post_{\beta}$ can be represented using DBMs. Since an MMT only has a finite number of timers that can only be set to a finite number of integer values. Since in an MMT the values of timers can only decrease, only finitely many numbers may
 appear in the DBM's that represent the sets $\Post_{\beta}$. Thus all the sets $\Post_{\beta}$ can be represented by a finite
@@ -853,7 +856,7 @@ Suppose $\beta$ is a feasible untimed behavior and $Y \xrightarrow{i/o, \rho} Y'
 with $Y = \Last{\beta}$ and $i \in I$.
 Then $\beta \xrightarrow{i/o, \rho} Y'$ is a feasible untimed behavior.
 \end{lemma}
-
+\fi
 Let $\beta$ be a feasible untimed behavior and let $x \in X$ be a timer. Then we say that $x$ is \emph{expirable} after $\beta$
 if there exists a valuation in $\Post_{\beta}$ in which $x$ is minimal.
 
@@ -863,6 +866,7 @@ with $Y = \Last{\beta}$.
 Then $x$ is expirable after $\beta$ iff $\beta \xrightarrow{\toevent{x}/o, \rho} Y'$ is feasible.
 \end{lemma}
 
+\iflong
 \begin{lemma}
 \label{not untimed}
 Suppose $\M$ and $\N$ are MMTs with $\M \not\approx_{\mathit{untimed}} \N$.
@@ -870,41 +874,73 @@ Then there exists a feasible untimed behavior $\beta$ of $\M$ that is not isomor
 behavior of $\N$.
 \end{lemma}
 
+
 \begin{lemma}
 \label{not timed}
 Suppose $\M$ and $\N$ are MMTs with $\M \not\approx_{\mathit{timed}} \N$.
 Then there exists a transparent timed word $w$ of $\M$ that is not a timed word of $\N$.
 \end{lemma}
 
-\iflong
 \marginpar{What is the complexity of deciding eg timed equivalence or reachability of MMTs?}
 \fi
 
 \section{Learning algorithm}  
-In 1987, Angluin \cite{Ang87} published a seminal paper in which she showed that finite automata can be learned using so-called \emph{membership} and \emph{equivalence queries}.
-Many (if not most) efficient active learning algorithms used
-today are designed following Angluin's approach of a \emph{minimally adequate teacher (MAT)}.
-In this apprioach, learning is viewed as a game in which a learner has to infer the behavior of
-an unknown state diagram by asking queries to a teacher.
-
-In this section, we consider three instances of the MAT framework.
-In the first setting, the teacher knows an MMT $\M$. 
-A \emph{timed learner} may perform timed experiments to learn about the
-timed words of $\M$, and pose equivalence queries.
-In the second instance, the teacher also knows an MMT, but now an \emph{untimed learner} performs membership queries
-to learn the untimed behaviors of $\M$, and poses equivalence queries.
-The third instance is the well known setting (see e.g.\ \cite{Nie03,RSBM09}) in which a teacher knows an (untimed) Mealy machine $\A$,
-and a learner tries to learn $\A$ via membership and equivalence queries.
-
-We will show how a timed learner for MMTs can be implemented using an untimed learner for MMTs,
+In this section, we consider three instances of Angluin's MAT framework.
+In the first instance, the teacher knows an MMT $\M$, and an \emph{untimed learner} poses membership queries
+to learn the untimed behaviors of $\M$, and equivalence queries to find out whether an hypothesis is correct.
+In the second instance, the teacher knows an MMT $\M$, but now a 
+\emph{timed learner} performs timed experiments to learn about the
+timed words of $\M$, and poses equivalence queries as well as a new type of \emph{lookahead queries}.
+The third instance is the well known setting (see e.g.\ \cite{Nie03,RSBM09}) 
+in which a teacher knows an (untimed) Mealy machine $\A$,
+and a learner learns $\A$ via membership and equivalence queries.
+%
+We will show how an untimed learner for MMTs can be implemented using an timed teacher for MMTs,
 and how an untimed learner for MMTs can be implemented using a Mealy machine learner.
 %This will allow us to use existing algorithms for learning Mealy machines,
 %as implemented for instance in LearnLib \cite{RSBM09}, as part of an algorithm to learn MMTs. 
 
-\subsection{A timed learner}
+\subsection{An untimed learner}
+Given the equivalence of the timed and the untimed semantics of MMTs, it is natural to also 
+consider an untimed setting, in which a learner tries to construct an MMT based on membership queries for untimed behaviors.
+The teacher, however, does not reveal the names of the timers that occur in untimed behaviors, and brings each behavior into a
+``canonical'' form, so that a learner can only observe untimed behaviors up to isomorphism.
+
+Let us formalize these ideas.
+Suppose $\beta$ be an untimed behavior in which each transition updates at most one timer.
+We say that $\beta$ is in \emph{canonical form} if, for each $j$, the timer that is updated in the $j$-th event
+(if any) is equal to $x_j$.
+For each untimed behavior $\beta$ in which each transition updates at most one timer, there is a unique untimed behavior
+$\beta'$ in canonical form that is isomorphic to $\beta$.
+We write $\can{\beta}$ to denote this $\beta'$.
+
+An \emph{untimed input word} over $I$ is a sequence $u = i_1 \cdots i_k$ over $\extinputs$ such that (1)
+for all indices $j, l$, $i_j = \toevent{x_l}$ implies $l < j$, and (2) each timer occurs at most once in a timeout event.
+The first condition  says that if a timer expires it must have been set in a previous event, and the second condition  expresses that
+each timer may expire at most once.
+Let $\beta$ be an untimed behavior in canonical form.
+We can associate a unique input word $\untimedinputword(\beta)$ to $\beta$ by removing all the output events,
+updates, and timer sets from $\beta$.
+
 In our first learning setup, the teacher knows an MMT $\M$.
-Initially, the timed learner only knows the set $I$ of input events of $\M$.
-The task of a timed learner is to learn $\M$ through three types of queries: membership queries, equivalence queries,
+The learner initially only knows the set $I$ of inputs of $\M$, and may pose
+two types of queries:
+\begin{itemize}
+\item
+With a \emph{membership query}, the learner asks for the response to an untimed input word $u$ over $I$.
+If $\M$ has a feasible untimed behavior $\beta$ with $\untimedinputword(\can{\beta}) = u$ then the teacher answers
+$\can{\beta}$. Otherwise, the answer is $\perp$ (``undefined'').
+\item
+An \emph{equivalence query} $\CH$, where $\CH$ is an MMT with inputs $I$.
+Upon receiving $\CH$, the teacher answers \emph{yes} if $\CH \approx_{\mathit{untimed}} \M$.
+Otherwise it answers \emph{no} and supplies a counterexample, that is, a behavior $\beta$ in canonical form that
+is isomorphic to a feasible behavior of $\M$ but not to a feasible behavior of $\CH$.
+\end{itemize}
+
+\subsection{A timed learner}
+In our second learning setup, the teacher also knows an MMT $\M$.
+Initially, the timed learner only knows the set $I$ of input of $\M$.
+The task of the timed learner is to learn $\M$ through three types of queries: membership queries, equivalence queries,
 and lookahead queries.
 
 \paragraph{Membership queries.}
@@ -938,51 +974,32 @@ The teacher answers with the unique maximal timed word $w$ of $\M$ such that $\t
 With an \emph{equivalence query}, the learner asks if a hypothesized MMT $\CH$ is correct, that is, 
 whether $\CH \approx_{\mathit{timed}} \M$.
 The teacher answers \emph{yes} if this is the case. Otherwise she answers \emph{no} and supplies a
-\emph{counterexample}: a transparend timed word $w$ of $\M$ that is not a timed word of $\CH$.
-(By Lemma~\ref{not timed} such a timed word exists.)
+\emph{counterexample}: a transparent timed word $w$ of $\M$ that is not a timed word of $\CH$.
+\iflong
+(By Lemma~\ref{not timed} 
+\else
+(We claim that
+\fi
+such a timed word always exists.)
 
-\paragraph{Lookahead queries}
-
-\subsection{An untimed learner}
-Given the equivalence of the timed and the untimed semantics of MMTs, it is natural to also 
-consider an untimed setting, in which a learner tries to construct an MMT based on membership queries for untimed behaviors.
-The teacher, however, does not reveal the names of the timers that occur in untimed behaviors, and brings each behavior into a
-``canonical'' form, so that a learner can only observe untimed behaviors up to isomorphism.
-
-Let us formalize these ideas.
-Suppose $\beta$ be an untimed behavior in which each transition updates at most one timer.
-We say that $\beta$ is in \emph{canonical form} if, for all $j$, the timer that is updated in the $j$-th event
-(if any) is equal to $x_j$.
-For each untimed behavior $\beta$ in which each transition updates at most one timer, there is a unique untimed behavior
-$\beta'$ in canonical form such that $\beta$ and $\beta'$ are isomorphic.
-We write $\can{\beta}$ to denote this $\beta'$.
-
-An \emph{untimed input word} over $I$ is a sequence $u = i_1 \cdots i_k$ over $\extinputs$ such that (1)
-for all indices $j, l$, $i_j = \toevent{x_l}$ implies $l < j$, and (2) each timer occurs at most once in a timeout event.
-The first condition  says that if a timer times out it must have been set in a previous event, and the second condition  expresses that
-each timer may timeout at most once.
-Let $\beta$ be an untimed behavior in canonical form.
-We can associate a unique input word $\untimedinputword(\beta)$ to $\beta$ by removing all the output events,
-updates, and timer sets from $\beta$.
-
-In our second setup, the teacher knows an MMT $\M$,
-and the learner initially only knows the set $I$ of input events of $\M$.
-The learner can ask two types of queries to the teacher:
-\begin{itemize}
-\item
-With a \emph{membership query}, the learner asks for the response to an untimed input word $u$ over $I$.
-If $\M$ has a feasible untimed behavior $\beta$ with $\untimedinputword(\can{\beta}) = u$ then the teacher answers
-$\can{\beta}$. Otherwise, the answer is $\perp$ (``undefined'').
-\item
-An \emph{equivalence query} $\CH$, where $\CH$ is an MMT with inputs $I$.
-Upon receiving $\CH$, the teacher answers \emph{yes} if $\CH \approx_{\mathit{untimed}} \M$.
-Otherwise it answers \emph{no} and supplies a counterexample, that is, a feasible behavior $\beta$ in canonical form that
-is isomorphic to a feasible behavior of $\M$ but not of $\CH$, or vice versa.
-\end{itemize}
+\paragraph{Lookahead queries.}
+A key question that a learner needs to answer is which timers are active after some untimed input word $u$.
+Since we assume that there are no ghost variables, a timer that is active after $u$ can expire eventually,
+following some further inputs.
+In general, however, it may be very difficult to find an input sequence that demonstrates that a timer is active: we may have combination lock scenarios
+in which a timer only expires after some very specific, long sequence of inputs.
+The search for such a sequence may require an exponential number of membership queries.
+However, if when we look at the actual use of timers in protocols, combination lock scenarios just do not occur:
+timeouts are not triggered by the occurrence of complicated sequences of inputs, 
+but rather by the \emph{absence} of certain inputs.
+Simply waiting and providing no inputs at all is usually enough to demonstrate that some timer has been set.
+We encapsulate the search for a proof that a timer is active into a \emph{lookahead oracle}:
+by posing a \emph{lookahead query}, a timed learner asks if, for some untimed input sequence $u = i_1 \cdots i_k$ and some
+index $j \leq k$, timer $x_j$ is active after $u$ in $\M$.
+The teacher/oracle answers \emph{yes} if this is the case, and \emph{no} otherwise.
 
 \subsection{A Mealy machine learner}
-We want to construct an algorithm for an untimed learner, by using existing algorithms for learning Mealy machines
-as a basis.
+We will present an algorithm for an untimed learner, by using existing algorithms for learning Mealy machines as a basis.
 
 A \emph{Mealy machine} is a tuple $\A = (I, O, Q, q_0, \delta, \lambda)$, where
 $I$ is a finite set of inputs,
@@ -1017,8 +1034,8 @@ inputs $I$ is correct, that is, whether $\CH$ and $\M$ are equivalent.
 The teacher answers \emph{yes} if this is the case. Otherwise she answers \emph{no} and supplies a
 \emph{counterexample} $\sigma \in I^{\ast}$ that distinguishes $\CH$ and $\M$.
 \end{itemize}
-The $L^{\ast}$ algorithm of Angluin \cite{Ang87} is able to learn Mealy machine $\M$ by asking a polynomial
-number of membership and equivalence queries (polynomial in the size of the corresponding canonical Mealy machine).
+The $L^{\ast}$ algorithm of Angluin \cite{Ang87} is able to learn Mealy machine $\M$ by asking a
+number of membership and equivalence queries that polynomial in the size of the corresponding canonical Mealy machine.
 Efficient implementations of $L^{\ast}$ and other algorithms for learning Mealy machines are available,
 for instance in the tool \learnlib\ \cite{Nie03,RSBM09,MertenSHM11}.
 
@@ -1069,6 +1086,7 @@ start with the empty set of timers, the set of timers that occur in $S$ is finit
 $S$ is prefix closed, behavior deterministic, input complete, timeout complete,
 and $\equiv_S$ has only finitely many equivalence classes (finite index).
 \end{theorem}
+\iflong
 \begin{proof}
 
 ``$\Rightarrow$'' Let $\M$ be an MMT and let $S$ be the set of its feasible untimed behaviors.
@@ -1111,6 +1129,7 @@ We define $\delta([\beta],\toevent{x}) = [\beta]$, $\lambda([\beta],\toevent{x})
 \end{itemize}
 It is routine to verify that $\M$ is a well-defined MMT whose set of feasible untimed behaviors equals $S$.
 \end{proof}
+\fi
 
 The MMT $\M$ constructed in the proof of Theorem~\ref{Nerode theorem} has a special property: an untimed
 behavior of $\M$ is feasible iff it does not contain output event $\perp$. Call an MMT that satisfies this property
@@ -1174,20 +1193,6 @@ Let $Y$ be the final set of variables of $\beta$.
 If $i_k = \toevent{x}$ for some timer $x$ that is not expirable after $\beta$ then there exists no feasible behavior
 with untimed input word $u$. In this case, the untimed teacher may return the answer $\perp$.
 Otherwise  Etc etc
-\marginpar{Needs doing}
-
-A key question to answer is which timers from $ \{ x_1 ,\ldots, x_k \}$ are active after $i_k$.
-Since we assume that there are no ghost variables, each timer that is active after $i_k$ can expire eventually, following some input sequence.
-In general, however, it may be very difficult to find an input sequence that demonstrates that some timer is active: we may have combination lock scenarios
-in which a timer only expires after some very specific and long sequence of inputs.
-In fact, only by doing an exhaustive search of all input sequence with a length less than the number of states of $\M$,
-we can prove that a timer can never expire. Such a search requires an exponential number of membership queries.
-However, if when we look at the actual use of timers in network protocols, combination lock scenarios just do not occur:
-in applications timeouts are not triggered by the occurrence of a specific sequence of inputs, but rather by the fact that certain inputs do \emph{not} occur.
-Thus,  simply waiting and providing no inputs at all is usually enough to demonstrate that some timer has been set.
-For this reason, we assume in our learning setup a \emph{lookahead oracle} which, for any untimed input sequence $u = i_1 \cdots i_k$ and any index $j \leq k$,
-tells us if clock $x_j$ is active after $u$ in $\M$.
-
 \marginpar{Needs doing}
 
 Once we have implemented the membership queries for an untimed teacher, implementing equivalence queries is easy.
