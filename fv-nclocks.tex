@@ -578,7 +578,7 @@ Note that the collection of blocks of $\sigma$ partitions the set of indices $\{
 We refer to this partition as $\Pi_{\sigma}$.
 We say that timed behavior $\sigma$ contains a \emph{race} if there is some index $j>0$ and some timer $x$  
 such that $\kappa'_{j-1}(x) = 0$ and $i_j \neq \toevent{x}$.
-The following lemma allows us to shift all the events in a block simultaneously forward or backward by a small amount, 
+The following lemma allows us to shift all events in a block simultaneously forward or backward by a small amount, 
 under the condition that there are no races.
 
 \begin{lemma}[Wiggle lemma]
@@ -603,12 +603,13 @@ d_j - \epsilon & \mbox{if } j-1 \in T \wedge j \not\in T
 \end{array}\right.
 \end{eqnarray*}
 \end{lemma}
-The next example shows that, in the presence of races, Lemma~\ref{wiggle lemma} does not hold. 
-
-\begin{example}
-\label{no wiggling example}
-Consider the following timed behavior with blocks $\{ 1, 3 \}$, $\{ 2 \}$, and $\{ 4, 5 \}$,
-visualized in Figure~\ref{fig:races}:
+In the presence of races, Lemma~\ref{wiggle lemma} does not hold. 
+Consider the following timed behavior with blocks $\{ 1, 3 \}$, $\{ 2 \}$,
+\iflong 
+and $\{ 4, 5 \}$, visualized in Figure~\ref{fig:races}:
+\else
+and $\{ 4, 5 \}$:
+\fi
 \[
 \emptyset \xrightarrow{7} \emptyset \xrightarrow{i_1/o_1, x \mapsto 2} (x=2) \xrightarrow{1} (x=1)
 \xrightarrow{i_2/o_2, y \mapsto 1} (x=y=1) \xrightarrow{1} (x=y=0) 
@@ -622,23 +623,24 @@ visualized in Figure~\ref{fig:races}:
 \[
 \xrightarrow{\toevent{z}/o_5} (u=0).
 \]
+\iflong
 \begin{figure}
+\vspace{-2em}
 \begin{center}
 \includegraphics[width=.8\textwidth]{wiggling.jpg}
 \end{center}
 \caption{A timed behavior with two races}
 \label{fig:races}
 \end{figure}
-
+\fi
 This timed behavior contains two races, after two and four time units, respectively.
 The first races is won by block $\{ 1, 3 \}$, and the second race is won by block $\{ 4, 5 \}$.
 As a result of these races we cannot wiggle the timing of block $\{ 1, 3 \}$ by any amount:
 if $i_1$ occurs just a bit later then timer $y$ must expire before timer $x$,
 and if $i_1$ occurs just a bit earlier then timer $u$ must expire before timer $z$.
 Note that when timer $x$ expires timer $y$ is stopped.
-\end{example}
-
-The scenario of Figure~\ref{fig:races} is similar to the well-known Rush Hour puzzle game,
+%
+The above scenario is similar to the well-known Rush Hour puzzle game,
 in which one has to slide blocking vehicles out of the way to find a path for one specific red car to exit a parking lot.
 The next lemma asserts that we can always solve the puzzle for MMTs: for any timed behavior that contains races,
 an equivalent timed behavior exists without races.
@@ -731,7 +733,9 @@ A transparent timed word has a unique causality map.
 
 Each timed word of MMT $\M$ with a unique causality map has a unique timed run that corresponds to it.
 The causality map tells us which timers time out during the trace, so we have complete information
-about the sequence of events that occurs. A timed run of $\M$ is fully determined
+about the sequence of events that occurs. 
+\iflong
+A timed run of $\M$ is fully determined
 by the sequence of time delays and events that occurs.
 
 \begin{lemma}
@@ -740,6 +744,7 @@ Suppose $w$ is a timed word of MMT $\M$ with a unique causality map.
 Then there is a unique timed run $\alpha$ of $\M$ such that $w = \timedword(\alpha)$.
 \end{lemma}
 
+\fi
 We are now prepared to prove our first main result:
 
 \begin{theorem}
@@ -792,11 +797,13 @@ Suppose $\beta, \beta'$ are untimed behaviors over $I$, $O$ and $Y$ such that $\
 Then $\beta \cdot \beta'$, the \emph{sequential composition} of $\beta$ and $\beta'$, is the untimed behavior $\beta \Tail{\beta'}$.
 Behavior $\beta$ is a \emph{prefix} of untimed behavior $\gamma$ if there exists an untimed behavior $\beta'$ such that $\gamma = \beta \cdot \beta'$.
 
+\iflong
 It is not difficult to translate an MMTs to a timed automaton \cite{AD94,BengtssonY03} that accepts the same timed words.
 Through such a translation, verification and analysis tools for timed automata, such as Uppaal \cite{Uppaal4.0}
 become available for MMTs.
 MMTs are less expressive than timed automata. MMTs, for instance, do not contain time deadlocks or zeno loops that
 may prevent time from progressing.
+\fi
 
 MMTs have infinitely (in fact even uncountably) many configurations and it is thus necessary to use symbolic representations
 for reachability analysis. Given an untimed behavior $\beta$ we want to compute its effect on a set of valuations. 
@@ -814,20 +821,12 @@ We write $\Post_{\beta}$ as abbreviation for $\Post_{\beta}(\Vals{\Head{\beta}})
 
 For any untimed behavior $\beta$, the set $\Post_{\beta}$ can be symbolically represented and computed using a Difference Bound Matrices (DBMs)
  \cite{Di89},  as the transition relations $\xrightarrow{d}$ and $\xrightarrow{i_1/o_1, \rho_1}$ can be easily decomposed 
-into elementary operations that have been defined
-on DBMs such as reset, conjunction, and delay successors \cite{BengtssonY03}.
+into elementary operations on DBMs such as reset, conjunction, and delay successors \cite{BengtssonY03}.
 %
-Since emptiness of DBMs is decidable, the following lemma allows us to compute whether or not an untimed behavior is feasible.
+It is easy to see that an untimed behavior $\beta$ is feasible iff $\Post_{\beta} \neq \emptyset$.
+Since emptiness of DBMs is decidable, this allows us to compute whether or not $\beta$ is feasible.
 
-\begin{lemma}
-Suppose $\beta$ is an untimed behavior. Then $\beta$ is feasible iff $\Post_{\beta} \neq \emptyset$.
-\end{lemma}
 \iflong
-\begin{proof}
-Straightforward by induction on the length of $\beta$.
-\end{proof}
-\fi
-
 The next technical lemma's are needed further on:
 
 \begin{lemma}
@@ -843,7 +842,7 @@ Then $\beta \cdot \gamma$ is feasible iff $\beta' \cdot \gamma$ is feasible.
 The set
 $\{ \Post_{\beta} \mid \beta \mbox{ is a feasible untimed behavior of } \M \}$ is finite.
 \end{lemma}
-\iflong
+
 \begin{proof}
 All the sets $\Post_{\beta}$ can be represented using DBMs. Since an MMT only has a finite number of timers that can only be set to a finite number of integer values. Since in an MMT the values of timers can only decrease, only finitely many numbers may
 appear in the DBM's that represent the sets $\Post_{\beta}$. Thus all the sets $\Post_{\beta}$ can be represented by a finite
@@ -855,7 +854,7 @@ Suppose $\beta$ is a feasible untimed behavior and $Y \xrightarrow{i/o, \rho} Y'
 with $Y = \Last{\beta}$ and $i \in I$.
 Then $\beta \xrightarrow{i/o, \rho} Y'$ is a feasible untimed behavior.
 \end{lemma}
-\fi
+
 Let $\beta$ be a feasible untimed behavior and let $x \in X$ be a timer. Then we say that $x$ is \emph{expirable} after $\beta$
 if there exists a valuation in $\Post_{\beta}$ in which $x$ is minimal.
 
@@ -865,14 +864,12 @@ with $Y = \Last{\beta}$.
 Then $x$ is expirable after $\beta$ iff $\beta \xrightarrow{\toevent{x}/o, \rho} Y'$ is feasible.
 \end{lemma}
 
-\iflong
 \begin{lemma}
 \label{not untimed}
 Suppose $\M$ and $\N$ are MMTs with $\M \not\approx_{\mathit{untimed}} \N$.
 Then there exists a feasible untimed behavior $\beta$ of $\M$ that is not isomorphic to any feasible untimed
 behavior of $\N$.
 \end{lemma}
-
 
 \begin{lemma}
 \label{not timed}
@@ -894,12 +891,12 @@ The third instance is the well known setting (see e.g.\ \cite{Nie03,RSBM09})
 in which a teacher knows an (untimed) Mealy machine $\A$,
 and a learner learns $\A$ via membership and equivalence queries.
 %
-We will show how an untimed learner for MMTs can be implemented using an timed teacher for MMTs,
+We will show how an untimed teacher for MMTs can be implemented using an timed teacher for MMTs,
 and how an untimed learner for MMTs can be implemented using a Mealy machine learner.
 %This will allow us to use existing algorithms for learning Mealy machines,
 %as implemented for instance in LearnLib \cite{RSBM09}, as part of an algorithm to learn MMTs. 
 
-\subsection{An untimed learner}
+\subsection{An untimed MAT framework for learning MMTs}
 Given the equivalence of the timed and the untimed semantics of MMTs, it is natural to also 
 consider an untimed setting, in which a learner tries to construct an MMT based on membership queries for untimed behaviors.
 The teacher, however, does not reveal the names of the timers that occur in untimed behaviors, and brings each behavior into a
@@ -922,8 +919,7 @@ We can associate a unique input word $\untimedinputword(\beta)$ to $\beta$ by re
 updates, and timer sets from $\beta$.
 
 In our first learning setup, the teacher knows an MMT $\M$.
-The learner initially only knows the set $I$ of inputs of $\M$, and may pose
-two types of queries:
+The learner initially knows the set $I$ of inputs of $\M$, and may pose two types of queries:
 \begin{itemize}
 \item
 With a \emph{membership query}, the learner asks for the response to an untimed input word $u$ over $I$.
@@ -936,9 +932,9 @@ Otherwise it answers \emph{no} and supplies a counterexample, that is, a behavio
 is isomorphic to a feasible behavior of $\M$ but not to a feasible behavior of $\CH$.
 \end{itemize}
 
-\subsection{A timed learner}
+\subsection{A timed MAT framework for learning MMTs}
 In our second learning setup, the teacher also knows an MMT $\M$.
-Initially, the timed learner only knows the set $I$ of input of $\M$.
+Initially, the timed learner knows the set $I$ of input of $\M$.
 The task of the timed learner is to learn $\M$ through three types of queries: membership queries, equivalence queries,
 and lookahead queries.
 
@@ -960,8 +956,10 @@ Thus, for instance,
 \timedinputword (3 ~ i_1 ~ o_1 ~ 1.1 ~ i_2 ~ o_2 ~ 2 ~ \mathit{to} ~ o_3 ~ 2.1 ~ i_4 ~ o_4) & = & 
 3 ~ i_1 ~ 1.1 ~ i_2 ~ 4.1 ~ i_4 ~ 0.
 \end{eqnarray*}
+\iflong
 Note that the first input occurs at time $3$, the second at time $4.1$, and the third at time $8.2$.
 Thus the fractional part of the times of the inputs are different.
+\fi
 %
 If $u$ and $u'$ are timed input words, then we write $u \propto u'$ if $u$ and $u'$ are equal, except that the final delay of $u$ is less or equal than the final delay of $u'$. Observe that,
 for any timed input word $u$ over $I$, 
@@ -997,10 +995,10 @@ by posing a \emph{lookahead query}, a timed learner asks if, for some untimed in
 index $j \leq k$, timer $x_j$ is active after $u$ in $\M$.
 The teacher/oracle answers \emph{yes} if this is the case, and \emph{no} otherwise.
 
-\subsection{A Mealy machine learner}
+\subsection{A MAT framework for learning Mealy machines}
 We will present an algorithm for an untimed learner, by using existing algorithms for learning Mealy machines as a basis.
 
-A \emph{Mealy machine} is a tuple $\A = (I, O, Q, q_0, \delta, \lambda)$, where
+A \emph{Mealy machine (MM)} is a tuple $\A = (I, O, Q, q_0, \delta, \lambda)$, where
 $I$ is a finite set of inputs,
 $O$ is a finite set of outputs,
 $Q$ is a finite set of states,
@@ -1021,8 +1019,8 @@ Mealy machines $\A$ and $\B$ are \emph{equivalent}, denoted $\A \approx \B$, iff
 Sequence $\sigma \in I^{\ast}$ \emph{distinguishes}
 $\M$ and $\N$ if and only if $A_{\M}(\sigma) \neq A_{\N}(\sigma)$.
 
-In our third setup, the teacher knows a Mealy machine $\M$. 
-The learner initially only knows the inputs $I$ of $\M$ and may ask two types of queries:
+In our third learning setup, the teacher knows a Mealy machine $\M$. 
+The learner initially knows the inputs $I$ of $\M$ and may ask two types of queries:
 \begin{itemize}
 \item
 With a \emph{membership query}, the learner asks for the response to an input sequence $\sigma \in I^{\ast}$.
@@ -1038,7 +1036,7 @@ number of membership and equivalence queries that polynomial in the size of the 
 Efficient implementations of $L^{\ast}$ and other algorithms for learning Mealy machines are available,
 for instance in the tool \learnlib\ \cite{Nie03,RSBM09,MertenSHM11}.
 
-\subsection{Algorithm for an untimed learner}
+\subsection{Constructing an untimed MMT learner using a MM learner}
 The number of timers that may occur in canonical untimed behaviors grows unboundedly with the length of these behavior,
 since timers are never reused in canonical behaviors.
 Let $S$ be the set of canonical versions of the untimed behaviors of an MMT $\M$.
@@ -1056,7 +1054,7 @@ Our algorithm for an untimed learner is based on the following result, which is 
 Myhill-Nerode theorem for MMTs.
 
 \begin{definition}
-Let $S$ be a set of feasible untimed behaviors over $I$ and $O$. Then $S$ is
+Let $S$ be a set of feasible untimed behaviors over $I$. Then $S$ is
 \begin{itemize}
 \item
 \emph{prefix closed}: $\beta \beta' \in S \Rightarrow \beta \in S$,
@@ -1181,9 +1179,9 @@ Our algorithm for an untimed learner now looks as follows.
 %$\Mealy(\M) \approx \Mealy(\N)$.
 %\end{theorem}
 
-\subsection{Algorithm for an untimed teacher}
+\subsection{Constructing an untimed MMT teacher using a timed teacher}
 In this subsection, we show how we may construct a teacher for the untimed setting, while using the
-teacher for the timed setting, as well as a special ``lookahead oracle''.
+teacher for the timed setting.
 
 Suppose the untimed teacher receives a membership query, consisting of an untimed input word
 $u = i_1 \cdots i_k$.
@@ -1200,16 +1198,16 @@ with untimed input word $u$. In this case, the untimed teacher may return the an
 Otherwise  Etc etc
 \marginpar{Needs doing}
 
-Once we have implemented the membership queries for an untimed teacher, implementing equivalence queries is easy.
+Once we have implemented membership queries for an untimed teacher, implementing equivalence queries is easy.
 Suppose that the untimed teacher receives an equivalence query $\CH$.
 Then we just forward this query to the timed teacher.
 If the timed teacher answers \emph{yes} then $\CH \approx_{\mathit{timed}} \M$.
 In this case, by Theorem~\ref{timedimpliesuntimed}, $\CH \approx_{\mathit{untimed}} \M$,
-and thus also the untimed teacher can return a result \emph{yes}.
+and thus the untimed teacher can also return a result \emph{yes}.
 If the timed teacher answers \emph{no} and returns a counterexample $w$,
 then $w$ is a transparent timed word of $\M$ but not of $\CH$.
 In this case, by Theorem~\ref{untimedimpliestimed}, we may conclude that
-$\CH \not\approx_{\mathit{untimed}} \M$, and also the untimed teacher can return a result \emph{no}.
+$\CH \not\approx_{\mathit{untimed}} \M$, and thus the untimed teacher can also return a result \emph{no}.
 Since $w$ is a transparent timed word of $\M$, it follows by Lemma~\ref{lemma unique causality map}
 that $w$ has a unique causality map $c$.
 This allows us to transform $w$ into an untimed input sequence $u$: 
