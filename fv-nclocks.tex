@@ -251,7 +251,15 @@ exhibit uncontrollable nondeterminism. The algorithm chooses the timing of the i
 nondeterministic behavior can arise.
 
 \subsection{A product construction}
-An \emph{untimed behavior} over inputs $I$ and outputs $O$ is a sequence 
+Configurations consists of pairs of states and timer valuations. This means that there are two natural projections on
+timed runs: a first projection $\untime$ that forgets all timing information and keeps the transitions of the MMT, 
+and a second projection $\beh$ that forgets information on states and preserves the timing information.
+When we compose these abstractions we obtain \emph{untimed behaviors} in which only information about inputs, outputs,
+active timers and updates is preserved.
+The abstractions commute, $\beh(\untime(\alpha))=\untime(\beh(\alpha))$, and this commuting diagram plays a key role in
+the technical development of this paper.
+%
+Formally, an \emph{untimed behavior} over inputs $I$ and outputs $O$ is a sequence 
 \begin{eqnarray*}
 \beta & = & X_0 \xrightarrow{i_1/o_1, \rho_1} X_1  \xrightarrow{i_2/o_2, \rho_2} X_2 \cdots \xrightarrow{i_k/o_k, \rho_k} X_{k},
 \end{eqnarray*}
@@ -1200,7 +1208,6 @@ input in $w$ equals $\mathit{to}$, we replace it by $\toevent{x_{c(j)}}$.
 We perform an untimed membership query for $u$, and let the untimed teacher return the resulting 
 untimed behavior $\beta$ as counterexample.
 
-\subsection{The single timer case}
 
 
 

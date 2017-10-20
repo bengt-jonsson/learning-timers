@@ -76,8 +76,9 @@ Department of Software Science, ICIS, Radboud University, Nijmegen
 
 \begin{abstract}
 Active automata learning is emerging as an effective bug finding technique, with applications in areas such as banking cards, network protocols and legacy software. Timing often plays a crucial role in these applications, but cannot be handled by existing learning algorithms. Even though there has been significant progress on algorithms for active learning of timed models, these are not yet broadly applicable due to limited expressiveness and/or high complexity.
-In order to address this problem, we introduce a new model of Mealy machines with timers that is able to model the timing behavior of a broad class of practical systems, and present an algorithm for active learning of this type of state machines that uses a
-polynomial number of queries. Besides the usual membership and equivalence queries, our learning algorithm uses lookahead queries to obtain information about whether a timer is active in a state and may expire eventually.
+In order to address this problem, we introduce a new model of Mealy machines with timers (MMTs) that is able to model the timing behavior of a broad class of practical systems, and present an algorithm for active learning of MMTs that uses a
+number of queries that is polynomial in the size of the corresponding canonical MMT. This is achieved by using, besides membership and equivalence queries, 
+lookahead queries to obtain information about whether a timer is active in a state and may expire eventually.
 \end{abstract}
 
 \input{macros}

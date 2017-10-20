@@ -6,16 +6,16 @@ by providing inputs and observing outputs.
 Following pioneering work by \cite{Ang87,PeVaYa02,Hagerer2002,RaMeSM2009,IsHoSt2015},
 active automata learning is emerging as an effective bug finding technique.
 Using active automata learning, for instance, standard violations have been found in many implementations of
-major network protocols such as TLS \cite{dRP15}, TCP \cite{FJV16} and SSH \cite{FiterauEtAl17}.
+major network and security protocols such as TLS \cite{dRP15}, TCP \cite{FJV14,FJV16,FH17} and SSH \cite{FiterauEtAl17}.
 
 Timing often plays a crucial role in these applications.
 A TCP implementation, for instance, may retransmit packets if they are not acknowledged within
 a specified time. Also, a timeout may occur if the implementation does not receive an acknowledgement
 after a number of retransmissions, or if it remains in certain states too long.
-Timing cannot be captured using existing learning tools, which only support learning of deterministic
+Timing behavior cannot be captured using existing learning tools, which only support learning of deterministic
 Mealy machines and related untimed models.
-In the case of TCP, we only succeeded to learn Mealy machine models by having the network adaptor ignore all retransmissions,
-and by completing our learning queries before the occurrence of certain timeouts \cite{FJV16}.
+In the case of TCP, previous work only succeeded to learn Mealy machine models by having the network adaptor 
+ignore all retransmissions, and by completing our learning queries before the occurrence of certain timeouts \cite{FJV16}.
 All timing issues had to be artificially suppressed.
 
 There has been some work on algorithms for learning timed systems, e.g., \cite{GrinchteinJL10,MensM15,CCF16}.
@@ -34,7 +34,7 @@ practical applications of automata learning like those described in \cite{Vaa17}
 Our work is inspired by the work of \cite{CCF16} on time delay Mealy machines.
 We introduce the class of Mealy machines with timers (MMTs) that 
 is able to model the timing behavior of a wide variety of communication protocols.
-MMT's can be viewed as a formalization of the finite state models with countdown timers that are used in the textbook of
+MMTs can be viewed as a formalization of the finite state models with countdown timers that are used in the textbook of
 Kurose and Ross \cite{KR13} to explain transport layer protocols.
 Figure~\ref{fig:abp} presents an MMT model of the sender from 
 the alternating-bit protocol, adapted from \cite[Figure 3.15]{KR13}.
@@ -74,6 +74,7 @@ If no $\mathit{ack0}$ input arrives within $3$ timeunits, a timeout occurs and t
 The behavior in states $q_2$ and state $q_3$ is analogous to that in states $q_0$ and $q_1$, respectively,
 with the roles of $0$ and $1$ swapped.
 \fi
+The approaches of \cite{MensM15,CCF16} cannot model the protocol of Figure~\ref{fig:abp}.
 
 The remainder of this article is structured as follows.
 In Section 2, we present the definition of MMTs and their timed semantics.
@@ -95,7 +96,12 @@ In applications such ``combination lock'' scenarios do not arise: typically, if 
 all the timers that have been set will expire one after the other.
 For this reason, our algorithm assumes a \emph{lookahead oracle} which, for any sequence of inputs $u$ and for any specific input
 $i$ in this sequence, tells us whether $i$ sets a timer that may still expire after $u$.
-With the strong - but in our view realistic - assumption of a lookeahead oracle, our learning algorithm can learn MMTs
-using a polynomial number of queries.
+With the strong --- but in our view realistic --- assumption of a lookeahead oracle, our learning algorithm can learn MMTs
+using a number of queries that is polynomial in the size of the corresponding canonical MMT.
 Section 6 contains some concluding remarks and lists topics for future research.
+\iflong
+%
+\else
+A full version of this article including proofs is available at \url{http://www.sws.cs.ru.nl/publications/papers/fvaan/MMT}.
+\fi
 
