@@ -20,7 +20,7 @@ after a number of retransmissions, or if it remains in certain states too long.
 Timing behavior cannot be captured using existing learning tools, which only support learning of deterministic
 Mealy machines and related untimed models.
 In the case of TCP, previous work only succeeded to learn Mealy machine models by having the network adaptor 
-ignore all retransmissions, and by completing our learning queries before the occurrence of certain timeouts \cite{FJV16}.
+ignore all retransmissions, and by completing learning queries before the occurrence of certain timeouts \cite{FJV16}.
 All timing issues had to be artificially suppressed.
 
 There has been some work on algorithms for learning timed systems, e.g., \cite{GrinchteinJL10,MensM15,CCF16}.
@@ -34,9 +34,9 @@ is determined by previous behavior, that is, fewer degrees of freedom than what 
 
 We therefore decided to pursue a different approach. We explore tractable extensions of untimed automata models that appear to
 be sufficiently expressive to describe the real-time behavior of network protocols such as TLS, TCP and SSH, and other
-practical applications of automata learning like those described in \cite{Vaa17}.
+applications of automata learning like those described in \cite{Vaa17}.
 %
-Our work is inspired by the work of \cite{CCF16} on time delay Mealy machines.
+Our work is inspired by the results of \cite{CCF16} on time delay Mealy machines.
 We introduce the class of Mealy machines with timers (MMTs) that 
 is able to model the timing behavior of a wide variety of communication protocols.
 MMTs can be viewed as a formalization of the finite state models with countdown timers that are used in the textbook of
@@ -63,8 +63,8 @@ the alternating-bit protocol, adapted from \cite[Figure 3.15]{KR13}.
 \caption{MMT model for alternating-bit protocol sender}
 \label{fig:abp}
 \end{figure}
-In the diagram we write $x :=3$ to denote that a transition starts a timer $x$ with value $3$,
-and we write $\mathit{stop}(x)$ if a transition stops timer $x$.
+In the diagram $x :=3$ denotes that a transition starts a timer $x$ with value $3$,
+and $\mathit{stop}(x)$ denotes that timer $x$ is stopped.
 For readability we have omitted trivial self-loops.
 \iflong
 $\Lambda$ denotes the absence of an observable output. 
@@ -79,7 +79,7 @@ If no $\mathit{ack0}$ input arrives within $3$ timeunits, a timeout occurs and t
 The behavior in states $q_2$ and state $q_3$ is analogous to that in states $q_0$ and $q_1$, respectively,
 with the roles of $0$ and $1$ swapped.
 \fi
-The approaches of \cite{MensM15,CCF16} cannot model the protocol of Figure~\ref{fig:abp}.
+The approaches of \cite{MensM15,CCF16} cannot model this protocol.
 
 The remainder of this article is structured as follows.
 In Section 2, we present the definition of MMTs and their timed semantics.
@@ -87,8 +87,8 @@ Our timed semantics is based on observations that record the timing of inputs an
 Since we assume that each timeout immediately triggers an observable output, we may observe
 the occurrence of a timeout indirectly. In general, however, we cannot observe which timer times out.
 In Section 3, we present a surprising result, namely that under certain mild restrictions the timed semantics
-is the same as an untimed semantics in which behaviors reveal when and how timers are set and when they expire.
-Intuitively, causality of timeouts can be inferred since a slight change in the timing of an input event leads to a corresponding slight change in the timing of any timeouts that it induces.
+is the same as an untimed semantics in which behaviors record when and how timers are set and when they expire.
+Intuitively, causality of timeouts can be inferred in the timed semantics since a slight change in the timing of an input event leads to a corresponding change in the timing of any timeout that it induces.
 Section 4, we use some basic timed automata theory (zones and DBMs) to compute the set of timers that may expire  following some untimed run.
 Section 5 presents our learning algorithm for MMTs. 
 Due to the equivalence of the timed and the untimed semantics, we only need a learning algorithm for untimed behaviors.
@@ -96,11 +96,11 @@ In fact, a Myhill-Nerode theorem for untimed behaviors allows us to reduce learn
 to the learning of (untimed) Mealy machines, meaning that we can use existing tools (such as LearnLib) and add an adapter layer.
 The main technical problem is to infer when timers are set, and whether timers that have been previously set may expire
 in the future.
-In theory, this is a very hard problem, since a timer may only expire after some long, specific sequence of inputs.
+In theory, this is a hard problem, since a timer may only expire after some specific sequence of inputs.
 In applications such ``combination lock'' scenarios do not arise: typically, if we just wait and provide no inputs at all,
 all the timers that have been set will expire one after the other.
 For this reason, our algorithm assumes a \emph{lookahead oracle} which, for any sequence of inputs $u$ and for any specific input
-$i$ in this sequence, tells us whether $i$ sets a timer that may still expire after $u$.
+$i$ in this sequence, tells us whether $i$ sets a timer that may expire after $u$.
 This is analogous to the way in which the equivalence oracle 
 of Angluin's L$^{\ast}$ algorithm \cite{Ang87} encapsulates a possibly exponential number of test queries into
 a single equivalence query.
