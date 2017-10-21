@@ -615,13 +615,9 @@ $\sigma'  =  \lambda_0 \xrightarrow{e_1} \lambda'_0 \xrightarrow{i_1/o_1, \rho_1
 without races such that
 $\untime(\sigma)=\untime(\sigma')$,
 $\kappa_0 = \lambda_0$, and
-\begin{eqnarray*}
-e_j & = & \left\{ \begin{array}{ll}
-d_j + \epsilon & \mbox{if } j-1 \not\in T \wedge j \in T \\
-d_j & \mbox{if } j-1 \in T \Leftrightarrow j \in T\\
-d_j - \epsilon & \mbox{if } j-1 \in T \wedge j \not\in T
-\end{array}\right.
-\end{eqnarray*}
+$e_j  =  d_j + \epsilon  \mbox{ if } j-1 \not\in T \wedge j \in T$,
+$e_j = d_j  \mbox{ if } j-1 \in T \Leftrightarrow j \in T$, and
+$e_j = d_j - \epsilon  \mbox{ if } j-1 \in T \wedge j \not\in T$.
 \end{lemma}
 In the presence of races, Lemma~\ref{wiggle lemma} does not hold. 
 Consider the following timed behavior with blocks $\{ 1, 3 \}$, $\{ 2 \}$,
@@ -638,11 +634,9 @@ and $\{ 4, 5 \}$:
 \xrightarrow{\toevent{x}/o_3, u \mapsto 2} (u=2)
 \xrightarrow{1} (u=1)
 \xrightarrow{i_4/o_4, z \mapsto 1} (u=z=1)
-\xrightarrow{1} (u=z=0)
+\xrightarrow{1} (u=z=0)\xrightarrow{\toevent{z}/o_5} (u=0).
 \]
-\[
-\xrightarrow{\toevent{z}/o_5} (u=0).
-\]
+
 \iflong
 \begin{figure}
 \vspace{-2em}
