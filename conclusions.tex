@@ -1,22 +1,22 @@
-\section{Conclusions and Future Work}
+\section{Conclusions and future work}
 \label{conclusions}
 Our work consitutes a major step towards a practical approach for active learning of timed systems.
 Such an approach would greatly enhance the applicability of active learning for reverse engineering of models of
 software and hardware systems. Nevertheless, there are still major challenges that need to be addressed.
-
+%
 A first challenge is to implement equivalence queries for MMTs.
 In the untimed case, equivalence queries for Mealy machines are approximated using conformance testing algorithms,
 for which a rich theory exists \cite{LeeY96}.
 We hope that our equivalence result for the timed and untimed semantics will help to lift existing conformance
 testing algorithms to the setting of MMTs. For MMTs with a single timer this is easy, but we do not yet have good
 conformance testing algorithms for MMTs with multiple timers.
-
+%
 A second challenge is to deal with the timing uncertainties that occur in real applications due to nondeterminism of
 implementations and imprecise measurements. In the idealized setting of this paper we are able to
 identify the triggering event for each timeout by providing inputs at different fractional times. In a realistic
 setting we may need more than one experiment to figure out which event causes a timeout. We may observe, for instance,
 that slight changes in the timing of certain inputs lead to corresponding changes in the timing of certain timeouts.
-
+%
 A third important challenge is to implement our algorithm and to apply it to practical case studies. In particular,
 it is interesting to see how we can implement lookahead queries. For MMTs with a single timer this is trivial 
 if we assume an upper bound $t$ on the value of timers (just  wait for $t+1$ time units).
