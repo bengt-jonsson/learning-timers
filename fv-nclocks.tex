@@ -183,7 +183,7 @@ $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'$ and $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o''$.
 \begin{figure}[ht]
 \vspace{-2em}
 \begin{center}
-\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2cm,main node/.style={circle,draw,font=\sffamily\large\bfsthe name of the eries}]
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=1.8cm,main node/.style={circle,draw,font=\sffamily\large\bfsthe name of the eries}]
   \node[initial, state] (1) {$q_0$};
   \node[state] (2) [below of=1] {$q_1$};
   \node[state] (3) [right of=2] {$q_3$};
@@ -194,7 +194,7 @@ $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'$ and $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o''$.
     (2) edge  node {$\toevent{x}/o'$} (3)
      edge  node {$\toevent{y}/o''$} (4);
 \end{tikzpicture}
-\caption{An MMT with nondeterministic behavior}
+\caption{An MMT with ``uncontrollable'' nondeterministic behavior}
 \label{fig:nondeterminism}
 \end{center}
 \end{figure}
@@ -231,14 +231,14 @@ when selecting the timing of inputs.
 \begin{figure}[ht]
 \vspace{-2em}
 \begin{center}
-\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.5cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
   \node[initial, state] (1) {$q_0$};
   \node[state] (2) [right of=1] {$q_1$};
   \node[state] (3) [right of=2] {$q_2$};
 
   \path[every node/.style={font=\sffamily\scriptsize}]
-    (1) edge node {$i/o$, $~x:=2$} (2)  
-    (2) edge  node {$i/o$, $~y:=1$} (3)
+    (1) edge [text width=1cm] node {$i/o$\\ $x:=2$} (2)  
+    (2) edge [text width=1cm] node {$i/o$\\ $y:=1$} (3)
       edge  [loop below] node {$\toevent{x}/o$, $~x:=2$} (2)
    (3) edge  [loop below] node {$\toevent{x}/o'$} (3)
    edge  [loop above] node {$\toevent{y}/o''$} (3);
@@ -253,13 +253,13 @@ exhibit uncontrollable nondeterminism. The algorithm chooses the timing of the i
 nondeterministic behavior can arise.
 \fi
 
-\subsection{A product construction}
-Configurations consists of pairs of states and timer valuations. This means that there are two natural projections on
+\subsection{Timed and untimed runs and behaviors}
+Configurations consists of pairs of states and timer valuations. This means that there are two natural abstractions of
 timed runs: an abstraction $\untime$ that forgets all timing information and keeps the transitions of the MMT, 
 and an abstraction $\beh$ that forgets information on states and preserves the timing information.
 When we compose these abstractions we obtain \emph{untimed behaviors} in which only information about inputs, outputs,
 updates and active timers is preserved.
-The abstractions commute, $\beh(\untime(\alpha))=\untime(\beh(\alpha))$, and this commuting diagram plays a key role in
+The abstractions commute, $\beh(\untime(\alpha))=\untime(\beh(\alpha))$, and play a key role in
 the technical development of this paper.
 %
 Formally, an \emph{untimed behavior} over inputs $I$ and outputs $O$ is a sequence 
@@ -275,7 +275,7 @@ An \emph{untimed run} of an MMT $\M$ is a sequence
 \gamma & = & q_0 \xrightarrow{i_1/o_1, \rho_1} q_1  \xrightarrow{i_2/o_2, \rho_2} q_2 \cdots \xrightarrow{i_k/o_k, \rho_k} q_k
 \end{eqnarray*}
 of transitions of $\M$ that starts with the initial state $q_0$. 
-To each untimed run $\gamma$ we associate a corresponding untimed behavior by simply replacing all
+To each untimed run $\gamma$ we associate an untimed behavior by replacing all
 states by their sets of timers:
 \begin{eqnarray*}
 \beh(\gamma) & = & \vars(q_0) \xrightarrow{i_1/o_1, \rho_1} \vars(q_1)  \xrightarrow{i_2/o_2, \rho_2} \vars(q_2) \cdots \xrightarrow{i_k/o_k, \rho_k} \vars(q_k).
@@ -292,7 +292,7 @@ A \emph{timed behavior} over inputs $I$ and outputs $O$ is an alternating sequen
 of delay transitions and discrete transitions with, for each $j$,
 $\tvals_j, \tvals'_j$ valuations and,
 for each $j>0$,  $d_j \in \delays$, $i_j \in \extinputs$, $o_j \in O$, and $\rho_j \in X \hookrightarrow \natplus$.
-To each timed behavior $\sigma$ we associate a corresponding untimed behavior by forgetting the
+To each timed behavior $\sigma$ we associate an untimed behavior by forgetting the
 delays transitions and by replacing valuations by their domain:
 \begin{eqnarray*}
 \untime(\sigma) & = & \domof{\tvals_0} \xrightarrow{i_1/o_1, \rho_1} \domof{\tvals_1}  \xrightarrow{i_2/o_2, \rho_2} \domof{\tvals_2} \cdots \xrightarrow{i_k/o_k, \rho_k} \domof{\tvals_k}.
@@ -460,7 +460,6 @@ $ \emptyset \xrightarrow{i/o,~ x, y:=1,2 } \{ x, y \}$, for which the bottom MMT
    (3) edge node {$\toevent{y}/o''$} (4);
 \end{tikzpicture}
 
-\vspace{1 em}
 \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
   \node[initial, state] (1) {$q_0$};
   \node[state] (2) [right of=1] {$q_1$};
@@ -725,23 +724,25 @@ Consider a timed word
 $w  =   d_1 ~ i_1 ~ o_1 ~ d_2 ~ i_2 ~ o_2 \cdots d_k ~ i_k ~ o_k$.
 We want to know, for each timeout event in $w$, by which event this timeout is triggered.
 Let $T = \{ j \mid i_j = \mathit{to} \}$ be the set of indices corresponding to a timeout.
-A \emph{causality map} for $w$ is a function $c: T \rightarrow \{ 1 ,\ldots, k \}$ that satisfies the following conditions:
-\begin{enumerate}
-\item
+A \emph{causality map} for $w$ is a function $c: T \rightarrow \{ 1 ,\ldots, k \}$ that satisfies three conditions:
+(1)
 $c$ is injective (at most one timer is started on each transition),
-\item
-for all $j$, $c(j) < j$ (a timeout is triggered by an earlier event),
-\item
+(2)
+for all $j$, $c(j) < j$ (a timeout is triggered by an earlier event), and
+(3)
 for all $j$, $\sum_{l=j+1}^{c(j)} d_l$ is an integer (timers expire after an integer delay).
-\end{enumerate}
 It is easy to see that a timed word has a causality map iff it is a timed word of an MMT that starts at most one timer
 on each transition. In general, a timed word may have multiple causality maps.
+\iflong
 However, we have the following lemma.
 
 \begin{lemma}
 \label{lemma unique causality map}
 A transparent timed word has a unique causality map.
 \end{lemma}
+\else
+However, a transparent timed word has a unique causality map.
+\fi
 
 Each timed word of MMT $\M$ with a unique causality map has a unique timed run that corresponds to it.
 The causality map tells us which timers time out during the trace, so we have complete information
@@ -833,7 +834,6 @@ into elementary operations on DBMs such as reset, conjunction, and delay success
 It is easy to see that an untimed behavior $\beta$ is feasible iff $\Post_{\beta} \neq \emptyset$.
 Since emptiness of DBMs is decidable, this allows us to compute whether or not $\beta$ is feasible.
 
-
 The next technical lemma's are needed further on:
 
 \begin{lemma}
@@ -907,7 +907,7 @@ and how an untimed learner for MMTs can be implemented using a Mealy machine lea
 \iflong
 %
 \else
-Note that for an untimed behavior $\beta$, the set $\zone{\beta}$ of timer valuations that can be reached with a timed behavior $\sigma$ with $\untime(\sigma) = \beta$ can be symbolically represented and computed using Difference Bound Matrices (DBMs) \cite{Di89}.
+Note that for an untimed behavior $\beta$, the set $\zone{\beta}$ of valuations that can be reached with a timed behavior $\sigma$ with $\untime(\sigma) = \beta$ can be symbolically represented using DBMs \cite{Di89}.
 We can do this since the transition relations $\xrightarrow{d}$ and $\xrightarrow{i_1/o_1, \rho_1}$ can be decomposed 
 into elementary operations on DBMs such as reset, conjunction, and delay successors \cite{BengtssonY03}.
 This allows us to compute whether an untimed behavior $\beta$ is feasible ($\zone{\beta}$ is empty), and
@@ -1228,7 +1228,7 @@ with untimed input word $u$. In this case, the untimed teacher may return the an
 Otherwise  Etc etc
 \marginpar{Needs doing}
 
-Once we have implemented membership queries for an untimed teacher, implementing equivalence queries is easy.
+Once we have implemented membership queries, implementing equivalence queries is easy.
 Suppose that the untimed teacher receives an equivalence query $\CH$.
 Then we just forward this query to the timed teacher.
 If the timed teacher answers \emph{yes} then $\CH \approx_{\mathit{timed}} \M$.
@@ -1238,12 +1238,15 @@ If the timed teacher answers \emph{no} and returns a counterexample $w$,
 then $w$ is a transparent timed word of $\M$ but not of $\CH$.
 In this case, by Theorem~\ref{untimedimpliestimed}, we may conclude that
 $\CH \not\approx_{\mathit{untimed}} \M$, and thus the untimed teacher can also return a result \emph{no}.
-Since $w$ is a transparent timed word of $\M$, it follows by Lemma~\ref{lemma unique causality map}
-that $w$ has a unique causality map $c$.
+Since $w$ is a transparent timed word of $\M$, it 
+\iflong
+follows by Lemma~\ref{lemma unique causality map} that $w$ 
+\fi
+has a unique causality map $c$.
 This allows us to transform $w$ into an untimed input sequence $u$: 
 we remove all the delays and output events, and if the $j$-th
 input in $w$ equals $\mathit{to}$, we replace it by $\toevent{x_{c(j)}}$.
-We perform an untimed membership query for $u$, and let the untimed teacher return the resulting 
+The untimed teacher performs an untimed membership query for $u$, and returns the resulting 
 untimed behavior $\beta$ as counterexample.
 
 
