@@ -89,8 +89,10 @@ the occurrence of a timeout indirectly. In general, however, we cannot observe w
 In Section 3, we present a surprising result, namely that under certain mild restrictions the timed semantics
 is the same as an untimed semantics in which behaviors record when and how timers are set and when they expire.
 Intuitively, causality of timeouts can be inferred in the timed semantics since a slight change in the timing of an input event leads to a corresponding change in the timing of any timeout that it induces.
+\iflong
 Section 4, we use some basic timed automata theory (zones and DBMs) to compute the set of timers that may expire  following some untimed run.
-Section 5 presents our learning algorithm for MMTs. 
+\fi
+Section~\ref{algorithm} presents our learning algorithm for MMTs. 
 Due to the equivalence of the timed and the untimed semantics, we only need a learning algorithm for untimed behaviors.
 In fact, a Myhill-Nerode theorem for untimed behaviors allows us to reduce learning MMTs
 to the learning of (untimed) Mealy machines, meaning that we can use existing tools (such as LearnLib) and add an adapter layer.
@@ -106,7 +108,7 @@ of Angluin's L$^{\ast}$ algorithm \cite{Ang87} encapsulates a possibly exponenti
 a single equivalence query.
 With the strong --- but in our view realistic --- assumption of a lookeahead oracle, our learning algorithm can learn MMTs
 using a number of queries that is polynomial in the size of the corresponding canonical MMT.
-Section 6 contains some concluding remarks and lists topics for future research.
+Section~\ref{conclusions} contains some concluding remarks and lists topics for future research.
 \iflong
 %
 \else

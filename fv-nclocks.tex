@@ -183,7 +183,7 @@ $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'$ and $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o''$.
 \begin{figure}[ht]
 \vspace{-2em}
 \begin{center}
-\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.5cm,main node/.style={circle,draw,font=\sffamily\large\bfsthe name of the eries}]
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2cm,main node/.style={circle,draw,font=\sffamily\large\bfsthe name of the eries}]
   \node[initial, state] (1) {$q_0$};
   \node[state] (2) [below of=1] {$q_1$};
   \node[state] (3) [right of=2] {$q_3$};
@@ -275,13 +275,13 @@ An \emph{untimed run} of an MMT $\M$ is a sequence
 \gamma & = & q_0 \xrightarrow{i_1/o_1, \rho_1} q_1  \xrightarrow{i_2/o_2, \rho_2} q_2 \cdots \xrightarrow{i_k/o_k, \rho_k} q_k
 \end{eqnarray*}
 of transitions of $\M$ that starts with the initial state $q_0$. 
-To each untimed run $\gamma$ we can associate a corresponding untimed behavior by simply replacing all
+To each untimed run $\gamma$ we associate a corresponding untimed behavior by simply replacing all
 states by their sets of timers:
 \begin{eqnarray*}
 \beh(\gamma) & = & \vars(q_0) \xrightarrow{i_1/o_1, \rho_1} \vars(q_1)  \xrightarrow{i_2/o_2, \rho_2} \vars(q_2) \cdots \xrightarrow{i_k/o_k, \rho_k} \vars(q_k).
 \end{eqnarray*}
 We say that $\beta$ is an untimed behavior of $\M$ if $\M$ has an untimed run $\gamma$ with $\beh(\gamma) = \beta$.
-Note that the initial timer set of any untimed behavior of $\M$ is empty.
+Note that the initial timer set of an untimed behavior of $\M$ is empty.
 %
 A \emph{timed behavior} over inputs $I$ and outputs $O$ is an alternating sequence
 \begin{eqnarray}
@@ -289,16 +289,16 @@ A \emph{timed behavior} over inputs $I$ and outputs $O$ is an alternating sequen
 \sigma & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \xrightarrow{d_2} \tvals'_1 \xrightarrow{i_2/o_2, \rho_2} \tvals_2 \cdots
 \xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}
 \end{eqnarray}
-of delay transitions and event relations with, for each $j$,
+of delay transitions and discrete transitions with, for each $j$,
 $\tvals_j, \tvals'_j$ valuations and,
 for each $j>0$,  $d_j \in \delays$, $i_j \in \extinputs$, $o_j \in O$, and $\rho_j \in X \hookrightarrow \natplus$.
-To each timed behavior $\sigma$ we associate a corresponding untimed behavior by forgetting the time
-delays and by replacing valuations by their domain:
+To each timed behavior $\sigma$ we associate a corresponding untimed behavior by forgetting the
+delays transitions and by replacing valuations by their domain:
 \begin{eqnarray*}
 \untime(\sigma) & = & \domof{\tvals_0} \xrightarrow{i_1/o_1, \rho_1} \domof{\tvals_1}  \xrightarrow{i_2/o_2, \rho_2} \domof{\tvals_2} \cdots \xrightarrow{i_k/o_k, \rho_k} \domof{\tvals_k}.
 \end{eqnarray*}
 We say that untimed behavior $\beta$ is \emph{feasible} if there exists a timed behavior $\sigma$ such that $\untime(\sigma) = \beta$.
-We also associate a timed word to timed behavior $\sigma$ by forgetting the valuations, the timers, and the update functions:
+We also associate a timed word to timed behavior $\sigma$ by forgetting valuations, timers, and update functions:
 \begin{eqnarray*}
 \timedword(\sigma) & = & d_ 1 ~ i'_1 ~ o_1 ~ i'_2 ~ o_2 \cdots d_k ~ i'_k ~ o_k, \mbox{ where for all } j,
 i'_j  =  \left\{ \begin{array}{ll}
@@ -315,7 +315,7 @@ Then $\alpha$ can be projected both to an untimed run of $\M$
 \begin{eqnarray*}
 \untime (\alpha) & = & q_0 \xrightarrow{i_1/o_1, \rho_1} q_1  \xrightarrow{i_2/o_2, \rho_2} q_2 \cdots \xrightarrow{i_k/o_k, \rho_k} q_k
 \end{eqnarray*}
-(the $\rho_j$'s are uniquely determined since $\M$ is deterministic) and to a timed behavior
+(the $\rho_j$'s are determined since $\M$ is deterministic) and to a timed behavior
 \begin{eqnarray*}
 \beh(\alpha) & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \xrightarrow{d_2} \tvals'_1 \xrightarrow{i_2/o_2, \rho_2} \tvals_2 \cdots
 \xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}.
@@ -803,14 +803,14 @@ of $\N$ such that $\delta' = f(\delta)$.
 In the remainder of this article, we only consider timer live MMTs in which at most one timer is started on each transition,
 which means we may assume equivalence of the timed and the untimed semantics.
 
-\section{Reachability analysis}
 \iflong
+\section{Reachability analysis}
+
 It is not difficult to translate an MMTs to a timed automaton \cite{AD94,BengtssonY03} that accepts the same timed words.
 Through such a translation, verification and analysis tools for timed automata, such as Uppaal \cite{Uppaal4.0}
 become available for MMTs.
 MMTs are less expressive than timed automata. MMTs, for instance, do not contain time deadlocks or zeno loops that
 may prevent time from progressing.
-\fi
 
 MMTs have infinitely (in fact even uncountably) many configurations and it is thus necessary to use symbolic representations
 for reachability analysis. Given an untimed behavior $\beta$ we want to compute its effect on a set of valuations. 
@@ -833,7 +833,7 @@ into elementary operations on DBMs such as reset, conjunction, and delay success
 It is easy to see that an untimed behavior $\beta$ is feasible iff $\Post_{\beta} \neq \emptyset$.
 Since emptiness of DBMs is decidable, this allows us to compute whether or not $\beta$ is feasible.
 
-\iflong
+
 The next technical lemma's are needed further on:
 
 \begin{lemma}
@@ -884,10 +884,11 @@ Suppose $\M$ and $\N$ are MMTs with $\M \not\approx_{\mathit{timed}} \N$.
 Then there exists a transparent timed word $w$ of $\M$ that is not a timed word of $\N$.
 \end{lemma}
 
-\marginpar{What is the complexity of deciding eg timed equivalence or reachability of MMTs?}
+%\marginpar{What is the complexity of deciding eg timed equivalence or reachability of MMTs?}
 \fi
 
 \section{Learning algorithm}  
+\label{algorithm}
 In this section, we consider three instances of Angluin's MAT framework.
 In the first instance, the teacher knows an MMT $\M$, and the learner poses membership queries
 to learn the untimed behaviors of $\M$, and equivalence queries to check whether an hypothesis is correct.
@@ -902,6 +903,16 @@ We will show how an untimed teacher for MMTs can be implemented using a timed te
 and how an untimed learner for MMTs can be implemented using a Mealy machine learner.
 %This will allow us to use existing algorithms for learning Mealy machines,
 %as implemented for instance in LearnLib \cite{RSBM09}, as part of an algorithm to learn MMTs. 
+
+\iflong
+%
+\else
+Note that for an untimed behavior $\beta$, the set $\zone{\beta}$ of timer valuations that can be reached with a timed behavior $\sigma$ with $\untime(\sigma) = \beta$ can be symbolically represented and computed using Difference Bound Matrices (DBMs) \cite{Di89}.
+We can do this since the transition relations $\xrightarrow{d}$ and $\xrightarrow{i_1/o_1, \rho_1}$ can be decomposed 
+into elementary operations on DBMs such as reset, conjunction, and delay successors \cite{BengtssonY03}.
+This allows us to compute whether an untimed behavior $\beta$ is feasible ($\zone{\beta}$ is empty), and
+whether a timer $x$ may expire after $\beta$ ($\zone{\beta}$ contains a valuation in which $x$ is minimal).
+\fi
 
 \subsection{An untimed MAT framework for learning MMTs}
 Given the equivalence of the timed and the untimed semantics of MMTs, it is natural to also 
@@ -926,18 +937,14 @@ We can associate a unique input word $\untimedinputword(\beta)$ to $\beta$ by re
 updates, and timer sets from $\beta$.
 
 In our first learning setup, the teacher knows an MMT $\M$.
-The learner initially knows the set $I$ of inputs of $\M$, and may pose two types of queries:
-\begin{itemize}
-\item
+The learner initially knows the set of inputs $I$, and may pose two types of queries.
 With a \emph{membership query}, the learner asks for the response to an untimed input word $u$ over $I$.
 If $\M$ has a feasible untimed behavior $\beta$ with $\untimedinputword(\can{\beta}) = u$ then the teacher answers
 $\can{\beta}$. Otherwise, the answer is $\perp$ (``undefined'').
-\item
-An \emph{equivalence query} $\CH$, where $\CH$ is an MMT with inputs $I$.
+With an \emph{equivalence query}, the learner asks if a hypothesis $\CH$ with inputs $I$ is correct.
 Upon receiving $\CH$, the teacher answers \emph{yes} if $\CH \approx_{\mathit{untimed}} \M$.
-Otherwise it answers \emph{no} and supplies a counterexample, that is, a behavior $\beta$ in canonical form that
+Otherwise it answers \emph{no} and supplies a counterexample, a behavior $\beta$ in canonical form that
 is isomorphic to a feasible behavior of $\M$ but not to a feasible behavior of $\CH$.
-\end{itemize}
 
 \subsection{A timed MAT framework for learning MMTs}
 In our second learning setup, the teacher also knows an MMT $\M$.
@@ -1024,20 +1031,17 @@ The behavior of Mealy machine $\A$ is defined by function $A_\A : I^{\ast} \righ
 $A_\A(\sigma) = \lambda (q^0, \sigma)$, for  $\sigma \in I^{\ast}$.
 Mealy machines $\A$ and $\B$ are \emph{equivalent}, denoted $\A \approx \B$, iff $A_{\A} = A_{\B}$.
 Sequence $\sigma \in I^{\ast}$ \emph{distinguishes}
-$\M$ and $\N$ if and only if $A_{\M}(\sigma) \neq A_{\N}(\sigma)$.
+$\M$ and $\N$ iff $A_{\M}(\sigma) \neq A_{\N}(\sigma)$.
 
 In our third learning setup, the teacher knows a Mealy machine $\M$. 
-The learner initially knows the inputs $I$ of $\M$ and may ask two types of queries:
-\begin{itemize}
-\item
+The learner initially knows the inputs $I$ of $\M$ and may ask two types of queries.
 With a \emph{membership query}, the learner asks for the response to an input sequence $\sigma \in I^{\ast}$.
 The teacher answers with output sequence $A_{\M}(\sigma)$.
-\item
 With an \emph{equivalence query}, the learner asks if a hypothesized Mealy machine $\CH$ with
 inputs $I$ is correct, that is, whether $\CH$ and $\M$ are equivalent.
 The teacher answers \emph{yes} if this is the case. Otherwise she answers \emph{no} and supplies a
 \emph{counterexample} $\sigma \in I^{\ast}$ that distinguishes $\CH$ and $\M$.
-\end{itemize}
+
 The $L^{\ast}$ algorithm of Angluin \cite{Ang87} is able to learn Mealy machine $\M$ by asking a
 number of membership and equivalence queries that polynomial in the size of the corresponding canonical Mealy machine.
 Efficient implementations of $L^{\ast}$ and other algorithms for learning Mealy machines are available,
@@ -1046,12 +1050,12 @@ for instance in the tool \learnlib\ \cite{Nie03,RSBM09,MertenSHM11}.
 \subsection{Constructing an untimed MMT learner using a MM learner}
 The number of timers that may occur in canonical untimed behaviors grows unboundedly with the length of these behavior,
 since timers are never reused in canonical behaviors.
-Let $S$ be the set of canonical versions of the untimed behaviors of an MMT $\M$.
+Let $S$ be the set of canonical versions of the feasible untimed behaviors of an MMT $\M$.
 Then there is a fixed upper bound on the number of timers that are active in a behavior in $S$ at any point,
 since $\M$ only has a finite number of timers that it may use.
 This means that we can effectively construct a function that maps each untimed behavior $\beta \in S$
 to an isomorphic behavior $\uncan{\beta}$ in such a way that only finitely many
-different behaviors occur in all the behaviors in the range of $\mathit{uncan}$.
+different timers occur in all the behaviors in the range of $\mathit{uncan}$.
 For instance, if a transition occurs in a state in which the set of active timers is $Y$, and this transition
 starts a new timer, then $\mathit{uncan}$ may compute the smallest index $j$
 such that $x_j \not\in Y$, and then choose $x_j$ as the name of the new timer.
@@ -1154,7 +1158,27 @@ from the set $S$ of feasible untimed behaviors of $\N$ we may construct an equiv
 of Theorem~\ref{Nerode theorem}.
 Our learning algorithm requires a number of queries that is polynomial in the size of the minimal transparent MMT that is equivalent to the given MMT.
 
-Our algorithm for an untimed learner now looks as follows.
+Our algorithm for an MMT learner works as follows.
+Let $S$ be the set of canonical versions of feasible untimed behaviors of $\M$.
+The MMT learner guesses an overapproximation $Y$ of the set of clocks that occur in $\uncan{S}$.
+(If this guess turns out to be wrong the learner extends $Y$ and restarts the learning process.)
+Next it starts a MM learner with a set of input actions $I' = I \cup \{ \toevent{x} \mid x \in Y \}$.
+Since Mealy machines are input enabled, membership queries posed by the MM learner will in general contain
+inputs $\toevent{x}$ which are either \emph{illegal}, when timer $x$ is not currently active, or \emph{infeasible},
+meaning that timer $x$ cannot expire in the current state.
+We refer to illegal and infeasible inputs as \emph{bad}, and call the other inputs \emph{good}.
+In response to an illegal input the MMT learner will always return an output $\ast$, and the response to an infeasible
+input will always be an output $\perp$. Apart from this, bad inputs are ignored.
+Suppose that $i_1 \cdots i_k$ is a membership query posed by the MM learner.
+Inductively, the MMT learner figures out which inputs are illegal or infeasible, and what is the untimed behavior
+induced by the valid inputs up to $i_j$.
+The initial untimed behavior $\beta_0 = \emptyset$.
+Suppose that the learner has figured out which inputs in $u_j = i_1 \cdots i_{j-1}$ are bad and which untimed behavior
+$\beta_j$ is induced by the good inputs in $u_j$. If $i_j = \toevent{x}$ with $x \not\in X_{j-1}$ then input $i_j$ is illegal.
+Otherwise the MMT learner submits a membership query $\untimedinputword(\can{\beta_j}) ~ i_j$.
+If the response is $\perp$ then input $i_j$ is infeasible.
+Otherwise the response is $\can{\beta}$
+as 
 \marginpar{Needs doing}
 
 %Let $\M = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$ be a transparent MMT with $\perp \in O$.
@@ -1187,18 +1211,17 @@ Our algorithm for an untimed learner now looks as follows.
 %\end{theorem}
 
 \subsection{Constructing an untimed MMT teacher using a timed teacher}
-In this subsection, we show how we may construct a teacher for the untimed setting, while using the
-teacher for the timed setting.
+In this subsection, we show how we may construct a teacher for the untimed setting by using a teacher for the timed setting.
 
 Suppose the untimed teacher receives a membership query, consisting of an untimed input word
 $u = i_1 \cdots i_k$.
-Inductively, we construct a response for $u$ by the untimed teacher.
+Inductively, we construct a response for $u$.
 If $k=0$, then we take $\beta = \emptyset$.
 This is an untimed feasible behavior of $\M$ in canonical form with $\untimedinputword(\beta)=u$.
 For the induction step, suppose that $k>0$.
-If the computed answer for $i_1 \cdots i_{k-1}$ is $\perp$, then the answer for $u$ is also $\perp$.
-Otherwise, let $\beta$ be the computed answer for $i_1 \cdots i_{k-1}$.
-Then $\beta$ is the canonical form of a feasible untimed behavior of $M$, and $\untimedinputword(\beta)=u$.
+If the response for $i_1 \cdots i_{k-1}$ is $\perp$, then the answer for $u$ is also $\perp$.
+Otherwise, let $\beta$ be the response for $i_1 \cdots i_{k-1}$.
+Then $\beta$ is the canonical form of a feasible untimed behavior of $\M$, and $\untimedinputword(\beta)=u$.
 Let $Y$ be the final set of variables of $\beta$.
 If $i_k = \toevent{x}$ for some timer $x$ that is not expirable after $\beta$ then there exists no feasible behavior
 with untimed input word $u$. In this case, the untimed teacher may return the answer $\perp$.
