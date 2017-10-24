@@ -45,7 +45,9 @@ Figure~\ref{fig:abp} presents an MMT model of the sender from
 the alternating-bit protocol, adapted from \cite[Figure 3.15]{KR13}.
 \begin{figure}[h]
 \centering
+\ifshort
 \vspace{-2 em}
+\fi
 \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.3cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
   \node[initial, state] (1) {$q_0$};
   \node[state] (2) [right of=1] {$q_1$};
@@ -109,9 +111,7 @@ a single equivalence query.
 With the strong --- but in our view realistic --- assumption of a lookeahead oracle, our learning algorithm can learn MMTs
 using a number of queries that is polynomial in the size of the corresponding canonical MMT.
 Section~\ref{conclusions} contains some concluding remarks and lists topics for future research.
-\iflong
-%
-\else
+\ifshort
 A full version of this article including proofs is available at \url{http://www.sws.cs.ru.nl/publications/papers/fvaan/MMT}.
 \fi
 

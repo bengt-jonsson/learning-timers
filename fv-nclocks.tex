@@ -210,28 +210,27 @@ $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'$ and $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o''$.
 \label{fig:nondeterminism}
 \end{center}
 \end{figure}
-\iflong
-In order to rule out this type of nondeterminism, it is not enough to require that the timer update functions are injective,
-that is, it is not allowed to assign the same value to multiple timers in a single transition.
-This is illustrated by the MMT of Figure~\ref{fig:nondeterminism2}, which accepts both the timed words
-$1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'~ 1 ~ \mathit{to} ~ o'$ and $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o' ~ 1 ~ \mathit{to} ~ o''$.
-\begin{figure}[ht]
-\begin{center}
-\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.5cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
-  \node[initial, state] (1) {$q_0$};
-  \node[state] (2) [below of=1] {$q_1$};
-  \node[state] (4) [left of=2] {$q_2$};
 
-  \path[every node/.style={font=\sffamily\scriptsize}]
-    (1) edge node {$i/o$, $~x:=1$, $y:=2$} (2)  
-    (2) edge  node {$\toevent{y}/o''$} (4)
-      edge  [loop right] node {$\toevent{x}/o'$, $~x:=1$} (2);
-\end{tikzpicture}
-\caption{Another MMT with nondeterministic behavior}
-\label{fig:nondeterminism2}
-\end{center}
-\end{figure}
-\fi
+%In order to rule out this type of nondeterminism, it is not enough to require that the timer update functions are injective,
+%that is, it is not allowed to assign the same value to multiple timers in a single transition.
+%This is illustrated by the MMT of Figure~\ref{fig:nondeterminism2}, which accepts both the timed words
+%$1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'~ 1 ~ \mathit{to} ~ o'$ and $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o' ~ 1 ~ \mathit{to} ~ o''$.
+%\begin{figure}[ht]
+%\begin{center}
+%\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.5cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
+%  \node[initial, state] (1) {$q_0$};
+%  \node[state] (2) [below of=1] {$q_1$};
+%  \node[state] (4) [left of=2] {$q_2$};
+%
+%  \path[every node/.style={font=\sffamily\scriptsize}]
+%    (1) edge node {$i/o$, $~x:=1$, $y:=2$} (2)  
+%    (2) edge  node {$\toevent{y}/o''$} (4)
+%      edge  [loop right] node {$\toevent{x}/o'$, $~x:=1$} (2);
+%\end{tikzpicture}
+%\caption{Another MMT with nondeterministic behavior}
+%\label{fig:nondeterminism2}
+%\end{center}
+%\end{figure}
 %
 The nondeterminism of the MMT of Figure~\ref{fig:nondeterminism} (left)
 %and \ref{fig:nondeterminism2} 
@@ -240,30 +239,7 @@ Figure~\ref{fig:nondeterminism} (right) gives an example of an MMT that exhibits
 $7 ~ i ~ o ~ 1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'$ and $7 ~ i ~ o ~ 1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o''$.
 This type of nondeterminism is ``controllable'' and will not occur if we carefully
 select the timing of inputs.
-\iflong
-\begin{figure}[ht]
-\vspace{-2em}
-\begin{center}
-\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
-  \node[initial, state] (1) {$q_0$};
-  \node[state] (2) [right of=1] {$q_1$};
-  \node[state] (3) [right of=2] {$q_2$};
 
-  \path[every node/.style={font=\sffamily\scriptsize}]
-    (1) edge [text width=1cm] node {$i/o$\\ $x:=2$} (2)  
-    (2) edge [text width=1cm] node {$i/o$\\ $y:=1$} (3)
-      edge  [loop below] node {$\toevent{x}/o$, $~x:=2$} (2)
-   (3) edge  [loop below] node {$\toevent{x}/o'$} (3)
-   edge  [loop above] node {$\toevent{y}/o''$} (3);
-\end{tikzpicture}
-\caption{An MMT with ``controllable'' nondeterministic behavior}
-\label{fig:nondeterminism3}
-\end{center}
-\end{figure}
-Our learning algorithm applies to MMTs in which at most one timer is (re)started on each transition. Such MMTs do not
-exhibit uncontrollable nondeterminism. The algorithm chooses the timing of the input events in such a way that no
-nondeterministic behavior can arise.
-\fi
 
 \subsection{Timed and untimed runs and behaviors}
 Configurations consists of pairs of states and timer valuations. This means that there are two natural abstractions of
@@ -332,6 +308,9 @@ Then $\alpha$ can be projected both to an untimed run of $\M$
 \beh(\alpha) & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \xrightarrow{d_2} \tvals'_1 \xrightarrow{i_2/o_2, \rho_2} \tvals_2 \cdots
 \xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}.
 \end{eqnarray*}
+\iflong
+We say that $\sigma$ is an timed behavior of $\M$ if $\M$ has an timed run $\alpha$ with $\beh(\alpha) = \sigma$.
+\fi
 Note that $\beh(\untime(\alpha))=\untime(\beh(\alpha))$ and $\timedword(\alpha) = \timedword(\beh(\alpha))$.
 \iflong
 Thus the diagram of Figure~\ref{fig:diagram}, which summarizes the various types of runs and behaviors that we consider
@@ -425,6 +404,9 @@ If untimed behaviors $\beta$ and $\beta'$ are isomorphic, then $\beta$ is feasib
 
 \fi
 Two MMTs $\M$ and $\N$ with the same sets of inputs are \emph{untimed equivalent}, denoted $\M \approx_{\mathit{untimed}} \N$, iff their sets of feasible untimed behaviors are isomorphic.
+\iflong
+Untimed equivalence is finer than timed equivalence.
+\fi
 
 \begin{theorem}
 \label{untimedimpliestimed}
@@ -458,7 +440,9 @@ are timed equivalent but not untimed equivalent,
 because the top MMT has an untimed behavior
 $ \emptyset \xrightarrow{i/o,~ x, y:=1,2 } \{ x, y \}$, for which the bottom MMT has no isomorphic behavior.
 \begin{figure}
+\ifshort
 \vspace{-1em}
+\fi
 \begin{center}
 \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
   \node[initial, state] (1) {$q_0$};
@@ -709,8 +693,10 @@ In a timed behavior, there is always an integer amount of time between events fr
 This means that, if we consider the absolute time at which events occur, the fractional part of the absolute times
 of occurrence is the same for all events in a block.
 We call a timed behavior \emph{transparent} if the fractional part of the absolute times of any pair of events from different blocks is different. Note that a transparent timed behavior contains no races.
+\ifshort
 We call a timed word $w$ \emph{transparent} if there exists a transparent timed behavior $\sigma$ with 
 $w = \timedword(\sigma)$.
+\fi
 
 \begin{lemma}
 \label{lemma: transparent timed behavior}
@@ -726,6 +712,28 @@ By repeated application of Lemma~\ref{wiggle lemma}, we can wiggle the timing of
 \end{proof}
 \fi
 
+\iflong
+\paragraph{Causality maps.} 
+Consider an untimed behavior
+\begin{eqnarray*}
+\beta & = & X_0 \xrightarrow{i_1/o_1, \rho_1} X_1  \xrightarrow{i_2/o_2, \rho_2} X_2 \cdots \xrightarrow{i_k/o_k, \rho_k} X_{k}.
+\end{eqnarray*}
+A causality map for $\beta$ is a function that specifies, for each timer that expires, the index of the event that
+triggered this timeout.
+Formally, let $T = \{ j \mid i_j \in \toevents \}$ be the set of indices of $\beta$ corresponding to a timeout.
+A \emph{causality map} for $\beta$ is a function $c: T \rightarrow \{ 1 ,\ldots, k \}$ that assigns
+to each index $j$ with $i_j = \toevent{x}$ an index $l < j$ such that $\rho_l$ starts $x$, and all events in between $i_l$ and $i_j$
+do not affect $x$.
+
+\begin{lemma}
+\label{causality map untimed behavior}
+Each untimed behavior $\beta$ that starts with the empty set of timers has a unique causality map $c$.
+\end{lemma}
+We say that $c$ is a causality map of a timed behavior $\sigma$ if it is a causality map of $\untime(\sigma)$,
+and we say that it is a causality map of a timed run $\alpha$ if it is a causality map of $\beh(\alpha)$.
+Lemma~\ref{causality map untimed behavior} implies that each timed run of an MMT has a unique causality map $c$.
+
+\fi
 Consider a timed word
 $w  =   d_1 ~ i_1 ~ o_1 ~ d_2 ~ i_2 ~ o_2 \cdots d_k ~ i_k ~ o_k$.
 We want to know, for each timeout event in $w$, by which event this timeout is triggered.
@@ -737,14 +745,27 @@ $c$ is injective (at most one timer is started on each transition),
 for all $j$, $c(j) < j$ (a timeout is triggered by an earlier event), and
 (3)
 for all $j$, $\sum_{l=j+1}^{c(j)} d_l$ is an integer (timers expire after an integer delay).
+\iflong
+\begin{lemma}
+\label{causality map run is causility map of its timed word}
+Suppose $\alpha$ is a timed run of an MMT in which at most one timer is set
+per transition and $c$ is the causality map of $\alpha$. 
+Then $c$ is a causality map of $\timedword(\alpha)$.
+\end{lemma}
+\else
 It is easy to see that a timed word has a causality map iff it is a timed word of an MMT that starts at most one timer
-on each transition. In general, a timed word may have multiple causality maps.
+on each transition. 
+\fi
+In general, a timed word may have multiple causality maps.
 \iflong
 However, we have the following lemma.
+Call a timed word \emph{transparent} if the fractional part of the absolute times of all input events is different.
 
 \begin{lemma}
 \label{lemma unique causality map}
-A transparent timed word has a unique causality map.
+Suppose $\alpha$ is a timed run of an MMT in which at most one timer is set
+per transition, $w =  \timedword(\alpha)$ and $w$ is transparent. 
+Then $w$ has a unique causality map.
 \end{lemma}
 \else
 However, a transparent timed word has a unique causality map.
@@ -775,17 +796,25 @@ $\M \approx_{\mathit{untimed}} \N$.
 \end{theorem}
 \iflong
 \begin{proof}
-\marginpar{Proof needs doing}
 Suppose that $\M \approx_{\mathit{timed}} \N$.
 Let $\beta$ be a feasible untimed behavior of $\M$.
+For reasons of symmetry, it suffices to prove that $\N$ has a feasible untimed behavior $\beta'$ that is isomorphic to $\beta$.
+
+Since $\beta$ be a feasible untimed behavior of $\M$, $\M$ has an untimed run $\gamma$ with $\beh(\gamma) = \beta$.
 By Lemma~\ref{lemma: transparent timed behavior}, there exists a 
-a transparent timed behavior $\sigma$ such that $\beta = \untime(\sigma)$.
-Let  $w = \timedword(\sigma)$.
-Then $w$ is a timed word of $\M$ that has a unique causality map by Lemma~\ref{lemma unique causality map}.
+transparent timed behavior $\sigma$ such that $\beta = \untime(\sigma)$.
+There exists a unique timed run $\alpha = \run(\gamma,\sigma)$ of $\M$ with $\untime(\alpha) = \gamma$ and $\beh(\alpha) = \sigma$.
+Thus $\sigma$ is a timed behavior of $\M$.
+Let  $w = \timedword(\alpha)$.
+Then $w$ is a timed word of $\M$.
+By Lemma~\ref{lemma unique causality map}, $w$ has a unique causality map $c$.
 Since $\M \approx_{\mathit{timed}} \N$, $w$ is also a timed word of $\N$.
-Let $\alpha$ be the unique (by Lemma~\ref{lemma unique timed run}) timed run such that $w = \timedword(\alpha)$,
-and let $\beta' = \untime(\beh(\alpha))$.
-Note that the mappings $\timedword$, $\untime$ and $\beh$ all preserve the number of events, the sequence of inputs that occur (except for the names of the timers in timeouts), and the sequence of outputs.
+By Lemma~\ref{lemma unique timed run}, $\N$ has a unique time run $\alpha'$ such that $w = \timedword(\alpha')$.
+Let $\beta' = \untime(\beh(\alpha'))$.
+Then $\beta'$ is a feasible untimed behavior of $\N$.
+Note that the mappings $\timedword$, $\untime$ and $\beh$ all preserve the number of events, the sequence of inputs that occur (except for the names of the timers in timeouts), and the sequence of outputs. Thus $\beta$ and $\beta'$ have the same length, the same inputs (except for the timer names), and the same outputs.
+Moreover, by Lemmas~\ref{causality map untimed behavior} and \ref{causality map run is causility map of its timed word},
+$\beta'$ and $\beta$ have the same causality map $c$.
 
 By induction on the number of events in $\beta$ and $\beta'$, we prove that they are isomorphic.
 Since $\approx_{\mathit{untimed}}$ is symmetric, this suffices to prove the theorem.
@@ -793,17 +822,41 @@ Since $\approx_{\mathit{untimed}}$ is symmetric, this suffices to prove the theo
 Induction base. If $\beta$ and $\beta'$ contain $0$ events then they are both equal to the empty set of variables $\emptyset$,
 and thus trivially isomorphic.
 
-Induction step. Suppose $\beta$ contains $k+1$ events:
+For the induction step, suppose $\beta$ and $\beta'$ contain $k+1$ events:
 \begin{eqnarray*}
 \beta & = & X_0 \xrightarrow{i_1/o_1, \rho_1} X_1  \xrightarrow{i_2/o_2, \rho_2} X_2 \cdots \xrightarrow{i_k/o_k, \rho_k} X_{k}
- \xrightarrow{i_{k+1}/o_{k+1}, \rho_{k+1}} X_{k+1}.
+ \xrightarrow{i_{k+1}/o_{k+1}, \rho_{k+1}} X_{k+1},\\
+\beta' & = & Y_0 \xrightarrow{i'_1/o_1, \tau_1} Y_1  \xrightarrow{i'_2/o_2, \tau_2} Y_2 \cdots \xrightarrow{i'_k/o_k, \tau_k} Y_{k} 
+ \xrightarrow{i'_{k+1}/o_{k+1}, \tau_{k+1}} Y_{k+1}.
 \end{eqnarray*}
-Let $\delta$ be the prefix of $\beta$ containing $k$ events. Then $\delta$ is also a feasible untimed behavior and thus, by
-induction hypothesis, there exists an isomorphism $f = f_0 ,\ldots, f_k$ and a feasible untimed behavior
-\begin{eqnarray*}
-\delta' & = & Y_0 \xrightarrow{i_1/o_1, \tau_1} Y_1  \xrightarrow{i_2/o_2, \tau_2} Y_2 \cdots \xrightarrow{i_k/o_k, \tau_k} Y_{k}
-\end{eqnarray*}
-of $\N$ such that $\delta' = f(\delta)$.
+Let $\delta$ and $\delta'$ be the prefixes of $\beta$ and $\beta'$, respectively,
+containing $k$ events. Then $\delta$ is also a feasible untimed behavior and, by
+induction hypothesis, there exists an isomorphism $f = f_0 ,\ldots, f_k$ such that $\delta' = f(\delta)$.
+Our task is to extend this isomorphism to $\beta$ and $\beta'$.
+
+Since $\timedword$, $\untime$ and $\beh$ preserve inputs except for the timers in timeouts,
+either $i_{k+1} = i'_{k+1} \in I$ or $i_{k+1}, i'_{k+1} \in\toevents$.
+If $i_{k+1} = \toevent{x}$, for some $x \in X_k$, then $i_{k+1}$ is triggered by a previous event $i_j$ with $j=c(k+1)$ that started
+timer $x$, and this timer was left unaffected by all events from $\beta$ in between $i_j$ and $i_{k+1}$. In this case,
+$i'_{k+1} = \toevent{x'}$, for some $x' \in X_k$, and $i'_{k+1}$ is triggered by a previous event $i'_j$ with $j=c(k+1)$ that started
+timer $x'$, and this timer was left unaffected by all events from $\beta'$ in between $i_j$ and $i_{k+1}$.
+Using the definition of an isomorphism, we may infer that $i'_{k+1} = \toevent{f_k(x)}$.
+
+Now suppose that $x \in X_{k+1}$ is a timer that is active after $\beta$.
+Then, since $\M$ is timer live, there exists an untimed behavior $\beta_x$ consisting of transitions that leave $x$ unaffected, except for the last one in which $x$ expires, and such that $\beta \cdot \beta_x$ is a feasible untimed behavior of $\M$.
+Using the same construction as in the beginning of this proof, we may construct an untimed behavior $\beta'_x$ such
+that $\beta' \cdot \beta'_x$ is a feasible untimed behavior of $\N$ such that $\beta \cdot \beta_x$ and $\beta' \cdot \beta'_x$
+have the same length, the same inputs (except for the timer names) and the same causality map $c_x$.
+Let $m$ be the index of the final event in $\beta' \cdot \beta'_x$. Then $m$ is in the domain of $c_x$ and $c_x(m) \leq k+1$.
+If $c_x(m) \leq k$ then we define $f_{k+1}(x) = f_k (x)$.
+Otherwise, if $c_x(m) = k+1$ then we know that timer $x$ is started in the last transition of $\beta$.
+Since $c_m$ is also a causality map for $\beta'$, there is also a unique timer $x' \in Y_{k+1}$ that is started in the last transition of $\beta'$.
+In this case, we define $f_{k+1}(x) = x'$.
+Repeating this construction for all timers $x \in X_{k+1}$, we define a function $f_{k+1} : X_{k+1} \rightarrow Y_{k+1}$ and thus
+extend isomorphism $f$ to $\beta$ and $\beta'$.
+Note that $f_{k+1}$ is surjective because for each $y \in Y_{k+1}$, since $\N$ is timer live,
+there exists an untimed behavior $\beta_y$ consisting of transitions that leave $y$ unaffected, except for the last one in which $y$ expires, and such that $\beta' \cdot \beta_y$ is a feasible untimed behavior of $\N$.
+Using again the same construction as in the beginning of this proof, we may establish that $X_{k+1}$ contains a corresponding timer. 
 \end{proof}
 \fi
 
@@ -910,9 +963,7 @@ and how an untimed learner for MMTs can be implemented using a Mealy machine lea
 %This will allow us to use existing algorithms for learning Mealy machines,
 %as implemented for instance in LearnLib \cite{RSBM09}, as part of an algorithm to learn MMTs. 
 
-\iflong
-%
-\else
+\ifshort
 Note that for an untimed behavior $\beta$, the set $\zone{\beta}$ of valuations that can be reached with a timed behavior $\sigma$ with $\untime(\sigma) = \beta$ can be symbolically represented using DBMs \cite{Di89}.
 We can do this since the transition relations $\xrightarrow{d}$ and $\xrightarrow{i_1/o_1, \rho_1}$ can be decomposed 
 into elementary operations on DBMs such as reset, conjunction, and delay successors \cite{BengtssonY03}.
