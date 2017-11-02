@@ -992,15 +992,37 @@ each timer may expire at most once.
 Let $\beta$ be an untimed behavior in canonical form.
 We can associate a unique input word $\untimedinputword(\beta)$ to $\beta$ by removing all the output events,
 updates, and timer sets from $\beta$.
+\iflong
+\begin{figure}
+\begin{center}
+ \begin{tikzpicture}[>=stealth]
+            \draw [thick] (0,0) rectangle (1.5,3.5) node[midway] {Learner};
+            \draw [thick] (9.5,0) rectangle (11,3.5) node[midway] {Teacher};
+            \draw [->] (1.5,3) -- (9.5,3) node[midway,below] {MQs};
+            \draw (1.5,3) -- (9.5,3) node[midway,above] {\small untimed input word $u$};
+            \draw [<-] (1.5,2.5) -- (9.5,2.5) node[midway,below] {\small canonical feasible behavior $\beta$ with $u=\untimedinputword(\beta)$, \emph{or} $\perp$};
+            \draw [->] (1.5,1) -- (9.5,1) node[midway,below] {EQ};
+            \draw (1.5,1) -- (9.5,1) node[midway,above] {\small hypothesis $\CH$};
+            \draw [<-] (1.5,0.5) -- (9.5,0.5) node[midway,below] {\small {\bf yes} \emph{or} {\bf no}+canonical counterexample $\beta$};
+        \end{tikzpicture}
+\end{center}    
+\caption{Untimed MAT framework}
+\label{fig:untimed MAT}
+\end{figure}
+\fi
 
-In our first learning setup, the teacher knows an MMT $\M$.
+In our first learning setup, 
+\iflong
+illustrated in Figure~\ref{fig:untimed MAT},
+\fi
+the teacher knows an MMT $\M$.
 The learner initially knows the set of inputs $I$, and may pose two types of queries.
 With a \emph{membership query}, the learner asks for the response to an untimed input word $u$ over $I$.
 If $\M$ has a feasible untimed behavior $\beta$ with $\untimedinputword(\can{\beta}) = u$ then the teacher answers
 $\can{\beta}$. Otherwise, the answer is $\perp$ (``undefined'').
 With an \emph{equivalence query}, the learner asks if a hypothesis $\CH$ with inputs $I$ is correct.
 Upon receiving $\CH$, the teacher answers \emph{yes} if $\CH \approx_{\mathit{untimed}} \M$.
-Otherwise it answers \emph{no} and supplies a counterexample, a behavior $\beta$ in canonical form that
+Otherwise it answers \emph{no} and supplies a counterexample, a canonical untimed behavior $\beta$ that
 is isomorphic to a feasible behavior of $\M$ but not to a feasible behavior of $\CH$.
 
 \subsection{A timed MAT framework for learning MMTs}
