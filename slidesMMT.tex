@@ -166,11 +166,11 @@ This talk: \red{THEORY!!!}\
 \begin{center}
 \includegraphics[width=.35\textwidth]{TCPbug.png}
 \end{center}
-{\small Multiple standard violations found in implementations of major protocols, e.g.,
-\blue{TCP}\  (CAV'16, FMICS-AVoCS'17), \blue{TLS}\  (Usenix Security'15), \blue{SSH}\  (Spin'17).}
+{\small Standard violations found in implementations of major protocols, e.g.,
+\blue{TCP}\  (CAV'16, FMICS'17), \blue{TLS}\  (Usenix Security'15), \blue{SSH}\  (Spin'17).}
 %
 \pause
-\red{Findings led to several bug fixes in implementations.}
+\red{These findings led to several bug fixes in implementations.}
 }
 
 \frame{
@@ -242,7 +242,7 @@ Sender alternating-bit protocol, adapted from Kurose \& Ross, \green{Computer Ne
 \frame{
 \frametitle{Idea}
 
-Develop learning algorithm for Mealy machines with timers
+Develop learning algorithm for Mealy machines with timers!!!
 % in which transitions can be triggered by both input events and timeouts,
 %and may start, stop and restart multiple timers.
 
@@ -693,41 +693,99 @@ We assume learner knows bound $n$ on the number of timers that can be active in 
 }
 
 \frame{
-\frametitle{Learning Algorithm}
+\frametitle{A timed MAT framework}
 
-Based on Myhill-Nerode result we define an Angluin style learning algorithm for MMTs. Key idea: introduce membership queries for untimed behaviors and implement these via membership queries for timed words.
+{\small
+A \red{timed input word}\  is a sequence
+$u = d_1 ~ i_1 \cdots d_k ~ i_k ~ d_{k+1}$, where $d_j \in \delays$ and $i_j \in I$, for all $1 \leq j \leq k$,
+and $d_{k+1} \in \realsplus$.
 
-\vspace{1em}
-\red{Challenge 1.}\  How to observe causality in timed word in practice? Different fractional parts for different inputs?  Wiggling?!
+To each timed word $w$ we associate a timed input word \red{$\timedinputword(w)$}.
 
-\vspace{1em}
-\red{Challenge 2.}\  Figure out which timers are active in a state. May be resolved using \red{lookahead oracle}, as in the  Tomte tool. 
+Write \red{$u \propto u'$}\  if $u$ and $u'$ are equal, except that final delay of $u$ may be less or equal than final delay of $u'$. 
+}
 
-\vspace{1em}
-Assuming a lookahead oracle and a teacher that answers equivalence queries, and considering the number of clocks as constant,
-the number of queries is polynomial in size MMT.
+\begin{center}
+ \begin{tikzpicture}[>=stealth]
+            \draw [thick] (0,0) rectangle (1.5,3.5) node[midway] {Learner};
+            \draw [thick] (9.5,0) rectangle (11,3.5) node[midway] {Teacher};
+            \draw [->] (1.5,3) -- (9.5,3) node[midway,below] {MQs};
+            \draw (1.5,3) -- (9.5,3) node[midway,above] {\small transparent timed input word $u$};
+            \draw [<-] (1.5,2.5) -- (9.5,2.5) node[midway,below] {\small maximal timed word $w$ with $\timedinputword(w) \propto u$};
+            \draw [->] (1.5,1) -- (9.5,1) node[midway,below] {EQ};
+            \draw (1.5,1) -- (9.5,1) node[midway,above] {\small hypothesis $\CH$};
+            \draw [<-] (1.5,0.5) -- (9.5,0.5) node[midway,below] {\small {\bf yes} \emph{or} {\bf no}+transparent counterexample $w$};
+        \end{tikzpicture}
+\end{center}        
+}
+
+
+\frame{
+\frametitle{Building an untimed MMT teacher with a timed teacher}
+
+\begin{center}
+%\vspace{-1cm}
+ \begin{tikzpicture}[>=stealth]
+ \draw [dashed] (-0.1,-2.6) rectangle (6.1,3.6) node[right] {Untimed MMT teacher};
+            \draw [thick] (0,0) rectangle (1.5,3.5) node[midway,below] {\small Teacher};
+               \draw [thick] (0,0) rectangle (1.5,3.5) node[midway,above] {\small Timed};
+            \draw [thick] (4.5,0) rectangle (6,3.5) node[midway] {\small Adapter};
+            \draw [->] (1.5,3) -- (4.5,3) node[midway,below] {MQs};
+            \draw [<-] (1.5,2.5) -- (4.5,2.5);
+            \draw [->] (1.5,1) -- (4.5,1) node[midway,below] {EQs};
+            \draw [<-] (1.5,0.5) -- (4.5,0.5);
+            \draw [->] (6,3) -- (7,3);
+            \draw [<-] (6,2.5) -- (7,2.5);
+            \draw [->] (6,1) -- (7,1);
+            \draw [<-] (6,0.5) -- (7,0.5);
+            \draw [thick] (4.5,-2.5) rectangle (6,-1) node[midway,below] {\footnotesize Oracle};
+            \draw [thick] (4.5,-2.5) rectangle (6,-1) node[midway,above] {\footnotesize Lookahead};
+            \draw [->] (5.5,-1) -- (5.5,0) node[midway,right] {\small {\bf no} \emph{or} {\bf yes}+timeout value};
+            \draw [->] (5,0) -- (5,-1) node[midway,left] {\small untimed input word $u$ + index $j$};
+        \end{tikzpicture}
+\end{center}
+
+}
+
+\frame{
+\frametitle{Query complexity}
+
+Number of queries polynomial in size canonical MMT $\N$ produced by Myhill-Nerode construction.
+
+\vspace{1 em}
+Note that this MMT may be exponentially bigger (in the number of clocks) than original MMT $\M$ of the teacher. (Similar to register automata.)
+
+\vspace{1 em}
+For MMTs with single timer, learning is easy: all untimed behaviors are feasible, lookahead oracle is trivial if we assume learner
+knows bound on maximal timer value (just wait), and complexity is the same as for Mealy machine with the same size.
 }
 
 \section{Conclusions and future work}
 \frame{
-\frametitle{Conclusions and Future Work}
+\frametitle{Conclusions}
 Our work consitutes a major step towards a practical approach for active learning of timed systems. 
 
 \vspace{1 em}
 Just like timed automata paved the way to extend 
-model checking to a timed setting, we hope that MMTs will
+model checking to a timed setting, we expect that MMTs will
 make it possible to lift model learning to a timed setting.
+}
 
-\pause
-\vspace{1 em}
-Challenges:
+\frame{
+\frametitle{Future Work}
 \begin{enumerate}
 \item
-Implement equivalence oracle.
+Implement equivalence oracle
 \item
-Deal with timing uncertainty that occurs in real applications.
+Implement lookahead oracle (inspired by Tomte tool)
 \item
-Implement our algorithm and apply to practical case studies.
+Handle non transparent counterexamples
+\item
+Deal with timing uncertainty in real applications
+\item
+Implement our algorithm and apply to practical case studies
+\item
+Many theoretical questions left!
 \end{enumerate}
 
 }

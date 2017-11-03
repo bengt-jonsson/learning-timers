@@ -759,7 +759,7 @@ on each transition.
 In general, a timed word may have multiple causality maps.
 \iflong
 However, we have the following lemma.
-Call a timed word \emph{transparent} if the fractional part of the absolute times of all input events is different.
+Call a timed word \emph{transparent} if the fractional part of the absolute times of all input events in $I$ is different.
 
 \begin{lemma}
 \label{lemma unique causality map}
@@ -1036,10 +1036,10 @@ A \emph{timed input word} is a sequence
 $u = d_1 ~ i_1 \cdots d_k ~ i_k ~ d_{k+1}$, where $d_j \in \delays$ and $i_j \in I$, for all $1 \leq j \leq k$,
 and $d_{k+1} \in \realsplus$.
 A timed input word describes an experiment that may be carried out on an MMT. We provide a series of inputs at specific times, and record all the outputs that occur in response to these inputs up to and including the finishing time of the experiment, that is $\sum_{j=1}^{k+1} d_j$.
-Since we want to rule out race conditions, we require that the fractional part of the absolute times of occurrence of
+A timed input word is \emph{transparent} if the fractional part of the absolute times of occurrence of
 all the inputs are different.
-Let $w$ be a transparent timed word of $\M$.
-We can associate a unique timed input word $\timedinputword(w)$ to $w$ by 
+Let $w$ be a timed word.
+We associate a unique timed input word $\timedinputword(w)$ to $w$ by 
 removing all the outputs events, 
 removing all occurrences of $\mathit{to}$, 
 replacing consecutive numbers by their sum, 
@@ -1050,13 +1050,13 @@ $\timedinputword (3 ~ i_1 ~ o_1 ~ 1.1 ~ i_2 ~ o_2 ~ 2 ~ \mathit{to} ~ o_3 ~ 2.1 
 
 \iflong
 Note that the first input occurs at time $3$, the second at time $4.1$, and the third at time $8.2$.
-Thus the fractional part of the times of the inputs are different.
+Thus the fractional part of the times of the inputs are different. In fact, $w$ is transparent iff $\timedinputword(w)$ is transparent.
 \fi
 %
 If $u$ and $u'$ are timed input words, then we write $u \propto u'$ if $u$ and $u'$ are equal, except that the final delay of $u$ is less or equal than the final delay of $u'$. Observe that,
-for any timed input word $u$ over $I$, 
+for any transparent timed input word $u$ over $I$, 
 there exists a unique maximal timed word $w$ of $\M$ such that $\timedinputword(w) \propto u$.
-With a \emph{membership query}, the learner asks what the output is in response to a timed input word $u$ over $I$. 
+With a \emph{membership query}, the learner asks what the output is in response to a transparent timed input word $u$ over $I$. 
 The teacher answers with the unique maximal timed word $w$ of $\M$ such that $\timedinputword(w) \propto u$.
 
 \paragraph{Equivalence queries.}
