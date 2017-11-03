@@ -45,10 +45,10 @@ $\delta(q,i)$, $\lambda(q,i)$ and $\pi(q,i)$ are defined iff either
 $i \in I$ or $i=\toevent{x}$, for some $x \in\varsof{q}$.
 We write $q \xrightarrow{i/o,\rho} q'$ if $\delta(q,i) = q'$, $\lambda(q,i)= o$ and $\remap(q,i) = \rho$.
 \end{definition}
-Update function $\remap$ determines how timers are affected when an event occurs.
-Basically, four things may happen.
+Update function $\remap$ determines how timers are affected when an event occurs. Suppose $q \xrightarrow{i/o,\rho} q'$.
+Basically, four things may happen:
 %\marginpar{Add Venn diagram to illustrate situation?}
-Let $q \in Q$, $i \in \extinputs$, $\delta(q,i)=q'$ and $\remap(q,i)=\rho$.
+%Let $q \in Q$, $i \in \extinputs$, $\delta(q,i)=q'$ and $\remap(q,i)=\rho$.
 \begin{enumerate}
 \item
 If $x \in\varsof{q} \setminus \varsof{q'}$ then input $i$ \emph{stops} timer $x$.
@@ -194,7 +194,7 @@ $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'$ and $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o''$.
     (2) edge  node {$\toevent{x}/o'$} (3)
      edge  node {$\toevent{y}/o''$} (4);
 \end{tikzpicture}
-\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.2cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
   \node[initial, state] (1) {$q_0$};
   \node[state] (2) [right of=1] {$q_1$};
   \node[state] (3) [right of=2] {$q_2$};
@@ -203,8 +203,8 @@ $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'$ and $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o''$.
     (1) edge [text width=1cm] node {$i/o$\\ $x:=2$} (2)  
     (2) edge [text width=1cm] node {$i/o$\\ $y:=1$} (3)
       edge  [loop below] node {$\toevent{x}/o$, $~x:=2$} (2)
-   (3) edge  [loop below] node {$\toevent{x}/o'$} (3)
-   edge  [loop above] node {$\toevent{y}/o''$} (3);
+   (3) edge  [loop below] node {$\toevent{x}/o'$, $x:=1$} (3)
+   edge  [loop above] node {$\toevent{y}/o''$, $y:=1$} (3);
 \end{tikzpicture}
 \caption{MMTs with ``uncontrollable'' and ``controllable'' nondeterminism}
 \label{fig:nondeterminism}
