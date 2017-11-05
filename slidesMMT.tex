@@ -257,14 +257,15 @@ Develop learning algorithm for Mealy machines with timers!!!
 % in which transitions can be triggered by both input events and timeouts,
 %and may start, stop and restart multiple timers.
 
-\includegraphics[width=.2\textwidth]{egg_timer.jpg}
+\vspace{2 em}
+\includegraphics[width=.2\textwidth]{egg_timer0.jpg}
 \includegraphics[width=.2\textwidth]{egg_timer2.jpg}
 \includegraphics[width=.2\textwidth]{Sand-timer.jpg}
 \includegraphics[width=.2\textwidth]{egg_timer3.jpg}
 \includegraphics[width=.2\textwidth]{egg_timer4.jpg}
 
 \pause
-\vspace{1 em}
+\vspace{2 em}
 \blue{\em Occurrence of timing dependent behavior fully determined by previous behavior}
 }
 
@@ -303,7 +304,7 @@ $\remap : Q \times \extinputs \hookrightarrow (X \hookrightarrow \natplus)$ is a
 \frametitle{Operations on timers}
 Write $q \xrightarrow{i/o,\rho} q'$ if $\delta(q,i) = q'$, $\lambda(q,i)= o$ and $\remap(q,i) = \rho$.
 
-Basically, four things may happen:
+Basically, four things can happen:
 
 \begin{enumerate}
 \item
@@ -482,21 +483,23 @@ A timed (input) word is \red{transparent}\  if inputs occur at different fractio
 }
 
 \frame{
-\frametitle{Untimed Runs and Behaviors}
-An \red{untimed run}\  of an MMT $\M$ is a sequence
-\[
-q_0 \xrightarrow{i_1/o_1, \rho_1} q_1  \xrightarrow{i_2/o_2, \rho_2} q_2 \cdots \xrightarrow{i_k/o_k, \rho_k} q_k
-\]
-A \red{timed behavior}\  is a sequence
-\[
-\tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \xrightarrow{d_2} \tvals'_1 \xrightarrow{i_2/o_2, \rho_2} \tvals_2 \cdots
-\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}
-\]
-
-An \red{untimed behavior}\  is a sequence 
-\[
-X_0 \xrightarrow{i_1/o_1, \rho_1} X_1  \xrightarrow{i_2/o_2, \rho_2} X_2 \cdots \xrightarrow{i_k/o_k, \rho_k} X_{k}
-\]
+\frametitle{Timed and Untimed Runs and Behaviors}
+\begin{center}
+\begin{tikzpicture}[>=stealth]
+\node [above] at (5.1,4) {\footnotesize ($q_0, \tvals_0) \xrightarrow{d_1} (q_0, \tvals'_0) \xrightarrow{i_1/o_1} (q_1, \tvals_1)  \cdots
+(q_{k-1}, \tvals'_{k-1}) \xrightarrow{i_k/o_k} (q_k, \tvals_k)$};
+%An \red{untimed run}\  of an MMT $\M$ is a sequence
+\node [right] at (0,2) {\tiny $q_0 \xrightarrow{i_1/o_1, \rho_1} q_1  \cdots q_{k-1} \xrightarrow{i_k/o_k, \rho_k} q_k$};
+%A \red{timed behavior}\  is a sequence
+\node [left] at (11,2) {\tiny $\tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1  \cdots \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}$};
+%An \red{untimed behavior}\  is a sequence 
+\node at (5.7,0) {\footnotesize $X_0 \xrightarrow{i_1/o_1, \rho_1} X_1  \cdots X_{k-1} \xrightarrow{i_k/o_k, \rho_k} X_{k}$};
+\draw [thick, red, ->] (5.5,4) -- (2,2.3) node[midway, right] {$\untime$};
+\draw [thick, red, ->] (5.5,4) -- (8.5,2.3) node[midway, right] {$~~\beh$};
+\draw [thick, red, ->] (8.5,1.7) -- (5.5,0.3) node[midway, right] {$\untime$};
+\draw [thick, red, ->] (2,1.7) -- (5.5,0.3) node[midway, right] {$~~\beh$};
+\end{tikzpicture}
+\end{center}
 }
 
 \frame{
@@ -566,7 +569,7 @@ $\M \approx_{\mathit{timed}} \N$.
 \end{block}
 
 \pause
-Converse implication does not hold...
+Converse implication does not hold in general.
 }
 
 \iflong
@@ -881,7 +884,7 @@ Implement our algorithm and apply to practical case studies
 \item
 Many theoretical questions left!
 \end{enumerate}
-\includegraphics[width=.2\textwidth]{egg_timer.jpg}
+\includegraphics[width=.2\textwidth]{egg_timer0.jpg}
 \includegraphics[width=.2\textwidth]{egg_timer2.jpg}
 \includegraphics[width=.2\textwidth]{Sand-timer.jpg}
 \includegraphics[width=.2\textwidth]{egg_timer3.jpg}
