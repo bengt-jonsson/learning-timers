@@ -360,7 +360,7 @@ Let $\beta$ and $\beta'$ be two untimed behaviors with the same length and outpu
 An \emph{isomorphism} from $\beta$ to $\beta'$ is a list $f = f_0 ,\ldots, f_k$ of bijections $f_j : X_j \rightarrow Y_j$ such that
 for all $j>0$: (1) for all $x \in X_j \setminus \domof{\rho_j})$, $f_j(x)=f_{j-1}(x)$,
 (2) $i'_j = i_j$ if $i_j \in I$ and $i'_j = \toevent{f_{j-1}(x)}$ if $i_j = \toevent{x}$, for some $x \in X_{j-1}$, and
-(3) $\domof{\rho'_j} = f(\domof{\rho_j})$ and $\rho'_j(y) = \rho_j ( f_j^{-1}(y))$, for all $y\in\domof{\rho'_j}$.
+(3) $\domof{\rho'_j} = f_j(\domof{\rho_j})$ and $\rho'_j(y) = \rho_j ( f_j^{-1}(y))$, for all $y\in\domof{\rho'_j}$.
 In this case, since $\beta'$ is fully determined by $\beta$ and $f$, we write $\beta' = f(\beta)$.
 We say that $\beta$ and $\beta'$ are \emph{isomorphic} if there exists an isomorphism $f$ from $\beta$ to $\beta'$.
 Two sets of untimed behaviors $A$ and $B$ are \emph{isomorphic} if for each untimed behavior of $A$ there is an isomorphic untimed behavior in $B$,

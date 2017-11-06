@@ -489,9 +489,9 @@ A timed (input) word is \red{transparent}\  if inputs occur at different fractio
 \node [above] at (5.1,4) {\footnotesize ($q_0, \tvals_0) \xrightarrow{d_1} (q_0, \tvals'_0) \xrightarrow{i_1/o_1} (q_1, \tvals_1)  \cdots
 (q_{k-1}, \tvals'_{k-1}) \xrightarrow{i_k/o_k} (q_k, \tvals_k)$};
 %An \red{untimed run}\  of an MMT $\M$ is a sequence
-\node [right] at (0,2) {\tiny $q_0 \xrightarrow{i_1/o_1, \rho_1} q_1  \cdots q_{k-1} \xrightarrow{i_k/o_k, \rho_k} q_k$};
+\node [right] at (-1,2) {\footnotesize $q_0 \xrightarrow{i_1/o_1, \rho_1} q_1  \cdots q_{k-1} \xrightarrow{i_k/o_k, \rho_k} q_k$};
 %A \red{timed behavior}\  is a sequence
-\node [left] at (11,2) {\tiny $\tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1  \cdots \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}$};
+\node [left] at (10.5,2) {\footnotesize $\tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1  \cdots \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}$};
 %An \red{untimed behavior}\  is a sequence 
 \node at (5.7,0) {\footnotesize $X_0 \xrightarrow{i_1/o_1, \rho_1} X_1  \cdots X_{k-1} \xrightarrow{i_k/o_k, \rho_k} X_{k}$};
 \draw [thick, red, ->] (5.5,4) -- (2,2.3) node[midway, right] {$\untime$};
@@ -554,10 +554,33 @@ Example of  untimed behavior that is \emph{not} feasible:
 }
 
 \frame{
+\frametitle{Isomorphism}
+An \red{isomorphism}\ between untimed behaviors $\beta$ and $\beta'$ is a consistent renaming of timers:
+\begin{center}
+\begin{tikzpicture}[>=stealth]
+\node [right] at (0,2) {\footnotesize $\emptyset \xrightarrow{i_1/o_1, x:=2} \{ x \}  \xrightarrow{i_2/o_2, y:=1} \{ x, y \} \xrightarrow{\toevent{y} /o_3, y:= 100 } \{ x, y \}$};
+
+\node [right] at (0,0) {\footnotesize $\emptyset \xrightarrow{i_1/o_1, x_1 :=2} \{ x_1 \}  \xrightarrow{i_2/o_2, x_2 :=1} \{ x_1, x_2 \} \xrightarrow{\toevent{x_2} /o_3, x_3 := 100} \{ x_1, x_3 \}$};
+\draw [thick, red, ->] (0.2,1.7) -- (0.2,0.3);
+\draw [thick, red, ->] (2,1.7) -- (2.1,0.3);
+\draw [thick, red, ->] (4,1.7) -- (4.3,0.3);
+\draw [thick, red, ->] (4.3,1.7) -- (4.6,0.3);
+\draw [thick, red, ->] (6.9,1.7) -- (7.4,0.3);
+\draw [thick, red, ->] (7.2,1.7) -- (7.8,0.3);
+\end{tikzpicture}
+\end{center}
+\pause
+An untimed behavior is in \red{canonical form}\  if, for each $j$, the timer that is updated in the $j$-th event
+(if any) is equal to $x_j$. 
+
+Each untimed behavior is isomorphic to a unique untimed behavior in canonical form.
+}
+
+\frame{
 \frametitle{Untimed semantics}
 
 \begin{block}{Definition}
-MMTs $\M$ and $\N$ are \red{untimed equivalent}, $\M \approx_{\mathit{untimed}} \N$, iff their sets of feasible untimed behaviors are \red{isomorphic}, that is, equal modulo renaming of timers.
+MMTs $\M$ and $\N$ are \red{untimed equivalent}, $\M \approx_{\mathit{untimed}} \N$, iff their sets of feasible untimed behaviors are isomorphic.
 \end{block}
 
 \pause
@@ -722,8 +745,8 @@ Then $w$ has a unique causality map.
 An \red{untimed input word}\  is a sequence $u = i_1 \cdots i_k$ over $\extinputs$ such that
 $i_j = \toevent{x_l}$ implies $l < j$, and each timer expires at most once.
 
-\vspace{0.5em}
-An untimed behavior $\beta$ is \red{canonical}\  if, for each $j$, the timer started in the $j$-th event (if any) is $x_j$.
+%\vspace{0.5em}
+%An untimed behavior $\beta$ is \red{canonical}\  if, for each $j$, the timer started in the $j$-th event (if any) is $x_j$.
 %
 %In this case, \red{$\untimedinputword(\beta)$}\  is the subsequence of inputs occurring in $\beta$.
 %Each behavior $\beta$ is isomorphic to a canonical behavior.
@@ -744,24 +767,10 @@ An untimed behavior $\beta$ is \red{canonical}\  if, for each $j$, the timer sta
 }
 
 \frame{
-\frametitle{Myhill-Nerode (1)}
+\frametitle{Nerode congruence}
 
 \begin{block}{Definition}
-Let $S$ be a set of feasible untimed behaviors. Then $S$ is
-\begin{itemize}
-\item
-\red{prefix closed}: $\beta \beta' \in S \Longrightarrow \beta \in S$,
-\item
-\red{behavior deterministic}:
-$\beta \xrightarrow{i/o_1, \rho_1} X_1 \in S \wedge \beta \xrightarrow{i/o_2, \rho_2} X_2 \in S \Longrightarrow o_1 = o_2 \wedge \rho_1 = \rho_2 \wedge X_1 = X_2$,
-\item
-\red{input complete}:
-$\beta \in S \wedge i \in I \Longrightarrow \exists o, \rho, Y : \beta \xrightarrow{i/o, \rho} Y \in S$,
-\item
-\red{timeout complete}:
-$\beta \in S \wedge x \mbox{ expirable after } \beta \Longrightarrow
-\exists o, \rho, Y: \beta \xrightarrow{\toevent{x}/o, \rho} Y \in S$.
-\end{itemize}
+Let $S$ be a set of feasible untimed behaviors.
 Behaviors $\beta, \beta' \in S$ are \red{equivalent}, notation $\beta \equiv_S \beta'$, iff 
 for any untimed behavior
 $\gamma$, $\beta \cdot \gamma \in S \Leftrightarrow \beta' \cdot \gamma \in S$.
@@ -769,7 +778,7 @@ $\gamma$, $\beta \cdot \gamma \in S \Leftrightarrow \beta' \cdot \gamma \in S$.
 }
 
 \frame{
-\frametitle{Myhill-Nerode (2)}
+\frametitle{Myhill-Nerode theorem}
 
 \begin{block}{Theorem}
 Let $S$ be a set of feasible untimed behaviors over finite sets of inputs $I$ and outputs $O$.
