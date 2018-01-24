@@ -1,0 +1,82 @@
+\iflong
+\section{Reachability analysis}
+
+It is not difficult to translate an MMTs to a timed automaton \cite{AD94,BengtssonY03} that accepts the same timed words.
+Through such a translation, verification and analysis tools for timed automata, such as Uppaal \cite{Uppaal4.0}
+become available for MMTs.
+MMTs are less expressive than timed automata. MMTs, for instance, do not contain time deadlocks or zeno loops that
+may prevent time from progressing.
+
+MMTs have infinitely (in fact even uncountably) many configurations and it is thus necessary to use symbolic representations
+for reachability analysis. Given an untimed behavior $\beta$ we want to compute its effect on a set of valuations. 
+If $\beta =X_0$ and $K \subseteq\Vals{X_0}$ then we define $\Post_{\beta}(K) = K$.
+If $\beta = X_0 \xrightarrow{i_1/o_1, \rho_1} X_1$ and
+$K \subseteq\Vals{X_0}$ then
+\begin{eqnarray*}
+\Post_{\beta}(K) & = & \{ \tvals'' \in\Vals{X_1} \mid \exists \tvals \in K \exists d >0 \exists \tvals' \in\Vals{X_0} :
+ \tvals \xrightarrow{d} \tvals' \xrightarrow{i_1/o_1, \rho_1} \tvals'' \}.
+\end{eqnarray*}
+The definition of $\Post_{\beta}(K)$ is extended inductively to arbitrary $\beta$ by 
+$\Post_{\gamma \cdot \gamma'}(K) = \Post_{\gamma'} (\Post_{\gamma}(K))$, where $\gamma \cdot \gamma'$ is the decomposition of
+$\beta$ into an untimed behavior $\gamma$ of length one and an untimed behavior $\gamma'$.
+We write $\Post_{\beta}$ as abbreviation for $\Post_{\beta}(\Vals{\Head{\beta}})$.
+
+For any untimed behavior $\beta$, $\Post_{\beta}$ can be symbolically represented and computed using a Difference Bound Matrices (DBMs)
+ \cite{Di89},  as the transition relations $\xrightarrow{d}$ and $\xrightarrow{i_1/o_1, \rho_1}$ can be decomposed 
+into elementary operations on DBMs such as reset, conjunction, and delay successors \cite{BengtssonY03}.
+%
+It is easy to see that an untimed behavior $\beta$ is feasible iff $\Post_{\beta} \neq \emptyset$.
+Since emptiness of DBMs is decidable, this allows us to compute whether or not $\beta$ is feasible.
+
+The next technical lemma's are needed further on:
+
+\begin{lemma}
+\label{lemma: feasibility concatenation}
+Suppose $\beta, \beta'$ are untimed behaviors with
+% $\Last{\beta} = \Last{\beta'} = X_1$ and 
+$\Post_{\beta} = Post_{\beta'}$. Let $\gamma$ be any untimed behavior.
+Then $\beta \cdot \gamma$ is feasible iff $\beta' \cdot \gamma$ is feasible.
+\end{lemma}
+
+\begin{lemma}
+\label{lemma finitely many zones}
+The set
+$\{ \Post_{\beta} \mid \beta \mbox{ is a feasible untimed behavior of } \M \}$ is finite.
+\end{lemma}
+
+\begin{proof}
+All the sets $\Post_{\beta}$ can be represented using DBMs. Since an MMT only has a finite number of timers that can only be set to a finite number of integer values. Since in an MMT the values of timers can only decrease, only finitely many numbers may
+appear in the DBM's that represent the sets $\Post_{\beta}$. Thus all the sets $\Post_{\beta}$ can be represented by a finite
+collection of DBMs.
+\end{proof}
+
+\begin{lemma}
+Suppose $\beta$ is a feasible untimed behavior and $Y \xrightarrow{i/o, \rho} Y'$ is an untimed behavior,
+with $Y = \Last{\beta}$ and $i \in I$.
+Then $\beta \xrightarrow{i/o, \rho} Y'$ is a feasible untimed behavior.
+\end{lemma}
+
+Let $\beta$ be a feasible untimed behavior and let $x \in X$ be a timer. Then we say that $x$ is \emph{expirable} after $\beta$
+if there exists a valuation in $\Post_{\beta}$ in which $x$ is minimal.
+
+\begin{lemma}
+Suppose $\beta$ is a feasible untimed behavior and $Y \xrightarrow{\toevent{x}/o, \rho} Y'$ is an untimed behavior 
+with $Y = \Last{\beta}$.
+Then $x$ is expirable after $\beta$ iff $\beta \xrightarrow{\toevent{x}/o, \rho} Y'$ is feasible.
+\end{lemma}
+
+\begin{lemma}
+\label{not untimed}
+Suppose $\M$ and $\N$ are MMTs with $\M \not\approx_{\mathit{untimed}} \N$.
+Then there exists a feasible untimed behavior $\beta$ of $\M$ that is not isomorphic to any feasible untimed
+behavior of $\N$.
+\end{lemma}
+
+\begin{lemma}
+\label{not timed}
+Suppose $\M$ and $\N$ are MMTs with $\M \not\approx_{\mathit{timed}} \N$.
+Then there exists a transparent timed word $w$ of $\M$ that is not a timed word of $\N$.
+\end{lemma}
+
+%\marginpar{What is the complexity of deciding eg timed equivalence or reachability of MMTs?}
+\fi
