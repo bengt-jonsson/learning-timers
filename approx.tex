@@ -117,8 +117,9 @@ by supplying the input as fast as possible. Thus the only non-trivial part
 of answering a suffix query is to determine which instantiations of a generic
 timeout in $v$ are feasible. This is easily reduced to the problem of
 determining, for a feasible behavior $\beta$, which timeouts of form
-$\toevent{x_i}$ with $i \leq |\beta|$ are feasible. Let us now describe how
-this can be done.
+$\toevent{x_i}$ with $i \leq |\beta|$ are feasible (note that $\beta$ here in
+general denotes an extension of the $\beta$ supplied as prefix in a
+suffix query). Let us now describe how this can be done.
 
 In order to determine which behaviors of form $\beta \cdot \toevent{x_i}$
 are feasible, we perform a timed membership query, which provide the longest
@@ -179,4 +180,114 @@ Thereafter, the following procedure is performed
   other timers may not be known when the procedure starts, and so their
   corresponding constraints are added when they are detected: this happens
   when they expire unexpectectly.
+
+  Note that conjunctions of constraints on delays $\delay{j}{k}$ can be represented as DBM, as is standard for timed automata.
+
+\section{Algorithm for Learning of MMTs}
+
+In this section, we provide a more specialized approach for learning MMTs based
+on queries for untimed behaviors, outlined previously in this section.
+It might potentially replace the text in Section~\ref{sect:learn-mm}.
+
+The learning algorithm follows the standard pattern for automata learning
+algorithms, such as $L^*$. It maintains
+a set $U$ of {\em short prefixes}, and
+  an overapproximation of the Nerode equivalence,
+  represented by a set $V$ of generic untimed behaviors.
+  Each short prefix is an untimed
+behavior, which represent a state in the MMT to be constructed.
+During hypothesis construction,
+the approximation of the Nerode equivalence triggers the expansion of
+$U$ until it is closed, so that a hypothesis MMT can be formed.
+During hypothesis validation, returned counterexamples are used to refine
+the Nerode equivalence by expanding $V$.
+
+It is required that $V$ contains at least each one-letter word, including
+the word $\toevent{p}$.
+A set $U$ of short prefixes is {\em closed} wrt.\ $V$ if 
+  for each $\beta \in U$ and each
+  $i$, either in $I$ or an expirable timeout $\toevent{x_i}$ after $\beta$,
+  there is an output $o$ and a $\beta' \in U$ such that
+  $\beta \cdot i/o \equiv_{S,V} \beta'$.
+
+Whenever the set $U$ is not closed wrt.\ $V$, then $U$ is extended:
+if there is some $\beta \in U$ and feasible $i$ 
+for which there is no
+output $o$ and a $\beta' \in U$ such that
+$\beta \cdot i/o \equiv_{S,V} \beta'$, 
+then $\beta \cdot i/o$ is added to $U$, triggering new membership queries.
+This process of extending $U$ is continued until $U$ is closed wrt.\ $V$.
+
+%% \begin{definition}[Hypothesis automaton]
+%%   Let $U$ be a set of words, which contains $\emptyword$,
+%%   and $V$ a set of generic suffix inputs
+%% $U$ is closed wrt.\ $V$. Then the
+%% {\em hypothesis automaton} $\hypoof U\symbsuffs$ is the RA
+%% $\hypoof UV = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$, where
+%% \begin{itemize}
+%% \item $Q = U$ and $q_0 = \emptyword$,
+%% \item $\vars$ maps each location $\beta\in U$ to $\getmemorable{S}{\beta}{V}$,
+%% \item $\lambda(\beta) = +$ if $u \in \Lang$, otherwise $\lambda(u) = -$, and
+%% \item $\delta: Q \times \extinputs \hookrightarrow  Q$ is a transition function,
+%% %with $\delta(q,i)$ defined iff $q \in Q$ and $i \in I \cup \{ \toevent{x} \mid x \in \varsof{q} \}$, 
+%% for each $\pair{\act}{g} \in \initguardsof{\treeoracleof{u}{\symbsuffs}}$
+%%   there is a transition
+%%   $\tuple{u,\act(p),g,\remap,u'}$ in $\transitions$, where
+%% \begin{itemize}
+%%  \item $u'$ is the unique short prefix in $U$
+%%    such that $u\act(\repr ug) \remapequiv{\treeoracle}{\symbsuffs}{} u'$
+%%  \item $\remap : \getmemorable{u'}{\treeoracle}{\symbsuffs} \rightarrow (\getmemorable{u}{\treeoracle}{\symbsuffs} \, \cup \, \set{p})$ is defined by $\remap(x_i) = p$ if $\gamma^{-1}(x_i) = \var_{\lengthof{u}+1}$, otherwise
+%%     $\remap(x_i) =\gamma^{-1}(x_i)$, where $\gamma$ is such that
+%%    $u\act(\repr ug) \remapequiv{\treeoracle}{\symbsuffs}{\gamma} u'$
+%% \end{itemize}
+%% \end{itemize}
+%% \end{definition}
+%% \todobj{Make a note that $\hypoof U\symbsuffs$ need not be determinate}
+
+%% \begin{definition}
+%% \label{def:MMT}
+%% A \emph{Mealy machine with timers (MMT)} is a tuple
+%% \\
+%% \begin{itemize}
+%% \item
+%% $I$ and $O$ are finite sets of input events and output events, respectively,
+%% \item
+%% $Q$ is a finite set of states,
+%% with
+%% $q_0 \in Q$ the initial state,
+%% \item
+%% $\vars: Q \rightarrow \finitesubsets{X}$, with $\varsof{q_0} = \emptyset$,
+%% \item
+%% $\delta: Q \times \extinputs \hookrightarrow  Q$ is a transition function,
+%% %with $\delta(q,i)$ defined iff $q \in Q$ and $i \in I \cup \{ \toevent{x} \mid x \in \varsof{q} \}$, 
+%% \item
+%% $\lambda: Q \times \extinputs \hookrightarrow O$ is an output function, 
+%% \item
+%% $\remap : Q \times \extinputs \hookrightarrow (X \hookrightarrow \natplus)$ is a timer update function.
+%% \end{itemize}
+%% Let $q \in Q$, $i \in \extinputs$, $q'=\delta(q,i)$ and $\rho=\remap(q,i)$. 
+%% We require that $\varsof{q'} \setminus \varsof{q} \subseteq \domof{\rho} \subseteq\varsof{q'}$. 
+%% When timer $x$ expires it is either stopped or restarted:
+%% if $i=\toevent{x}$, for some $x$, then $x \not\in \varsof{q'} \setminus \domof{\rho}$.
+%% %
+%% We also require that input events are always enabled and timeout events are enabled
+%% for timers that are active in the current state:
+%% $\delta(q,i)$, $\lambda(q,i)$ and $\pi(q,i)$ are defined iff either
+%% $i \in I$ or $i=\toevent{x}$, for some $x \in\varsof{q}$.
+%% We write $q \xrightarrow{i/o,\rho} q'$ if $\delta(q,i) = q'$, $\lambda(q,i)= o$ and $\remap(q,i) = \rho$.
+%% \end{definition}
+%% Update function $\remap$ determines how timers are affected when an event occurs. Suppose $q \xrightarrow{i/o,\rho} q'$.
+%% Basically, four things may happen:
+%% %\marginpar{Add Venn diagram to illustrate situation?}
+%% %Let $q \in Q$, $i \in \extinputs$, $\delta(q,i)=q'$ and $\remap(q,i)=\rho$.
+%% \begin{enumerate}
+%% \item
+%% If $x \in\varsof{q} \setminus \varsof{q'}$ then input $i$ \emph{stops} timer $x$.
+%% \item
+%% If $x \in \varsof{q'} \setminus \varsof{q}$ then $i$ \emph{starts} timer $x$ with value $\rho(x)$.
+%% \item
+%% If $x \in \varsof{q} \cap \domof{\rho}$ then $i$ \emph{restarts} timer $x$ with value $\rho(x)$.
+%% \item
+%% Finally, if $x \in \varsof{q'} \setminus \domof{\rho}$ then timer $x$ is \emph{unaffected} by $i$.
+%% \end{enumerate}
 
