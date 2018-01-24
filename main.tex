@@ -60,6 +60,7 @@
 
 \usepackage{marginnote}
 \newcommand{\todobj}[1]{\textcolor{blue}{\sl [#1]}}
+\newcommand{\todofv}[1]{\textcolor{red}{\sl [#1]}}
 %% \newcommand{\todobj}[1]{}
 
 \pagestyle{plain}
@@ -72,14 +73,8 @@
 \author{Frits Vaandrager}
 \affiliation{Department of Software Science, ICIS, Radboud University, Nijmegen}
 
-
-\ifshort
-\vspace{-2em}
-\fi
 \begin{abstract}
-We introduce a new model of Mealy machines with timers (MMTs) that is able to model the timing behavior of a broad class of practical systems, and present an algorithm for active learning of MMTs that uses a
-number of queries that is polynomial in the size of the corresponding canonical MMT. This is achieved by using, besides the usual membership and equivalence queries, 
-lookahead queries to obtain information about whether a timer is active and may expire eventually.
+We introduce a new model of Mealy machines with timers (MMTs) that is able to model the timing behavior of a broad class of practical systems, and present an algorithm for active learning of MMTs using membership and equivalence queries. 
 \end{abstract}
 
 \maketitle

@@ -23,9 +23,9 @@ and vice versa.
 Isomorphisms can be lifted to timed behaviors in the obvious way. 
 Let $\sigma$ and $\sigma'$ be two timed behaviors with the same length and outputs:
 \begin{eqnarray*}
-\sigma & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \xrightarrow{d_2} \tvals'_1 \xrightarrow{i_2/o_2, \rho_2} \tvals_2 \cdots
+\sigma & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1  \cdots
 \xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k},\\
-\sigma' & = & \lambda_0 \xrightarrow{d_1} \lambda'_0 \xrightarrow{i'_1/o_1, \rho'_1} \lambda_1 \xrightarrow{d_2} \lambda'_1 \xrightarrow{i'_2/o_2, \rho'_2} \lambda_2 \cdots
+\sigma' & = & \lambda_0 \xrightarrow{d_1} \lambda'_0 \xrightarrow{i'_1/o_1, \rho'_1} \lambda_1  \cdots
 \xrightarrow{d_k} \lambda'_{k-1} \xrightarrow{i'_k/o_k, \rho'_k} \lambda_{k}.
 \end{eqnarray*}
 An \emph{isomorphism} from $\sigma$ to $\sigma'$ is a list $f = f_0 ,\ldots, f_k$ of bijections such that
@@ -269,7 +269,7 @@ and $\{ 4, 5 \}$:
 \begin{figure}
 \vspace{-2em}
 \begin{center}
-\includegraphics[width=.8\textwidth]{wiggling.jpg}
+\includegraphics[width=.45\textwidth]{wiggling.jpg}
 \end{center}
 \caption{A timed behavior with two races}
 \label{fig:races}

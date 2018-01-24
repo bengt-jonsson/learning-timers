@@ -61,7 +61,8 @@ Finally, if $x \in \varsof{q'} \setminus \domof{\rho}$ then timer $x$ is \emph{u
 \end{enumerate}
 
 \paragraph{Semantics.}
-The semantics of MMT $\M = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$ is defined via an infinite state transition system that describes all possible
+We define the semantics of an MMT $\M = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$ 
+via an infinite state transition system that describes all possible
 configurations and transitions between them.
 A \emph{valuation} is a partial function
 $\tvals : X \hookrightarrow \realsplus$, defined on a finite subset of $X$, that assigns nonnegative real numbers as values to timers.
@@ -72,21 +73,21 @@ Valuations and configurations can be modified by the occurrence of input and tim
 the occurrence of delays.
 If $\tvals$ is a valuation in which all timers
 have a value of at least $d$, then $d$ units of time may pass. As a result of this delay the value of all the timers is decremented by $d$.
-Formally, for $\tvals, \tvals'$ valuations and $d \in \delays$, we define a delay transition relation by
-\begin{eqnarray*}
-\tvals \xrightarrow{d} \tvals' & \Leftrightarrow & [\domof{\tvals} = \domof{\tvals'} \wedge \forall x \in\domof{\tvals} : \tvals'(x) = \tvals(x) - d ].
-\end{eqnarray*}
+Formally, for $\tvals, \tvals'$ valuations and $d \in \delays$, we define a delay transition relation by: $\tvals \xrightarrow{d} \tvals'$ iff
+\[
+\domof{\tvals} = \domof{\tvals'} \wedge \forall x \in\domof{\tvals} : \tvals'(x) = \tvals(x) - d .
+\]
 If the current valuation is $\tvals$, then timeout event $\toevent{x}$ may occur only if $\tvals(x)=0$.
 If an input or a timeout event occurs, $\tvals$ is updated as specified by update function $\rho$.
 The values of timers that are not affected by $\rho$ remain unchanged.
 Formally, for $\tvals, \tvals'$ valuations, $i \in \extinputs$, $o \in O$ and $\rho \in X \hookrightarrow \natplus$,
-we define a discrete transition relation by
+we define a discrete transition relation by: $\tvals \xrightarrow{i/o, \rho}  \tvals'$ iff
 \begin{eqnarray*}
-\tvals \xrightarrow{i/o, \rho}  \tvals' & \Leftrightarrow & [ \domof{\tvals'} \setminus \domof{\tvals}  \subseteq \domof{\rho} \subseteq \domof{\tvals'} ~ \wedge\\
+&& \domof{\tvals'} \setminus \domof{\tvals}  \subseteq \domof{\rho} \subseteq \domof{\tvals'} ~ \wedge\\
 && [\forall x \in\domof{\tvals'} : \tvals'(x) = \mbox{ if } x \in\domof{\rho} \mbox{ then } \rho(x) \mbox{ else } \tvals(x)] ~ \wedge\\
 %More concise but harder to understand:
 %&& \tvals' =  \tvals'[\tvals][\rho] ~ \wedge \\
-&& \forall x \in X : i=\toevent{x} \Rightarrow (\tvals(x) = 0 \wedge x \not\in\domof{\tvals'} \setminus \domof{\rho})].
+&& \forall x \in X : i=\toevent{x} \Rightarrow (\tvals(x) = 0 \wedge x \not\in\domof{\tvals'} \setminus \domof{\rho}).
 \end{eqnarray*}
 %Condition $\tvals' =  \tvals'[\tvals][\rho]$ expresses that $\tvals'$ is obtained by giving variables
 %in $\domof{\rho}$ the value specified by $\rho$, and all remaining variables the value specified by $\tvals$.
@@ -99,7 +100,9 @@ For all configurations $(q, \tvals)$, $(q', \tvals')$ of an MMT $\M$,
 \]
 A \emph{timed run} of $\M$ over $w$ is a sequence 
 \begin{eqnarray*}
-\alpha & = & C_0 \xrightarrow{d_1} C'_0 \xrightarrow{i_1/o_1} C_1 \xrightarrow{d_2} C'_1 \xrightarrow{i_2/o_2} C_2 \cdots
+\alpha & = & C_0 \xrightarrow{d_1} C'_0 \xrightarrow{i_1/o_1} C_1 \xrightarrow{d_2} 
+%C'_1 \xrightarrow{i_2/o_2} C_2 
+\cdots
 \xrightarrow{d_k} C'_{k-1} \xrightarrow{i_k/o_k} C_{k}
 \end{eqnarray*}
 of transitions between configurations $C_j, C'_j$ of $\M$, where $C_0$ is the initial configuration.
@@ -114,8 +117,11 @@ where $d_j \in \delays$, $i_j \in I \cup \{ \mathit{to} \}$, and $o_j \in O$.
 To each timed run $\alpha$ we associate a \emph{timed word} by forgetting the configurations and the timers
 in timeout events:
 \begin{eqnarray*}
-\timedword(\alpha) & = & d_1 ~ i'_1 ~ o_1 ~ d_2 ~ i'_2 ~ o_2 \cdots d_k ~ i'_k ~ o_k, \mbox{ where for all } j,
-i'_j  =  \left\{ \begin{array}{ll}
+\timedword(\alpha) & = & d_1 ~ i'_1 ~ o_1 ~ d_2 ~ i'_2 ~ o_2 \cdots d_k ~ i'_k ~ o_k,
+\end{eqnarray*}
+where for all  $j$,
+\begin{eqnarray*}
+i'_j  & = &   \left\{ \begin{array}{ll}
 i_j & \mbox{if } i_j \in I,\\
 \mathit{to} & \mbox{if } i_j \in \toevents.
 \end{array} \right.
@@ -174,14 +180,14 @@ a different approach in which we only consider runs in which no ``races'' occur.
 behavior of the above MMT in which there is a race between the second $i$ event and the timeout.
 \fi
 
-\paragraph{Nondeterminism.}
+\paragraph{Experiments and nondeterminism.}
 Due to our assumption that we cannot observe the identity of a timer in a timeout event, an MMT may exhibit nondeterministic
 behavior: even if we offer exactly the same inputs at exactly the same time, different outputs may occur in different runs. 
-The MMT of Figure~\ref{fig:nondeterminism} (left), for instance, accepts both the timed words
+The MMT of Figure~\ref{fig:nondeterminism} (top), for instance, has timed words
 $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'$ and $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o''$.
 (For clarity, we omit some self-loop transitions.)
 \begin{figure}[ht]
-\vspace{-2em}
+\vspace{-1em}
 \begin{center}
 \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=1.8cm,main node/.style={circle,draw,font=\sffamily\large\bfsthe name of the eries}]
   \node[initial, state] (1) {$q_0$};
@@ -235,13 +241,86 @@ $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'$ and $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o''$.
 The nondeterminism of the MMT of Figure~\ref{fig:nondeterminism} (left)
 %and \ref{fig:nondeterminism2} 
 is ``uncontrollable'' and occurs after any (nonempty) input sequence.
-Figure~\ref{fig:nondeterminism} (right) gives an example of an MMT that exhibits nondeterminism when the second input occurs \emph{exactly} one time unit after the first input: the MMT accepts timed words
+Figure~\ref{fig:nondeterminism} (bottom) gives an example of an MMT that exhibits nondeterminism when the second input occurs \emph{exactly} one time unit after the first input: the MMT has timed words
 $7 ~ i ~ o ~ 1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'$ and $7 ~ i ~ o ~ 1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o''$.
 This type of nondeterminism is ``controllable'' and will not occur if we carefully
 select the timing of inputs.
 
+Let us formalize these ideas.
+A \emph{timed input word} is a sequence
+$u = d_1 ~ i_1 \cdots d_k ~ i_k ~ d_{k+1}$, where $d_j \in \delays$ and $i_j \in I$, for all $1 \leq j \leq k$,
+and $d_{k+1} \in \realsplus$.
+A timed input word describes an experiment that may be carried out on an MMT in which we
+provide a series of inputs at specific times, and observe the outputs that occur in response to these inputs up to time $\sum_{j=1}^{k+1} d_j$.
+%
+We associate a timed input word $\timedinputword(w)$ to each timed word $w$ by 
+removing the outputs events, 
+removing the occurrences of $\mathit{to}$, 
+replacing consecutive numbers by their sum, 
+and possibly placing $0$ at the end of the sequence.
+Thus, for instance,
+$\timedinputword (7 ~ i ~ o ~ 1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o') = 7 ~ i ~ 1 ~ i ~ 1$ and
+$\timedinputword (3 ~ i_1 ~ o_1 ~ 1.1 ~ i_2 ~ o_2 ~ 2 ~ \mathit{to} ~ o_3 ~ 2.1 ~ i_4 ~ o_4) = 3 ~ i_1 ~ 1.1 ~ i_2 ~ 4.1 ~ i_4 ~ 0$.
+%
+If $u$ and $u'$ are timed input words, then we write $u \propto u'$ if $u$ and $u'$ are equal, except that the final delay of $u$ is less or equal than the final delay of $u'$.
+For any timed input word $u$ over $I$,  there exists a maximal timed word $w$ of $\M$ such that $\timedinputword(w) \propto u$.
+We call $w$ an \emph{outcome of running experiment} $u$ on $\M$.
+In general, outcome $w$ is not uniquely determined, and thus an MMT may exhibit nondeterminism. 
+In the example of Figure~\ref{fig:nondeterminism} (bottom), for instance, experiment $7 ~ i ~ 1 ~ i ~ 1$ has outcomes
+$7 ~ i ~ o ~ 1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'$ and  $7 ~ i ~ o ~ 1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o''$.
+
+We call timed input word $u$ \emph{transparent} if the fractional part of the absolute times of occurrence of
+all the inputs are different. A timed word $w$ is transparent iff $\timedinputword(w)$ is transparent.
+If $u$ is transparent, there is a unique outcome of running experiment $u$ on $\M$.
+\todofv{clarify this section}
+%\iflong
+%Note that the first input occurs at time $3$, the second at time $4.1$, and the third at time $8.2$.
+%Thus the fractional part of the times of the inputs are different. In fact, 
+%\fi
+\subsection{A timed MAT framework for learning MMTs}
+We now propose an instance of Angluin's MAT framework for Mealy machines with timers.
+In our setting, illustrated in Figure~\ref{fig timed MAT}, the teacher knows an MMT $\M$.
+Initially, the learner only knows the set $I$ of inputs of $\M$.
+The learner may perform experiments (membership queries, MQ) to learn about the
+timed words of $\M$, and  pose equivalence queries (EQ) to find out whether a constructed hypothesis is correct.
+
+\begin{figure}[h]
+\begin{center}
+ \begin{tikzpicture}[>=stealth]
+            \draw [thick] (0,0) rectangle (1.5,3.5) node[midway] {Learner};
+            \draw [thick] (7,0) rectangle (8.5,3.5) node[midway] {Teacher};
+            %\draw [thick] (7,0) rectangle (8.5,3.5) node[midway,below] {(knows $\M$)};
+            \draw [->] (1.5,3) -- (7,3) node[midway,below] {MQ};
+            \draw (1.5,3) -- (7,3) node[midway,above] {\small timed input word $u$};
+            \draw [<-] (1.5,2.5) -- (7,2.5) node[midway,below] {\small outcome of running experiment $u$ on $\M$};
+            \draw [->] (1.5,1) -- (7,1) node[midway,below] {EQ};
+            \draw (1.5,1) -- (7,1) node[midway,above] {\small hypothesis $\CH$};
+            \draw [<-] (1.5,0.5) -- (7,0.5) node[midway,below] {\small {\bf yes} \emph{or} {\bf no}+ counterexample $w$};
+        \end{tikzpicture}
+\end{center} 
+\caption{A timed MAT framework}
+\label{fig timed MAT}
+\end{figure}
+
+\paragraph{Membership queries.}
+With a \emph{membership query}, the learner asks what the output is in response to a timed input word $u$ over $I$. 
+The teacher answers with a maximal timed word $w$ of $\M$ such that $\timedinputword(w) \propto u$.
+
+
+\paragraph{Equivalence queries.}
+With an \emph{equivalence query}, the learner asks if a hypothesized MMT $\CH$ is correct, that is, 
+whether $\CH \approx_{\mathit{timed}} \M$.
+The teacher answers \emph{yes} if this is the case. Otherwise she answers \emph{no} and supplies a
+\emph{counterexample}: a transparent timed word $w$ of $\M$ that is not a timed word of $\CH$.
+(We will prove in Lemma~\ref{not timed} that such a timed word always exists.)
+
+\vspace{0.5em}
+\noindent
+The main result of this paper is an algorithm that allows the learner to learn an MMT $\CH$ that is timed equivalent to
+$\M$ via a finite number of membership and equivalence queries. \todofv{Point out restrictions on MMTs (only one timer set per transition, no ghost timers)}
 
 \subsection{Timed and untimed runs and behaviors}
+In order to present our algorithm, we need to define a number of abstractions of timed runs.
 Configurations consists of pairs of states and timer valuations. This means that there are two natural abstractions of
 timed runs: an abstraction $\untime$ that forgets all timing information and keeps the transitions of the MMT, 
 and an abstraction $\beh$ that forgets information on states and preserves the timing information.
@@ -252,7 +331,7 @@ the technical development of this paper.
 %
 Formally, an \emph{untimed behavior} over inputs $I$ and outputs $O$ is a sequence 
 \begin{eqnarray*}
-\beta & = & X_0 \xrightarrow{i_1/o_1, \rho_1} X_1  \xrightarrow{i_2/o_2, \rho_2} X_2 \cdots \xrightarrow{i_k/o_k, \rho_k} X_{k},
+\beta & = & X_0 \xrightarrow{i_1/o_1, \rho_1} X_1  \cdots \xrightarrow{i_k/o_k, \rho_k} X_{k},
 \end{eqnarray*}
 where $X_0 \subseteq X$ and, for each $j>0$,  $i_j \in \extinputs$, $o_j \in O$, $\rho_j \in X \hookrightarrow \natplus$, and
  $X_j \setminus X_{j-1}  \subseteq \domof{\rho_j} \subseteq X_j \subseteq X$.
@@ -260,13 +339,13 @@ Moreover, if $i_j = \toevent{x}$, for some $j>0$, then $x \in X_{j-1}$ and $x \n
 %
 An \emph{untimed run} of an MMT $\M$ is a sequence
 \begin{eqnarray*}
-\gamma & = & q_0 \xrightarrow{i_1/o_1, \rho_1} q_1  \xrightarrow{i_2/o_2, \rho_2} q_2 \cdots \xrightarrow{i_k/o_k, \rho_k} q_k
+\gamma & = & q_0 \xrightarrow{i_1/o_1, \rho_1} q_1   \cdots \xrightarrow{i_k/o_k, \rho_k} q_k
 \end{eqnarray*}
 of transitions of $\M$ that starts with the initial state $q_0$. 
 To each untimed run $\gamma$ we associate an untimed behavior by replacing all
 states by their sets of timers:
 \begin{eqnarray*}
-\beh(\gamma) & = & \vars(q_0) \xrightarrow{i_1/o_1, \rho_1} \vars(q_1)  \xrightarrow{i_2/o_2, \rho_2} \vars(q_2) \cdots \xrightarrow{i_k/o_k, \rho_k} \vars(q_k).
+\beh(\gamma) & = & \vars(q_0) \xrightarrow{i_1/o_1, \rho_1} \vars(q_1)  \cdots \xrightarrow{i_k/o_k, \rho_k} \vars(q_k).
 \end{eqnarray*}
 We say that $\beta$ is an untimed behavior of $\M$ if $\M$ has an untimed run $\gamma$ with $\beh(\gamma) = \beta$.
 Note that the initial timer set of an untimed behavior of $\M$ is empty.
@@ -274,38 +353,41 @@ Note that the initial timer set of an untimed behavior of $\M$ is empty.
 A \emph{timed behavior} over inputs $I$ and outputs $O$ is an alternating sequence
 \begin{eqnarray}
 \label{timedbehavior}
-\sigma & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \xrightarrow{d_2} \tvals'_1 \xrightarrow{i_2/o_2, \rho_2} \tvals_2 \cdots
+\sigma & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \cdots
 \xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}
 \end{eqnarray}
 of delay transitions and discrete transitions with, for each $j$,
 $\tvals_j, \tvals'_j$ valuations and,
 for each $j>0$,  $d_j \in \delays$, $i_j \in \extinputs$, $o_j \in O$, and $\rho_j \in X \hookrightarrow \natplus$.
 To each timed behavior $\sigma$ we associate an untimed behavior by forgetting the
-delays transitions and by replacing valuations by their domain:
+delay transitions and by replacing valuations by their domain:
 \begin{eqnarray*}
-\untime(\sigma) & = & \domof{\tvals_0} \xrightarrow{i_1/o_1, \rho_1} \domof{\tvals_1}  \xrightarrow{i_2/o_2, \rho_2} \domof{\tvals_2} \cdots \xrightarrow{i_k/o_k, \rho_k} \domof{\tvals_k}.
+\untime(\sigma) & = & \domof{\tvals_0} \xrightarrow{i_1/o_1, \rho_1}  \cdots \xrightarrow{i_k/o_k, \rho_k} \domof{\tvals_k}.
 \end{eqnarray*}
 We say that untimed behavior $\beta$ is \emph{feasible} if there exists a timed behavior $\sigma$ such that $\untime(\sigma) = \beta$.
 We also associate a timed word to timed behavior $\sigma$ by forgetting valuations, timers, and update functions:
 \begin{eqnarray*}
-\timedword(\sigma) & = & d_ 1 ~ i'_1 ~ o_1 ~ i'_2 ~ o_2 \cdots d_k ~ i'_k ~ o_k, \mbox{ where for all } j,
-i'_j  =  \left\{ \begin{array}{ll}
+\timedword(\sigma) & = & d_ 1 ~ i'_1 ~ o_1 ~ i'_2 ~ o_2 \cdots d_k ~ i'_k ~ o_k, 
+\end{eqnarray*} 
+where for all  $j$,
+\begin{eqnarray*}
+i'_j  & = &  \left\{ \begin{array}{ll}
 i_j & \mbox{if } i_j \in I,\\
 \mathit{to} & \mbox{if } i_j \in \toevents.
 \end{array} \right.
-\end{eqnarray*} 
+\end{eqnarray*}
 Let $\alpha$ be a timed run of an MMT $\M$: 
 \begin{eqnarray*}
-\alpha & = & (q_0, \tvals_0) \xrightarrow{d_1} (q_0, \tvals'_0) \xrightarrow{i_1/o_1} (q_1, \tvals_1) \xrightarrow{d_2} (q_1, \tvals'_1)  \cdots
+\alpha & = & (q_0, \tvals_0) \xrightarrow{d_1} (q_0, \tvals'_0) \xrightarrow{i_1/o_1} (q_1, \tvals_1)  \cdots
  \xrightarrow{i_k/o_k} (q_k, \tvals_k).
 \end{eqnarray*}
 Then $\alpha$ can be projected both to an untimed run of $\M$
 \begin{eqnarray*}
-\untime (\alpha) & = & q_0 \xrightarrow{i_1/o_1, \rho_1} q_1  \xrightarrow{i_2/o_2, \rho_2} q_2 \cdots \xrightarrow{i_k/o_k, \rho_k} q_k
+\untime (\alpha) & = & q_0 \xrightarrow{i_1/o_1, \rho_1} q_1  \cdots \xrightarrow{i_k/o_k, \rho_k} q_k
 \end{eqnarray*}
 (the $\rho_j$'s are determined since $\M$ is deterministic) and to a timed behavior
 \begin{eqnarray*}
-\beh(\alpha) & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \xrightarrow{d_2} \tvals'_1 \xrightarrow{i_2/o_2, \rho_2} \tvals_2 \cdots
+\beh(\alpha) & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1  \cdots
 \xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}.
 \end{eqnarray*}
 \iflong
@@ -332,7 +414,7 @@ in this article, commutes.
     (3) edge  node {$\untime$} (4)
         edge  node {$\timedword$} (5);
 \end{tikzpicture}
-\caption{Functions relating different types of runs and behaviors}
+\caption{Relating different types of runs and behaviors}
 \label{fig:diagram}
 \end{figure}
 \fi

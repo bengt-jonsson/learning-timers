@@ -103,13 +103,7 @@ in the future.
 In theory, this is a hard problem, since a timer may only expire after some specific sequence of inputs.
 In applications such ``combination lock'' scenarios do not arise: typically, if we just wait and provide no inputs at all,
 all the timers that have been set will expire one after the other.
-For this reason, our algorithm assumes a \emph{lookahead oracle} which, for any sequence of inputs $u$ and for any specific input
-$i$ in this sequence, tells us whether $i$ sets a timer that may expire after $u$.
-This is analogous to the way in which the equivalence oracle 
-of Angluin's L$^{\ast}$ algorithm \cite{Ang87} encapsulates a possibly exponential number of test queries into
-a single equivalence query.
-With the strong --- but in our view realistic --- assumption of a lookeahead oracle, our learning algorithm can learn MMTs
-using a number of queries that is polynomial in the size of the corresponding canonical MMT.
+
 Section~\ref{conclusions} contains some concluding remarks and lists topics for future research.
 \ifshort
 A full version of this article including proofs is available at \url{http://www.sws.cs.ru.nl/publications/papers/fvaan/MMT}.

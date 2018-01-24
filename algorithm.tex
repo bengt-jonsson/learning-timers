@@ -1,12 +1,9 @@
 \section{Learning algorithm}  
 \label{algorithm}
-In this section, we consider three instances of Angluin's MAT framework.
+In this section, we consider two more instances of Angluin's MAT framework.
 In the first instance, the teacher knows an MMT $\M$, and the learner poses membership queries
 to learn the untimed behaviors of $\M$, and equivalence queries to check whether an hypothesis is correct.
-In the second instance, the teacher also knows an MMT $\M$, but now the 
-learner performs timed experiments to learn about the
-timed words of $\M$, and poses equivalence queries and lookahead queries.
-The third instance is the well known setting (see e.g.\ \cite{Nie03,RSBM09}) 
+The second instance is the well known setting (see e.g.\ \cite{Nie03,RSBM09}) 
 in which the teacher knows an (untimed) Mealy machine $\A$,
 and the learner performs membership and equivalence queries.
 %
@@ -23,7 +20,7 @@ This allows us to compute whether an untimed behavior $\beta$ is feasible ($\zon
 whether a timer $x$ may expire after $\beta$ ($\zone{\beta}$ contains a valuation in which $x$ is minimal).
 \fi
 
-\subsection{An untimed MAT framework for learning MMTs}
+\subsection{An untimed MAT framework for MMTs}
 Given the equivalence of the timed and the untimed semantics of MMTs, it is natural to also 
 consider an untimed setting, in which a learner tries to construct an MMT based on membership queries for untimed behaviors.
 The teacher, however, does not reveal the names of the timers that occur in untimed behaviors, and brings each behavior into a
@@ -77,70 +74,70 @@ Upon receiving $\CH$, the teacher answers \emph{yes} if $\CH \approx_{\mathit{un
 Otherwise it answers \emph{no} and supplies a counterexample, a canonical untimed behavior $\beta$ that
 is isomorphic to a feasible behavior of $\M$ but not to a feasible behavior of $\CH$.
 
-\subsection{A timed MAT framework for learning MMTs}
-In our second learning setup, the teacher also knows an MMT $\M$.
-Initially, the timed learner knows the set $I$ of input of $\M$.
-The task of the timed learner is to learn $\M$ through three types of queries: membership queries, equivalence queries,
-and lookahead queries.
-
-\paragraph{Membership queries.}
-A \emph{timed input word} is a sequence
-$u = d_1 ~ i_1 \cdots d_k ~ i_k ~ d_{k+1}$, where $d_j \in \delays$ and $i_j \in I$, for all $1 \leq j \leq k$,
-and $d_{k+1} \in \realsplus$.
-A timed input word describes an experiment that may be carried out on an MMT. We provide a series of inputs at specific times, and record all the outputs that occur in response to these inputs up to and including the finishing time of the experiment, that is $\sum_{j=1}^{k+1} d_j$.
-A timed input word is \emph{transparent} if the fractional part of the absolute times of occurrence of
-all the inputs are different.
-Let $w$ be a timed word.
-We associate a unique timed input word $\timedinputword(w)$ to $w$ by 
-removing all the outputs events, 
-removing all occurrences of $\mathit{to}$, 
-replacing consecutive numbers by their sum, 
-and possibly placing $0$ at the end of the sequence.
-Thus, for instance,
-$\timedinputword (3 ~ i_1 ~ o_1 ~ 1.1 ~ i_2 ~ o_2 ~ 2 ~ \mathit{to} ~ o_3 ~ 2.1 ~ i_4 ~ o_4) = 
-3 ~ i_1 ~ 1.1 ~ i_2 ~ 4.1 ~ i_4 ~ 0$.
-
-\iflong
-Note that the first input occurs at time $3$, the second at time $4.1$, and the third at time $8.2$.
-Thus the fractional part of the times of the inputs are different. In fact, $w$ is transparent iff $\timedinputword(w)$ is transparent.
-\fi
+%\subsection{A timed MAT framework for learning MMTs}
+%In our second learning setup, the teacher also knows an MMT $\M$.
+%Initially, the timed learner knows the set $I$ of input of $\M$.
+%The task of the timed learner is to learn $\M$ through three types of queries: membership queries, equivalence queries,
+%and lookahead queries.
 %
-If $u$ and $u'$ are timed input words, then we write $u \propto u'$ if $u$ and $u'$ are equal, except that the final delay of $u$ is less or equal than the final delay of $u'$. Observe that,
-for any transparent timed input word $u$ over $I$, 
-there exists a unique maximal timed word $w$ of $\M$ such that $\timedinputword(w) \propto u$.
-With a \emph{membership query}, the learner asks what the output is in response to a transparent timed input word $u$ over $I$. 
-The teacher answers with the unique maximal timed word $w$ of $\M$ such that $\timedinputword(w) \propto u$.
+%\paragraph{Membership queries.}
+%A \emph{timed input word} is a sequence
+%$u = d_1 ~ i_1 \cdots d_k ~ i_k ~ d_{k+1}$, where $d_j \in \delays$ and $i_j \in I$, for all $1 \leq j \leq k$,
+%and $d_{k+1} \in \realsplus$.
+%A timed input word describes an experiment that may be carried out on an MMT. We provide a series of inputs at specific times, and record all the outputs that occur in response to these inputs up to and including the finishing time of the experiment, that is $\sum_{j=1}^{k+1} d_j$.
+%A timed input word is \emph{transparent} if the fractional part of the absolute times of occurrence of
+%all the inputs are different.
+%Let $w$ be a timed word.
+%We associate a unique timed input word $\timedinputword(w)$ to $w$ by 
+%removing all the outputs events, 
+%removing all occurrences of $\mathit{to}$, 
+%replacing consecutive numbers by their sum, 
+%and possibly placing $0$ at the end of the sequence.
+%Thus, for instance,
+%$\timedinputword (3 ~ i_1 ~ o_1 ~ 1.1 ~ i_2 ~ o_2 ~ 2 ~ \mathit{to} ~ o_3 ~ 2.1 ~ i_4 ~ o_4) = 
+%3 ~ i_1 ~ 1.1 ~ i_2 ~ 4.1 ~ i_4 ~ 0$.
 
-\paragraph{Equivalence queries.}
-With an \emph{equivalence query}, the learner asks if a hypothesized MMT $\CH$ is correct, that is, 
-whether $\CH \approx_{\mathit{timed}} \M$.
-The teacher answers \emph{yes} if this is the case. Otherwise she answers \emph{no} and supplies a
-\emph{counterexample}: a transparent timed word $w$ of $\M$ that is not a timed word of $\CH$.
-\iflong
-(By Lemma~\ref{not timed} 
-\else
-(We claim that
-\fi
-such a timed word always exists.)
+%\iflong
+%Note that the first input occurs at time $3$, the second at time $4.1$, and the third at time $8.2$.
+%Thus the fractional part of the times of the inputs are different. In fact, $w$ is transparent iff $\timedinputword(w)$ is transparent.
+%\fi
+%
+%If $u$ and $u'$ are timed input words, then we write $u \propto u'$ if $u$ and $u'$ are equal, except that the final delay of $u$ is less or equal than the final delay of $u'$. Observe that,
+%for any transparent timed input word $u$ over $I$, 
+% exists a unique maximal timed word $w$ of $\M$ such that $\timedinputword(w) \propto u$.
+%With a \emph{membership query}, the learner asks what the output is in response to a transparent timed input word $u$ over $I$. 
+%The teacher answers with the unique maximal timed word $w$ of $\M$ such that $\timedinputword(w) \propto u$.
 
-\paragraph{Lookahead queries.}
-A key question that a learner needs to answer is which timers are active after some untimed input word $u$.
-Since we assume that there are no ghost variables, a timer that is active after $u$ can expire eventually,
-following some further inputs.
-In general, however, it may be very difficult to find an input sequence that demonstrates that a timer is active: we may have combination lock scenarios
-in which a timer only expires after some very specific, long sequence of inputs.
-The search for such a sequence may require an exponential number of membership queries.
-However, if when we look at the actual use of timers in protocols, combination lock scenarios just do not occur:
-timeouts are not triggered by the occurrence of complicated sequences of inputs, 
-but rather by the \emph{absence} of certain inputs.
-Simply waiting and providing no inputs at all is usually enough to demonstrate that some timer has been set.
-We encapsulate the search for a proof that a timer is active into a \emph{lookahead oracle}:
-by posing a \emph{lookahead query}, a timed learner asks if, for some untimed input sequence $u = i_1 \cdots i_k$ and some
-index $j \leq k$, timer $x_j$ is active after $u$ in $\M$.
-The teacher/oracle answers \emph{yes} if this is the case, and \emph{no} otherwise.
-In the case the answer is \emph{yes} and $j=k$ the teacher gives the value to which the timer has just been set.
+%\paragraph{Equivalence queries.}
+%With an \emph{equivalence query}, the learner asks if a hypothesized MMT $\CH$ is correct, that is, 
+%whether $\CH \approx_{\mathit{timed}} \M$.
+%The teacher answers \emph{yes} if this is the case. Otherwise she answers \emph{no} and supplies a
+%\emph{counterexample}: a transparent timed word $w$ of $\M$ that is not a timed word of $\CH$.
+%\iflong
+%(By Lemma~\ref{not timed} 
+%\else
+%(We claim that
+%\fi
+%such a timed word always exists.)
 
-\subsection{A MAT framework for learning Mealy machines}
+%\paragraph{Lookahead queries.}
+%A key question that a learner needs to answer is which timers are active after some untimed input word $u$.
+%Since we assume that there are no ghost variables, a timer that is active after $u$ can expire eventually,
+%following some further inputs.
+%In general, however, it may be very difficult to find an input sequence that demonstrates that a timer is active: we may have combination lock scenarios
+%in which a timer only expires after some very specific, long sequence of inputs.
+%The search for such a sequence may require an exponential number of membership queries.
+%However, if when we look at the actual use of timers in protocols, combination lock scenarios just do not occur:
+%timeouts are not triggered by the occurrence of complicated sequences of inputs, 
+%but rather by the \emph{absence} of certain inputs.
+%Simply waiting and providing no inputs at all is usually enough to demonstrate that some timer has been set.
+%We encapsulate the search for a proof that a timer is active into a \emph{lookahead oracle}:
+%by posing a \emph{lookahead query}, a timed learner asks if, for some untimed input sequence $u = i_1 \cdots i_k$ and some
+%index $j \leq k$, timer $x_j$ is active after $u$ in $\M$.
+%The teacher/oracle answers \emph{yes} if this is the case, and \emph{no} otherwise.
+%In the case the answer is \emph{yes} and $j=k$ the teacher gives the value to which the timer has just been set.
+
+\subsection{A MAT framework for Mealy machines}
 We will present an algorithm for an untimed learner, by using existing algorithms for learning Mealy machines as a basis.
 
 A \emph{Mealy machine (MM)} is a tuple $\A = (I, O, Q, q_0, \delta, \lambda)$, where
