@@ -5,13 +5,16 @@ In this section, we present a framework for approximating the Nerode equivalence
 defined in Definition~\ref{def:nerode} using finite sets of suffixes. This
 is analogous to the use of finite sets of suffixes in $L^*$ to approximate the
 standard Nerode congruence on languages over finite words. A natural approach
-would be to define a finite set $V$ of suffixes of behaviors, and define
-an equivalence on behaviors by letting 
-behaviors $\beta$ and $\beta'$ be equivalence if $\beta \cdot \gamma \in S \Leftrightarrow \beta' \cdot \gamma \in S$ for all $\gamma \in V$.
-This idea does not work right away, however, since we must worry about the
-names of timers that expire in $\gamma$. Moreover, it is in many cases natural to
-allow names of expired timers in $\gamma$ differ depending on whether the
-prefix is $\beta$ or $\beta'$.
+would be to define an approximated Nerode equivalence on untimed behaviors,
+parameterized by a finite set $V$ of suffixes, by letting 
+untimed behaviors $\beta$ and $\beta'$ be equivalent
+iff there exists a bijection 
+$f_0 : X \to X'$ between some sets of timers \todobj{to be defined}
+such that for any untimed behavior $\gamma \in V$:
+if $\beta \cdot \gamma \in S$ then there exists an isomorphism $f$ that extends $f_0$ such that $\beta' \cdot f(\gamma) \in S$, and vice versa.
+%% (b) if $\beta' \cdot \gamma \in S$ then there exists an isomorphism $f$ that extends $f_0^{-1}$ such that $\beta \cdot f(\gamma) \in S$.
+In order to make this idea work, we must let the sets $V$ of suffixes be
+closed under renaming of timers.
 
 To illustrate this, consider a simple MMT, which can perform the untimed runs
 \(
@@ -42,193 +45,138 @@ the effect of a timeout $\toevent{x_1}$ for some timer $x_1$, then it must
 include the effects of all timeout events of form $\toevent{x_i}$, otherwise we
 may fail to overapproximate the Nerode equivalence of Definition~\ref{def:nerode}.
 
-Let us introduce an abstract timeout event, denoted $\tosymbol$, which 
-intuitively denotes the occurrence of any timout. Let an {\em abstract
-input suffix} be a sequence of symbols in $I \cup \set{tosymbol}$.
-A {\em concretization} of an abstract input suffix is obtained by replacing all
-symbols $\tosymbol$ by some timeout $\toevent{x_i}$. 
+\todobj{We need to decide how to handle sets of timers in ``partial''
+  untimed behaviors}
 
-The approximation of the Nerode equivalence is now carried out by a procedure,
-which answers so-called {\em suffix queries}.
-\todobj{Find a better name}
-The input to a suffix query is
-an untimed behavior $\beta$ and an abstract input suffix $\tau$. It returns
+Let us introduce a formal {\em timer parameter}, denoted $p$, and the
+{\em generic timeout} $\toevent{p}$,
+which intuitively denotes the occurrence of any timout.
+Let a {\em generic untimed behavior} be a sequence of symbols in
+$I \cup \set{\toevent{p}}$.
+A {\em instance} of a generic untimed behavior is obtained by replacing all
+generic timeout $\toevent{p}$ by some concrete timeout $\toevent{x_i}$.
+For a set $V$ of generic untimed behaviors, let $\instancesof{V}$ be the
+set of instances of generic untimed behaviors in $V$. For a canonical untimed
+behavior $\beta$, let $\suffixbehs{S}{\beta}{V}$ be the set of untimed behaviors
+$\gamma$ with $\untimedinputword(\gamma) \in \instancesof{V}$ such that
+$\beta\cdot\gamma$ is a canonical untimed behavior in $S$. Let
+$\getmemorable{S}{\beta}{V}$ be the set of timers among
+$x_1 , \ldots x_{|\beta|}$ that occur in some behavior in
+$\suffixbehs{S}{\beta}{V}$.
+Let $\suffbij{\beta}{\beta'}$ be the mapping on timers that map each
+timer $x_i$ with $i > |\beta|$ to $x_{i + |\beta'| - |\beta|}$.
+
+\todobj{An illustrating example would help the reader here}
+
+The approximated Nerode equivalence can now be defined as follows.
+Let $\beta$ and $\beta'$ be behaviors in $S$, and let  $V$ be a set of
+generic untimed behaviors.
+Let $f : \getmemorable{S}{\beta}{V} \to \getmemorable{S}{\beta'}{V}$
+be a bijection
+from $\getmemorable{S}{\beta}{V}$ to $\getmemorable{S}{\beta'}{V}$.
+Then $\beta$ and $\beta'$ are \emph{equivalent wrp $V$} under $f$, written
+$\beta \equiv_{S,V}^f \beta'$, 
+\[
+\gamma \in \suffixbehs{S}{\beta}{V}
+\qquad \mbox{iff} \qquad
+(\suffbij{\beta}{\beta'} \circ f) (\gamma) \in \suffixbehs{S}{\beta'}{V}
+\]
+Intuitively, $\beta \equiv_{S,V}^f \beta'$ means that $\beta$ and $\beta'$
+have the same suffixes with inputs in $\instancesof{V}$, after performing the
+obvious renamings of timers that rename timers in $\beta$ according to
+$f$ and timers in each suffix according to $\suffbij{\beta}{\beta'}$.
+We write $\beta \equiv_{S,V} \beta'$ to denote that
+$\beta \equiv_{S,V}^f \beta'$ for some
+$f : \getmemorable{S}{\beta}{V} \to \getmemorable{S}{\beta'}{V}$.
+
+\todobj{We now need to prove theorems about this approximating equivalence.
+  We should make the definition of Nerode use the same notation, whenever
+  reasonable, to make this easier}
+
+In order to use the above approximated equivalence for learning, we need to
+present a procedure for constructing the set
+$\suffixbehs{S}{\beta}{V}$ by a sequence of timed membership queries.
+
+We should also construct an automaton from a set of results of such
+suffix queries, provided they satisfy some conditions
+\todobj{closedness, etc, which we must define}
+
+Let us first present a procedure for answering suffix queries. It is
+sufficient to perform them for one generic suffix at a time.
+The input to a suffix query is a (feasible) untimed behavior $\beta$ an a
+generic untimed input behavior $v$. It returns
+$\suffixbehs{S}{\beta}{\set{v}}$. To compute this, it must be determined
 \begin{itemize}
-\item
-  all feasible untimed behaviors of form $\beta \cdot \gamma$ such that the
-  sequence of inputs in $\gamma$ are a concretization of $\tau$.
-\item
-  For all of the above behaviors, all feasible timeout transitions that may
-  occur after some prefix of $\beta \cdot \gamma$ caused by
-  a timer that was set sometime during $\beta \cdot \gamma$.
+\item which instantiations of generic timeouts in $v$ are feasible after $\beta$, and
+\item what is the output in response to an input.
 \end{itemize}
-We may assume, before the query, that all feasible timeout transitions
-after some prefix of $\beta$ are known.
+The second item is trivially answered by observing the output in response to
+each relevant input. Note that if a behavior $\beta$ is feasible, then
+any extension of $\beta$ by a non-timeout input is trivially feasible, simply
+by supplying the input as fast as possible. Thus the only non-trivial part
+of answering a suffix query is to determine which instantiations of a generic
+timeout in $v$ are feasible. This is easily reduced to the problem of
+determining, for a feasible behavior $\beta$, which timeouts of form
+$\toevent{x_i}$ with $i \leq |\beta|$ are feasible. Let us now describe how
+this can be done.
 
-The suffix query can be implemented by a set of timed membership queries.
-During its operation, it maintains a timing constraint that characterizes
-under which timing constraint a particular behavior $\beta \cdot \gamma$
-can be performed. This constraint represents the constraints imposed
-by timers that are known to be set during $\beta \cdot \gamma$, and
-which have been observed to expire in some continuation.
-The suffix query essentially performs two things
-\begin{itemize}
-\item For each pair of transitions in $\beta \cdot \gamma$ (of index $i$ and $j$,
-  it checks whether a timer is set at transition $i$ and can expire instead of
-  transition $j$. This is done by maximizing the time between transitions $i$ and
-  $j$ under the known timing constraints, and seeing whether timer $x_i$
-  actually expires instead of the $j$th transition. During such an experiment,
-  it may happen that new timers are discovered that expire before $x_i$. If so,
-  they are added to the maintained constraint, and the procedure restarts.
-\item For each abstract $\tosymbol$ symbol in the suffix, it is determined
-  which timers may actually expire as concretizations of $\tosymbol$. This is
-  done in a similar way as the first activity: For each $i$, it is checked
-  whether timer $\toevent{x_i}$ may expire as $\tosymbol$. The corresponding
-  timing constraint is added to the set of maintained constraints.
-\end{itemize}
-    Our suffix query thus just produces a ``subtree'' of the
-    unfolding of the MMT state transition graph, which includes
-    $\beta\cdot\gamma$ and the timeout transitions that are feasible from
-    any of its prefixes. Note that we do not explicitly annotate prefixes with
-    ``live'' timers, since we can only underapproximate the set of live
-    timers with finite information.
+In order to determine which behaviors of form $\beta \cdot \toevent{x_i}$
+are feasible, we perform a timed membership query, which provide the longest
+possible time delay between the $i$th transition in $\beta$ and the time
+of any other timeout that can feasibly expire after $\beta$. In order to
+maximize this time, we need to know which other timeouts may expire while
+performing $\beta \cdot \toevent{x_i}$. Such timeouts are either expiring
+as part of $\beta$, or disturb the execution of $\beta \cdot \toevent{x_i}$,
+in which case our membership query must know how to prevent them from occuring.
 
-    The approximation of the Nerode equivalence is now derived by saying that
-    two equivalent prefixes return the same answers to suffix queries, modulo
-    renaming of timers. This is not very different from how the approximated
-    Nerode congruence is defined for register automata.
+Les us introduce notation. Let $\beta$ be of form
+\(
+  {i_1/o_1, \rho_1} \ \cdot \ {i_n/o_n, \rho_n}
+\)
+We are looking for a corresponding timed behavior of form 
+\[
+\tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1}
+\quad \cdots \quad
+\xrightarrow{d_n} \tvals'_n \xrightarrow{i_n/o_n, \rho_n} \tvals_n
+\xrightarrow{d_{n+1}} \tvals'_{n+1} \xrightarrow{\toevent{x_i}/o_{n+1}, \rho_n}
+\]
+The timed membership queries need to select values
+of $\vect{d}{n+1}$, and gradually adds new timers to the word together
+with constraints on $\vect{d}{n+1}$ induced by these timers.
+Let $\delay{j}{k}$ denote $d_{j+1} + d_{j+2} + \cdots + d_k$.
 
-    \todobj{The rest of this section is old text from ``bj-nclocks''. Please
-      do not read it at this point}
-
-The suffix query can be answered by performing timed queries, using the
-following procedure.
-
-The procedure must find all ways to instantiate the timeout symbols in $v$
-with actual timers to obtain a feasible instantiation of $u\conc v$, and for
-each such instantiation determine the set of timers that may expire after some
-prefix, and how they are manipulated.
-
-Our procedure considers increasing prefixes $z$ of extended inputs that
-instantiate some prefix of $u \conc v$. For each such prefix, it
-determines the set $\expirable(z)$, the constraint $\constrof{z}$
-under which $z$ can be performed without any succeeding timer event, 
-the timers that are in $\expirable(z')$ for some prefix $z'$ of $z$, and
-their manipulation.
-
-The procedure performs repeated membership queries for selected values
-of $\vect{t}{n+1}$, and gradually adds new timers to the word together
-with constraints on $\vect{t}{n+1}$ induced by these timers.
-
-Let $\delay{j}{k}$ denote $t_{j+1} + t_{j+2} + \cdots + t_k$.
-%% This means that $\remapinst_j(\timerof jp) = p$, and that 
-%% $\remapinst_l(\timerof jp) = \timerof jp$ if $j < l < k$.
-%% This means that $\timerof jp \in \domof{\remapinst_l}$ iff
-%% $j \leq l < k$, where $\remapinst_j(\timerof jp) = p$ and
-%% $\remapinst_l(\timerof jp) = \timerof jp$ for $j < l < k$.
-%% Initially, $\constrof{\word}$ is the conjunction of the constraints of form
-%% $\delay{j}{k}=m$ for each $i_k$ of form is $\toevent{\timerof jp}$.
-
-%% The procedure considers prefixes in increasing order. For each input prefix
-%% $z$, it
-%% \begin{itemize}
-%% \item determines all timers that are in $\expirable(z)$,
-%% \item gradually builds a constraint $\constrof{z}$ under which $z$ can
-%%   be performed without interruption by unexpected timer events,
-%% \item
-%%   gradually builds the mappings $\remapinst_{z'}$ for prefixes $z'$ of $z$.
-%% \end{itemize}
-
-\medskip
-\noindent{\bf Algorithm} \textsl{Infer-Traces.}
-\begin{description}
-\item[Input:] (normalized) feasible input prefix $u$ and input suffix $v$,
-\item[Returns:] set of (normalized) traces
-$\uttrace\conc\strace$ such that
-$\pinpof{\uttrace} = u$ and $\sinpof{\strace} = v$, together with
-  constraint $\constrof{\uttrace\conc\strace}$ on derived timed words.
-\item[Initialization:]
-    Let $z = \emptyword$, let $\constrof{z} = \true$;
-\item[Return:]
-    $\textsc{Infer-Traces}(\emptyword,\emptyword,\true)$
-%%     \begin{itemize}
-%% \item initialize $\vect{\remapinst}n$ by letting
-%%     $\timerof jp \in \domof{\remapinst_l}$ iff $i_k$ is $\toevent{\timerof jp}$
-%%     with $j \leq l < k$; let $\remapinst_j(\timerof jp) = p$ and
-%%     $\remapinst_l(\timerof jp) = \timerof jp$ for $j < l < k$;
-%% \item let $\constrof{\uttrace}$ be
-%%     the conjunction of the constraints of form
-%% $\delay{j}{k}=p$ for each $i_k$ of form $\toevent{\timerof jp}$.
-%%     \end{itemize}
-\end{description}
-\medskip
-\noindent{\bf Function} $\textsc{Infer-Traces}(z,\uttrace,\constrof{\uttrace})$;
-\begin{enumerate}
-\item
-  let $z = i_1 \cdots i_m$;
-  let $\uttrace = \tuple{i_1,o_1,\remapinst_1}\cdots\tuple{i_m,o_m,\remapinst_m}$;
-\item
-  {\bf for} each index $k = 1, \ldots , m$ {\bf do}:
-     \qquad \textit{// find all timers in $\expirable(z)$}
+The algorithm maintains an increasing constraint $\constr$ on delays of form
+$\delay jk$. Initially, the constraint contains the conjunct
+$\delay jk = D$ whenever $i_k$ is of form $\toevent{x_j}$ and
+$\rho_j$ sets $x_j$ to $D$.
+Thereafter, the following procedure is performed
   \begin{enumerate}
   \item
-    find $\vect t{{m+1}}$ that maximizes $\delay{k}{(m+1)}$ given
-    $\constrof{\uttrace}$;
+    find $\vect d{{n+1}}$ that maximizes $\delay{i}{(n+1)}$ given
+    $\constr$ (note that $d_{n+1} = \infty$ is allowed)
   \item
-    supply membership query $t_1i_2t_2i_2 \cdots t_mi_mt_{m+1}$;
+    supply membership query with delay values $\vect d{{n+1}}$.
+\begin{itemize}
   \item
-    {\bf if} unexpected timeout $\toevent{\timerof jp}$ occurs within at most
-    $t_{m+1}$ after $i_m$:
-    \begin{enumerate}
-    \item
-      add $\timerof jp$ to $\domof{\remapinst_l}$ iff
-$j \leq l \leq m$, where $\remapinst_j(\timerof jp) = p$ and
-      $\remapinst_l(\timerof jp) = \timerof jp$ for $j < l \leq m$;
-    \item
-      Add conjunct 
-      $\delay{j}{(m+1)} \leq p$ to $\constrof{\uttrace}$;
-      \todobj{should it be $\delay{j}{(m+1)} < p$?}
-    \item if $k \neq j$ go to (a);
-    \end{enumerate}
-    {\bf else} do nothing;
+    {\bf if} the output is of form $\beta$ followed by $\toevent{x_i}$, then
+    report that $\toevent{x_i}$ is feasible and stop
+  \item
+    {\bf else if} no timeout occurs within $d_{n+1}$ after $\beta$, report
+    that $\toevent{x_i}$ is not feasible and stop
+  \item
+    {\bf else if} another timeout of form $\toevent{x_j}$ occurs before
+    the $k$th input, this means that timer $x_j$ is assigned a value
+    $D_j$ at the $j$ transition and may expire before the $k$th transition
+    in the untimed trace. In order to prevent this from happening,
+    add the constraint $\delay jk < D_j$ to $\constr$ and start again
+    from step 1.
+\end{itemize}
   \end{enumerate}
-  {\bf od}
-\item
-  {\bf if} $\lengthof{z} = \lengthof{u} + \lengthof{v}$ {\bf return}
-  $\tuple{\uttrace,\constrof{\uttrace}}$;
-\item
-  {\bf if} $i_{m+1} \in \extinputs$:
-  \[  \textbf{return } \textsc{Infer-Traces}(zi_{m+1},\uttrace\tuple{i_{m+1},o_{m+1},\emptyset},\phi')
-  \]
-  where $\phi'$ is $\constrof{\uttrace}$ if $i_{m+1} \in I$, otherwise, if
-  $i_{m+1} = \toevent{\timerof jp}$, it is obtained from $\constrof{\uttrace}$
-  by replacing $\delay{j}{(m+1)} \leq p$ by $\delay{j}{(m+1)} = p$.
-  \item
-  {\bf else} \hspace*{4cm} \textit{// \ $i_{m+1}$ is the timeout symbol}
-    \[
-    \textbf{return} \mathop\bigcup_{\timerof jp \in \expirable(z)}
-     \textsc{Infer-Traces}(z\toevent{\timerof jp},\uttrace\tuple{\toevent{\timerof jp},o_{m+1},\emptyset},\phi')
-     \]
-  where  $\phi_j^p$ is obtained from $\constrof{\uttrace}$
-  by replacing $\delay{j}{(m+1)} \leq p$ by $\delay{j}{(m+1)} = p$.
-\end{enumerate}
-Intuitively, the function
-$\textsc{Infer-Traces}(z,\uttrace,\constrof{\uttrace})$ finds
-all timers in $\expirable(z)$ by testing for each $k$ whether 
-it is possible
-to set a timer at the $k$th transition that may expire after the
-$m$th transition. Any such timer expiration adds a constraint to
-$\constrof{\uttrace}$, which is included in the constraints used to find
-further timers.
-This is done by finding a timed word is found which maximises the
-time within which it is able to expire, subject to the constraints under
-which other, already detected, timers cannot expire. If no expiration is
-observed, then it is ascertained that no such timer exists.
-If such a timer may exist, then some expiration must be observed, either
-by a timer set at the $k$th transition and expiring at the $m+1$st transition,
-or by a so-far undetected timer that can expire because the membership
-query exposes a new timing pattern. In either case, the new detected timer
-is added to the word, and the procedure restarts.
-
-
+  Intuitively, the procedure aims to find a timed membership query which maximise
+  the time within which $\toevent{x_i}$ is able to expire,
+  subject to the constraints under which timers that expire in $\beta$ expire
+  as scheduled, and under which any other timers do not expire. These
+  other timers may not be known when the procedure starts, and so their
+  corresponding constraints are added when they are detected: this happens
+  when they expire unexpectectly.
 
