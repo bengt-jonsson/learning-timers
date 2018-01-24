@@ -180,14 +180,14 @@ a different approach in which we only consider runs in which no ``races'' occur.
 behavior of the above MMT in which there is a race between the second $i$ event and the timeout.
 \fi
 
-\paragraph{Nondeterminism.}
+\paragraph{Experiments and nondeterminism.}
 Due to our assumption that we cannot observe the identity of a timer in a timeout event, an MMT may exhibit nondeterministic
 behavior: even if we offer exactly the same inputs at exactly the same time, different outputs may occur in different runs. 
-The MMT of Figure~\ref{fig:nondeterminism} (top), for instance, accepts both the timed words
+The MMT of Figure~\ref{fig:nondeterminism} (top), for instance, has timed words
 $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'$ and $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o''$.
 (For clarity, we omit some self-loop transitions.)
 \begin{figure}[ht]
-\vspace{-2em}
+\vspace{-1em}
 \begin{center}
 \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=1.8cm,main node/.style={circle,draw,font=\sffamily\large\bfsthe name of the eries}]
   \node[initial, state] (1) {$q_0$};
@@ -246,6 +246,37 @@ $7 ~ i ~ o ~ 1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'$ and $7 ~ i ~ o ~ 1 ~ i ~ o ~ 1 ~ 
 This type of nondeterminism is ``controllable'' and will not occur if we carefully
 select the timing of inputs.
 
+Let us formalize these ideas.
+A \emph{timed input word} is a sequence
+$u = d_1 ~ i_1 \cdots d_k ~ i_k ~ d_{k+1}$, where $d_j \in \delays$ and $i_j \in I$, for all $1 \leq j \leq k$,
+and $d_{k+1} \in \realsplus$.
+A timed input word describes an experiment that may be carried out on an MMT in which we
+provide a series of inputs at specific times, and observe the outputs that occur in response to these inputs up to time $\sum_{j=1}^{k+1} d_j$.
+%
+We associate a timed input word $\timedinputword(w)$ to each timed word $w$ by 
+removing the outputs events, 
+removing the occurrences of $\mathit{to}$, 
+replacing consecutive numbers by their sum, 
+and possibly placing $0$ at the end of the sequence.
+Thus, for instance,
+$\timedinputword (7 ~ i ~ o ~ 1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o') = 7 ~ i ~ 1 ~ i ~ 1$ and
+$\timedinputword (3 ~ i_1 ~ o_1 ~ 1.1 ~ i_2 ~ o_2 ~ 2 ~ \mathit{to} ~ o_3 ~ 2.1 ~ i_4 ~ o_4) = 3 ~ i_1 ~ 1.1 ~ i_2 ~ 4.1 ~ i_4 ~ 0$.
+%
+If $u$ and $u'$ are timed input words, then we write $u \propto u'$ if $u$ and $u'$ are equal, except that the final delay of $u$ is less or equal than the final delay of $u'$.
+For any timed input word $u$ over $I$,  there exists a maximal timed word $w$ of $\M$ such that $\timedinputword(w) \propto u$.
+We call $w$ an \emph{outcome of running experiment} $u$ on $\M$.
+In general, outcome $w$ is not uniquely determined, and thus an MMT may exhibit nondeterminism. 
+In the example of Figure~\ref{fig:nondeterminism} (bottom), for instance, experiment $7 ~ i ~ 1 ~ i ~ 1$ has outcomes
+$7 ~ i ~ o ~ 1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'$ and  $7 ~ i ~ o ~ 1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o''$.
+
+We call timed input word $u$ \emph{transparent} if the fractional part of the absolute times of occurrence of
+all the inputs are different. A timed word $w$ is transparent iff $\timedinputword(w)$ is transparent.
+If $u$ is transparent, there is a unique outcome of running experiment $u$ on $\M$.
+\todofv{clarify this section}
+%\iflong
+%Note that the first input occurs at time $3$, the second at time $4.1$, and the third at time $8.2$.
+%Thus the fractional part of the times of the inputs are different. In fact, 
+%\fi
 \subsection{A timed MAT framework for learning MMTs}
 We now propose an instance of Angluin's MAT framework for Mealy machines with timers.
 In our setting, illustrated in Figure~\ref{fig timed MAT}, the teacher knows an MMT $\M$.
@@ -261,7 +292,7 @@ timed words of $\M$, and  pose equivalence queries (EQ) to find out whether a co
             %\draw [thick] (7,0) rectangle (8.5,3.5) node[midway,below] {(knows $\M$)};
             \draw [->] (1.5,3) -- (7,3) node[midway,below] {MQ};
             \draw (1.5,3) -- (7,3) node[midway,above] {\small timed input word $u$};
-            \draw [<-] (1.5,2.5) -- (7,2.5) node[midway,below] {\small max timed word $w$ of $\M$ s.t.\  $\timedinputword(w) \propto u$};
+            \draw [<-] (1.5,2.5) -- (7,2.5) node[midway,below] {\small outcome of running experiment $u$ on $\M$};
             \draw [->] (1.5,1) -- (7,1) node[midway,below] {EQ};
             \draw (1.5,1) -- (7,1) node[midway,above] {\small hypothesis $\CH$};
             \draw [<-] (1.5,0.5) -- (7,0.5) node[midway,below] {\small {\bf yes} \emph{or} {\bf no}+ counterexample $w$};
@@ -272,42 +303,16 @@ timed words of $\M$, and  pose equivalence queries (EQ) to find out whether a co
 \end{figure}
 
 \paragraph{Membership queries.}
-A \emph{timed input word} is a sequence
-$u = d_1 ~ i_1 \cdots d_k ~ i_k ~ d_{k+1}$, where $d_j \in \delays$ and $i_j \in I$, for all $1 \leq j \leq k$,
-and $d_{k+1} \in \realsplus$.
-A timed input word describes an experiment that may be carried out on an MMT. We provide a series of inputs at specific times, and record all the outputs that occur in response to these inputs up to and including the finishing time of the experiment, that is $\sum_{j=1}^{k+1} d_j$.
-%A timed input word is \emph{transparent} if the fractional part of the absolute times of occurrence of
-%all the inputs are different.
-Let $w$ be a timed word.
-We associate a unique timed input word $\timedinputword(w)$ to $w$ by 
-removing all the outputs events, 
-removing all occurrences of $\mathit{to}$, 
-replacing consecutive numbers by their sum, 
-and possibly placing $0$ at the end of the sequence.
-Thus, for instance,
-$\timedinputword (3 ~ i_1 ~ o_1 ~ 1.1 ~ i_2 ~ o_2 ~ 2 ~ \mathit{to} ~ o_3 ~ 2.1 ~ i_4 ~ o_4) = 
-3 ~ i_1 ~ 1.1 ~ i_2 ~ 4.1 ~ i_4 ~ 0$.
-
-%\iflong
-%Note that the first input occurs at time $3$, the second at time $4.1$, and the third at time $8.2$.
-%Thus the fractional part of the times of the inputs are different. In fact, $w$ is transparent iff $\timedinputword(w)$ is transparent.
-%\fi
-%
-If $u$ and $u'$ are timed input words, then we write $u \propto u'$ if $u$ and $u'$ are equal, except that the final delay of $u$ is less or equal than the final delay of $u'$. Observe that,
-for any timed input word $u$ over $I$, 
-there exists a maximal timed word $w$ of $\M$ such that $\timedinputword(w) \propto u$.
 With a \emph{membership query}, the learner asks what the output is in response to a timed input word $u$ over $I$. 
 The teacher answers with a maximal timed word $w$ of $\M$ such that $\timedinputword(w) \propto u$.
-Note that, in general, the teacher may give more than one answer to a membership query.
-In the example of Figure~\ref{fig:nondeterminism} (bottom), for instance, the membership query $7 ~ i ~ 1 ~ i ~ 1$ may result in both anwer
-$7 ~ i ~ o ~ 1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'$ and answer  $7 ~ i ~ o ~ 1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o''$.
+
 
 \paragraph{Equivalence queries.}
 With an \emph{equivalence query}, the learner asks if a hypothesized MMT $\CH$ is correct, that is, 
 whether $\CH \approx_{\mathit{timed}} \M$.
 The teacher answers \emph{yes} if this is the case. Otherwise she answers \emph{no} and supplies a
-\emph{counterexample}: a timed word $w$ of $\M$ that is not a timed word of $\CH$.
-(Observe that such a timed word always exists.)
+\emph{counterexample}: a transparent timed word $w$ of $\M$ that is not a timed word of $\CH$.
+(We will prove in Lemma~\ref{not timed} that such a timed word always exists.)
 
 \vspace{0.5em}
 \noindent
