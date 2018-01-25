@@ -305,14 +305,16 @@ timed words of $\M$, and  pose equivalence queries (EQ) to find out whether a co
 \paragraph{Membership queries.}
 With a \emph{membership query}, the learner asks what the output is in response to a timed input word $u$ over $I$. 
 The teacher answers with a maximal timed word $w$ of $\M$ such that $\timedinputword(w) \propto u$.
-
+\todobj{Comment: This maximal timed word can be infinite if it gets into a loop
+  driven by repeated timeouts}
 
 \paragraph{Equivalence queries.}
 With an \emph{equivalence query}, the learner asks if a hypothesized MMT $\CH$ is correct, that is, 
 whether $\CH \approx_{\mathit{timed}} \M$.
 The teacher answers \emph{yes} if this is the case. Otherwise she answers \emph{no} and supplies a
 \emph{counterexample}: a transparent timed word $w$ of $\M$ that is not a timed word of $\CH$.
-(We will prove in Lemma~\ref{not timed} that such a timed word always exists.)
+(We will prove in Lemma~\ref{not timed} that such a timed word always exists
+when $\CH \not\approx_{\mathit{timed}} \M$.)
 
 \vspace{0.5em}
 \noindent
