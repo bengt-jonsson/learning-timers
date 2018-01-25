@@ -2,7 +2,7 @@
 \label{algorithm}
 In this section, we consider another instance of Angluin's MAT framework.
 Again, the teacher knows an MMT $\M$ but now the learner poses membership queries
-to learn the \emph{untimed} behaviors of $\M$, and equivalence queries to check whether an hypothesis is correct.
+to learn the \emph{untimed} behaviors of $\M$, and if an equivalence query fails then the counterexample is an \emph{untimed} behavior of $\M$.
 %
 We will show how an untimed teacher for MMTs can be implemented using a timed teacher.
 %and how an untimed learner for MMTs can be implemented using a Mealy machine learner.
@@ -20,16 +20,29 @@ whether a timer $x$ may expire after $\beta$ ($\zone{\beta}$ contains a valuatio
 \subsection{An untimed MAT framework for MMTs}
 Given the equivalence of the timed and the untimed semantics of MMTs, it is natural to also 
 consider an untimed setting, in which a learner tries to construct an MMT based on membership queries for untimed behaviors.
-The teacher, however, does not reveal the names of the timers that occur in untimed behaviors, and brings each behavior into a
-``canonical'' form, so that a learner can only observe untimed behaviors up to isomorphism.
 
-Let us formalize these ideas.
-Suppose $\beta$ be an untimed behavior in which each transition updates at most one timer.
+In the untimed framework, the teacher does not reveal the names of the timers that occur in untimed behaviors, 
+and brings untimed behaviors into a ``canonical'' form, so that a learner can only observe these behaviors up to isomorphism.
+Let us formalize this idea.
+Suppose $\beta$ be an untimed behavior in which transitions update at most one timer.
 We say that $\beta$ is in \emph{canonical form} if, for each $j$, the timer that is updated in the $j$-th event
 (if any) is equal to $x_j$.
-For each untimed behavior $\beta$ in which each transition updates at most one timer, there is a unique untimed behavior
+For each untimed behavior $\beta$ in which transitions update at most one timer, there is a unique untimed behavior
 $\beta'$ in canonical form that is isomorphic to $\beta$.
 We write $\can{\beta}$ to denote this $\beta'$.
+
+Suppose the $\beta$ is an untimed behavior. Then it may occur that somewhere in $\beta$ a timer $x$ is started that never times out.
+In such a case, we may obtain a new untimed behavior by not starting $x$ and removing subsequent occurrences of $x$ in $\beta$ (possibly up to the point
+where $x$ is restarted).
+In the untimed behavior $\emptyset \xrightarrow{i/o,~ x:=1 } \{ x\} \xrightarrow{i/o,~ y:=60 } \{ x, y\}$, for instance, we may remove timer $x$
+and obtain $\emptyset \xrightarrow{i/o } \emptyset \xrightarrow{i/o,~ y:=60 } \{ y\}$.
+Similarly, we may remove the first use of timer $x$ in the untimed behavior 
+$\emptyset \xrightarrow{i/o,~ x:=1 } \{ x\} \xrightarrow{i/o,~ x:=5 } \{ x\} \xrightarrow{\toevent{x}/o} \emptyset$ and obtain
+$\emptyset \xrightarrow{i/o } \emptyset \xrightarrow{i/o,~ x:=5 } \{ x\} \xrightarrow{\toevent{x}/o} \emptyset$.
+Write $\beta \sqsubseteq \beta'$ if $\beta$ can be obtained from $\beta'$ by removing zero or more of timers that do not timeout.
+Observe that $\sqsubseteq$ is a partial order.
+We call $\beta$ a \emph{partial} untimed behavior of MMT $\M$ iff $\M$ has an untimed behavior $\beta'$ such that $\beta \sqsubseteq \beta'$.
+In the untimed framework, the teacher replies with partial untimed behaviors of $M$, brought in canonical form.
 
 An \emph{untimed input word} over $I$ is a sequence $u = i_1 \cdots i_k$ over $\extinputs$ such that (1)
 for all indices $j, l$, $i_j = \toevent{x_l}$ implies $l < j$, and (2) each timer occurs at most once in a timeout event.
@@ -42,14 +55,15 @@ updates, and timer sets from $\beta$.
 \begin{figure}
 \begin{center}
  \begin{tikzpicture}[>=stealth]
-            \draw [thick] (0,0) rectangle (1.5,3.5) node[midway] {Learner};
-            \draw [thick] (9.5,0) rectangle (11,3.5) node[midway] {Teacher};
-            \draw [->] (1.5,3) -- (9.5,3) node[midway,below] {MQs};
-            \draw (1.5,3) -- (9.5,3) node[midway,above] {\small untimed input word $u$};
-            \draw [<-] (1.5,2.5) -- (9.5,2.5) node[midway,below] {\small canonical feasible behavior $\beta$ with $u=\untimedinputword(\beta)$, \emph{or} $\perp$};
-            \draw [->] (1.5,1) -- (9.5,1) node[midway,below] {EQ};
-            \draw (1.5,1) -- (9.5,1) node[midway,above] {\small hypothesis $\CH$};
-            \draw [<-] (1.5,0.5) -- (9.5,0.5) node[midway,below] {\small {\bf yes} \emph{or} {\bf no}+canonical counterexample $\beta$};
+            \draw [thick] (0,0) rectangle (1.2,3.5) node[midway] {Learner};
+            \draw [thick] (7,0) rectangle (8.3,3.5) node[midway] {Teacher};
+            \draw [->] (1.2,3) -- (7,3) node[midway,below] {MQs};
+            \draw (1.2,3) -- (7,3) node[midway,above] {\small untimed input word $u$};
+            \draw [<-] (1.2,2.5) -- (7,2.5) node[midway,below] {\small canonical feasible partial untimed behavior};
+             \draw (4.15,2) node {\small $\beta$ of $\M$ with $\untimedinputword(\beta)$ maximal prefix of $u$};
+            \draw [->] (1.2,1) -- (7,1) node[midway,below] {EQ};
+            \draw (1.2,1) -- (7,1) node[midway,above] {\small hypothesis $\CH$};
+            \draw [<-] (1.2,0.5) -- (7,0.5) node[midway,below] {\small {\bf yes} \emph{or} {\bf no}+ counterexample $\beta$};
         \end{tikzpicture}
 \end{center}    
 \caption{Untimed MAT framework}
@@ -57,19 +71,16 @@ updates, and timer sets from $\beta$.
 \end{figure}
 \fi
 
-In our first learning setup, 
-\iflong
-illustrated in Figure~\ref{fig:untimed MAT},
-\fi
-the teacher knows an MMT $\M$.
-The learner initially knows the set of inputs $I$, and may pose two types of queries.
-With a \emph{membership query}, the learner asks for the response to an untimed input word $u$ over $I$.
-If $\M$ has a feasible untimed behavior $\beta$ with $\untimedinputword(\can{\beta}) = u$ then the teacher answers
-$\can{\beta}$. Otherwise, the answer is $\perp$ (``undefined'').
+Our untimed learning setup, illustrated in Figure~\ref{fig:untimed MAT}, is similar to the timed setup:
+again the teacher knows an MMT $\M$ and the learner initially only knows the set of inputs $I$ of $\M$.
+Again, the learer may pose membership and equivalence queries.
+But now a \emph{membership query} consists of an untimed input word $u$ over $I$.
+The teacher replies with a maximal feasible partial untimed behavior $\beta$ of $M$ (in canonical form) such that
+$\untimedinputword(\beta)$ is a prefix of $u$.
 With an \emph{equivalence query}, the learner asks if a hypothesis $\CH$ with inputs $I$ is correct.
 Upon receiving $\CH$, the teacher answers \emph{yes} if $\CH \approx_{\mathit{untimed}} \M$.
-Otherwise it answers \emph{no} and supplies a counterexample, a canonical untimed behavior $\beta$ that
-is isomorphic to a feasible behavior of $\M$ but not to a feasible behavior of $\CH$.
+Otherwise it answers \emph{no} and supplies a counterexample, which now is a feasible untimed behavior $\beta$ (in canonical form) that
+is a partial untimed behavior of $\M$ but not of $\CH$.
 
 %\subsection{A timed MAT framework for learning MMTs}
 %In our second learning setup, the teacher also knows an MMT $\M$.
@@ -171,8 +182,6 @@ is isomorphic to a feasible behavior of $\M$ but not to a feasible behavior of $
 %number of membership and equivalence queries that polynomial in the size of the corresponding canonical Mealy machine.
 %Efficient implementations of $L^{\ast}$ and other algorithms for learning Mealy machines are available,
 %for instance in the tool \learnlib\ \cite{Nie03,RSBM09,MertenSHM11}.
-
-\input{myhillnerode}
 
 %\subsection{Constructing an untimed MMT learner using a MM learner}
 %The number of timers that may occur in canonical untimed behaviors grows unboundedly with the length of these behavior,
@@ -343,7 +352,7 @@ is isomorphic to a feasible behavior of $\M$ but not to a feasible behavior of $
 %$\Mealy(\M) \approx \Mealy(\N)$.
 %\end{theorem}
 
-\subsection{Constructing an untimed MMT teacher using a timed teacher}
+\subsection{Constructing an untimed teacher from a timed teacher}
 In this subsection, we show how we may construct a teacher for the untimed setting by using a teacher for the timed setting.
 
 Suppose the untimed teacher receives a membership query, consisting of an untimed input word
