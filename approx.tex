@@ -202,14 +202,32 @@ $U$ until it is closed, so that a hypothesis MMT can be formed.
 During hypothesis validation, returned counterexamples are used to refine
 the Nerode equivalence by expanding $V$.
 
-It is required that $V$ contains at least each one-letter word, including
-the word $\toevent{p}$.
-A set $U$ of short prefixes is {\em closed} wrt.\ $V$ if 
+It is required that 
+Let $U$ be a set of untimed behaviors, and let $V$ be a set of generic suffix
+inputs, which contains all one-symbol words, including $\toevent{p}$.
+\begin{itemize}
+\item
+$U$ is {\em closed} wrt.\ $V$ if 
   for each $\beta \in U$ and each
   $i$ in $I$ or of form $\toevent{x_i}$ such thas $x_i$ is expirable
   after $\beta$,
   there is an output $o$ and a $\beta' \in U$ such that
   $\beta \cdot i/o,\rho_{i+1} \equiv_{S,V} \beta'$.
+\item
+$U$ is {\em timer-consistent} wrt.\ $V$ if 
+  for each $\beta \in U$ and each
+  $i$ in $I$ or of form $\toevent{x_i}$ such thas $x_i$ is expirable
+  after $\beta$, we have
+  $\getmemorable{S}{\beta \cdot i/o,\rho_{i+1}}{V} \subseteq
+  (\getmemorable{S}{\beta}{V} \cup \domof{\rho_{i+1}})$.
+\end{itemize}
+Closedness ensures 
+that each transition in the MMT to be constructed has a target location. 
+Timer-consistency states that each timer in $\beta \cdot i/o,\rho_{i+1}$
+is either a timer in $\beta$ or is started by the transition $i/o,\rho_{i+1}$.
+In the automaton to be constructed, it ensures that
+any timer started during $\beta$ that is active in $\beta \cdot i/o,\rho_{i+1}$
+is also active in $\beta$.
 
 Whenever the set $U$ is not closed wrt.\ $V$, then $U$ is extended:
 if there is some $\beta \in U$ and $i$ in $I$ or of form $\toevent{x_i}$ with
@@ -217,16 +235,18 @@ $x_i$ expirable, for which there is no $o$ and $\beta' \in U$ such that
 $\beta \cdot i/o,\rho_{i+1} \equiv_{S,V} \beta'$, 
 then $\beta \cdot i/o,\rho_{i+1}$ is added to $U$,
 triggering new membership queries.
-This process of extending $U$ is continued until $U$ is closed wrt.\ $V$.
-
-When $U$ is closed wrt.\ $V$, then a hypothesis MMT $\hypoof UV$ can be
-formed, defined as follows.
+Whenever the set $U$ is not timer-consistent wrt.\ $V$, then $V$ is extended:
+for any suffix of form $\gamma \cdot \toevent{x_j}$, where
+$x_j$ is a ``missing timer'', we make sure that $i/o,\rho_{i+1} \cdot \gamma \cdot \toevent{p}$ is in $V$.
+    This process of
+    extending $U$ and $V$ is continued until $U$ is closed
+    and timer consistent wrt.\ $V$.
 
 \begin{definition}[Hypothesis automaton]
   Let $U$ be a prefix-closed set
   of untimed behaviors, which contains $\emptyword$,
   and $V$ a set of generic suffix inputs such that
-$U$ is closed wrt.\ $V$. Then the
+$U$ is closed and timer consistent wrt.\ $V$. Then the
 {\em hypothesis automaton} $\hypoof UV$ is the MMT
 $\hypoof UV = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$, where
 \begin{itemize}
@@ -247,3 +267,5 @@ $i$, either in $I$ or of form $\toevent{x_i}$, to the function
 \end{itemize}
 \end{definition}
 
+\paragraph{Counterexample processing}
+We should also indicate a procedure for processing counterexamples.
