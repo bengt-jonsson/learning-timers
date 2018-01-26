@@ -52,6 +52,7 @@ collection of DBMs.
 \end{proof}
 
 \begin{lemma}
+\label{feasible plus input is feasible}
 Suppose $\beta$ is a feasible untimed behavior with $\Last{\beta} = Y$ and 
 suppose $Y \xrightarrow{i/o, \rho} Y'$ is an untimed behavior with $i \in I$.
 Then $\beta \xrightarrow{i/o, \rho} Y'$ is a feasible untimed behavior.
@@ -60,11 +61,36 @@ Then $\beta \xrightarrow{i/o, \rho} Y'$ is a feasible untimed behavior.
 Let $\beta$ be a feasible untimed behavior and let $x \in X$ be a timer. Then we say that $x$ is \emph{expirable} after $\beta$
 if there exists a valuation in $\Zone{\beta}$ in which $x$ is minimal.
 
-
 \begin{lemma}
-Suppose $\beta$ is a feasible untimed behavior with $Y = \Last{\beta}$ and $Y \xrightarrow{\toevent{x}/o, \rho} Y'$ is an untimed behavior.
+Suppose $\beta$ is a feasible untimed behavior with $\Last{\beta} = Y$ and $Y \xrightarrow{\toevent{x}/o, \rho} Y'$ is an untimed behavior.
 Then $x$ is expirable after $\beta$ iff $\beta \xrightarrow{\toevent{x}/o, \rho} Y'$ is feasible.
 \end{lemma}
+
+Suppose that $\beta$ is an untimed behavior in canonical form:
+\begin{eqnarray*}
+\beta & = & \emptyset \xrightarrow{i_1/o_1, \rho_1} X_1  \cdots X_{k-1} \xrightarrow{i_k/o_k, \rho_k} X_k.
+\end{eqnarray*}
+We associate to $\beta$ a set of constraints with real-valued variables $t_1 ,\ldots t_k$ that denote the time of
+occurrence of events $i_1 ,\ldots, i_k$ respectively. We add the following constraints to this set $\Constraints{\beta}$:
+\begin{itemize}
+\item
+$0 < t_1$,
+\item
+for each index $j < k$:  $0 <  t_{j+1} - t_j \leq d_{\max}$,
+\item
+for each timeout event $i_j = \toevent{x_l}$: $t_j = t_l + \rho_j(x_l)$,
+\item
+for each clock $x_l$ that is started but does not timeout: $t_j \leq t_l + \rho_j(x_l)$,
+where $j$ is the largest index such that $x_l \in X_j$, and
+\item
+for each pair of distinct indices $j$ and $l$ with $i_j, i_l \in I$: $\Frac{t_j} \neq \Frac{t_l}$ 
+(to express that the fractional parts of $t_j$ and $t_l$ are different).
+\end{itemize}
+Note that $\beta$ is feasible iff the set of constraints $\Constraints{\beta}$ is satisfiable.
+We may use an SMT solver to decide whether $\Constraints{\beta}$ is satisfiable and to compute\footnote{If an SMT solver
+does not support fractions, we may compute a solution without these constraints and then use the wiggling approach
+of Section~\ref{section untimed semantics} to ensure that the fractional times of inputs are different.} a solution for
+$t_1 ,\ldots t_k$.
 
 \todofv{Next two lemmas belong in different section}
 
