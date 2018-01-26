@@ -46,7 +46,7 @@ If $x$ is terminal and fresh then omit $x$ from $X_j$ and from the domain of $\r
 %$\emptyset \xrightarrow{i/o } \emptyset \xrightarrow{i/o,~ x:=5 } \{ x\} \xrightarrow{\toevent{x}/o} \emptyset$.
 Write $\beta \sqsubseteq \beta'$ if $\beta$ can be obtained from $\beta'$ by zero or more applications of rules A and B.
 Observe that $\sqsubseteq$ is a partial order with as minimal elements untimed behaviors in which every timer that is started also times out.
-We call such untimed behaviors \emph{neat}.
+We call such untimed behaviors \emph{lean}.
 We say that $\beta$ is a \emph{partial} untimed behavior of MMT $\M$ iff $\M$ has an untimed behavior $\beta'$ such that $\beta \sqsubseteq \beta'$.
 In the untimed framework, the teacher replies with partial untimed behaviors of $M$, brought in canonical form.
 
@@ -107,24 +107,33 @@ the timed teacher.
 Suppose the untimed teacher receives a membership query, consisting of an untimed input word
 $u = i_1 \cdots i_k$.
 By induction on the length of $u$, 
-we construct a response for $u$, that is, a feasible partial untimed behavior $\beta$ of $M$ (in canonical form)
+we construct a response for $u$, that is, a feasible partial untimed behavior $\beta$ of $\M$ (in canonical form)
 with $\untimedinputword(\beta)$ a maximal prefix of $u$.
 If $k=0$, then the response $\beta$ is the trivial partial untimed behavior $\emptyset$.
 For the induction step, suppose that $k>0$.
-Let $\beta$ be the response for $i_1 \cdots i_{k-1}$.
-If $\beta$ contains less than $k-1$ inputs, then the response for $u$ is also $\beta$.
-Now assume that $\beta$ contains $k-1$ inputs. There are two cases:
+Let $\beta'$ be the response for $i_1 \cdots i_{k-1}$.
+If $\beta'$ contains less than $k-1$ inputs, then the response $\beta$ for $u$ is equal to $\beta'$.
+Now assume that $\beta'$ contains $k-1$ inputs. There are two cases:
 \begin{enumerate}
 \item
-If $i_k \in I$, let $\beta' = \beta ~ i_k ~ \omega ~ \emptyset$, where $\omega \in O$ is some arbitrary output that acts as a placeholder.
-Since $\beta$ is feasible (by induction hypothesis), $\beta'$ is also feasible 
+If $i_k \in I$, let $\beta'' = \beta' ~ i_k ~ \omega ~ \emptyset$, where $\omega \in O$ is some arbitrary output that acts as a placeholder.
+Since $\beta'$ is feasible (by induction hypothesis), $\beta''$ is also feasible 
 (by Lemma~\ref{feasible plus input is feasible}).
-Thus the constraints in $\Constraints{\beta'}$ are satisfiable and we may compute a solution $t_1 ,\ldots, t_k$.
+Thus the constraints in $\Constraints{\beta''}$ are satisfiable and we may compute a solution $t_1 ,\ldots, t_k$.
 Let $o_1 ,\ldots, o_{k-1}$ be the outputs occurring in $\beta'$. Then
 $w = t_1 ~ i_1 ~ o_1 ~ t_2 - t_1 ~ i_2 ~ o_2 ~ t_3- t_2 \cdots t_k - t_{k-1} ~ i_k ~ \omega$ is a transparent timed word.
 Let $u = \timedinputword(w)$ be the timed input word associated to $w$.
 We forward membership query $u$ to the timed teacher.
+Let $w'$ be the response from the timed teacher.
+If $w'$ and $w$ are equal except for the last symbol, which is $o_k$ in $w'$ and $\omega$ in $w$,
+the response $\beta$ for $u$ is $\beta' ~ i_k ~ o_k ~ \emptyset$.
+Otherwise, it must be that $w'$ contains some timeout event that was not supposed to happen according to our input word $u$.
+We now use the info to enrich $\beta'$ with information about this timer and perform step (1) again.
+
+\paragraph{Example}
+Consider a scenario where the timed teacher knows the MMT of Figure~\ref{fig:nondeterminism} (bottom).
 \end{enumerate}
+\todofv{Subsection unfinished from here}
 If $i_k = \toevent{x}$ for some timer $x$ that is not expirable after $\beta$ then there exists no feasible partial untimed behavior
 with untimed input word $u$. This means that $\beta$ is maximal and the teacher returns answer $\beta$.
 Otherwise, there exists a feasible behavior that extends $\beta$ with input $i_k$. 
