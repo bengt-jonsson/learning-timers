@@ -49,28 +49,35 @@ may fail to overapproximate the Nerode equivalence of Definition~\ref{def:nerode
   untimed behaviors}
 
 Let us introduce a formal {\em timer parameter}, denoted $p$, and the
-{\em generic timeout} $\toevent{p}$,
-which intuitively denotes the occurrence of any timout.
-Let a {\em generic untimed behavior} be a sequence of symbols in
+{\em generic timeout event} $\toevent{p}$,
+which intuitively denotes the occurrence of any timout event.
+Let a {\em generic untimed input word} be a sequence of symbols in
 $I \cup \set{\toevent{p}}$.
-A {\em instance} of a generic untimed behavior is obtained by replacing all
-generic timeout $\toevent{p}$ by some concrete timeout $\toevent{x_i}$.
+A {\em instance} of a generic untimed input word is an untimed input
+word obtained by replacing all generic timeout events
+$\toevent{p}$ by some concrete timeout event $\toevent{x_i}$.
 For a set $V$ of generic untimed behaviors, let $\instancesof{V}$ be the
 set of instances of generic untimed behaviors in $V$. For a canonical untimed
 behavior $\beta$, let $\suffixbehs{S}{\beta}{V}$ be the set of untimed behaviors
 $\gamma$ with $\untimedinputword(\gamma) \in \instancesof{V}$ such that
 $\beta\cdot\gamma$ is a canonical untimed behavior in $S$. Let
 $\getmemorable{S}{\beta}{V}$ be the set of timers among
-$x_1 , \ldots x_{|\beta|}$ that occur in some behavior in
+$x_1 , \ldots x_{|\beta|}$ for which the corresponding timeout event
+(of form $\toevent{x_i}$) occurs (as an input) in some untimed behavior in
 $\suffixbehs{S}{\beta}{V}$.
 Let $\suffbij{\beta}{\beta'}$ be the mapping on timers that map each
 timer $x_i$ with $i > |\beta|$ to $x_{i + |\beta'| - |\beta|}$.
+The purpose of $\suffbij{\beta}{\beta'}$ is that if timer $x_j$ is assigned
+in the $j$th transition of $\gamma$ in a canonical behavior of form
+$\beta\gamma$, then timer $\suffbij{\beta}{\beta'}(x_j)$ is assigned 
+in the $j$th transition of $\gamma$ in a canonical behavior of form
+$\beta'\gamma$.
 
 \todobj{An illustrating example would help the reader here}
 
 The approximated Nerode equivalence can now be defined as follows.
 Let $\beta$ and $\beta'$ be behaviors in $S$, and let  $V$ be a set of
-generic untimed behaviors.
+generic untimed input words.
 Let $f : \getmemorable{S}{\beta}{V} \to \getmemorable{S}{\beta'}{V}$
 be a bijection
 from $\getmemorable{S}{\beta}{V}$ to $\getmemorable{S}{\beta'}{V}$.
