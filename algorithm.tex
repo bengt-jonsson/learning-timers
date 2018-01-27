@@ -1,5 +1,6 @@
 \newcommand{\Constraints}[1]{\mathsf{constraints}({#1})}
 \newcommand{\Frac}[1]{\mathsf{frac}({#1})}
+\newcommand{\Addtimer}[4]{\mathsf{addtimer}({#1,#2,#3,#4})}
 
 \section{Learning algorithm}  
 \label{algorithm}
@@ -22,33 +23,28 @@ We say that $\beta$ is in \emph{canonical form} if, for each $j$, the timer that
 For each untimed behavior $\beta$ in which transitions update at most one timer, there is a unique untimed behavior
 $\beta'$ in canonical form that is isomorphic to $\beta$.
 We write $\can{\beta}$ to denote this $\beta'$.
+\todofv{Add example}
 
-It may occur that somewhere in an untimed behavior a timer $x$ is started that never times out.
-In such cases we may obtain new untimed behaviors by removing occurrences of $x$.
-Consider an untimed behavior
+Consider an untimed behavior $\beta$ in canonical form:
 \begin{eqnarray*}
 \beta & = & X_0 \xrightarrow{i_1/o_1, \rho_1} X_1  \cdots \xrightarrow{i_k/o_k, \rho_k} X_{k}.
 \end{eqnarray*}
-We call an occurrence of variable $x$ in set $X_j$ is \emph{fresh} if $\rho_j(x)$ is defined,
-and \emph{terminal} if $j<k$ implies $i_{j+1} \neq \toevent{x}$ and $x \not\in X_{j+1}$.
-We may eliminate a timer occurrence from $\beta$ by applying one of the following rules:
-\begin{itemize}
-\item[A]
-If $x$ is terminal but not fresh then omit $x$ from $X_j$.
-\item[B]
-If $x$ is terminal and fresh then omit $x$ from $X_j$ and from the domain of $\rho_j$.
-\end{itemize}
-\todofv{Add example}
+Let $1 \leq l \leq j \leq k$, $d \in \natplus$ and suppose that 
+(1) $\rho_l$ either starts no timer or sets $x_l$ to $d$,
+(2) $\beta$ does not contain a timeout event $\toevent{x_l}$.
+Then $\Addtimer{l}{d}{j}{\beta}$ is the untimed behavior obtained from $\beta$ by
+replacing $\rho_l$ by the update $x_l := d$, and adding $x_j$ to the sets $X_l$ up to (and including) $X_j$.
 %In the untimed behavior $\emptyset \xrightarrow{i/o,~ x:=1 } \{ x\} \xrightarrow{i/o,~ y:=60 } \{ x, y\}$, for instance, we may remove timer $x$
 %and obtain $\emptyset \xrightarrow{i/o } \emptyset \xrightarrow{i/o,~ y:=60 } \{ y\}$.
 %Similarly, we may remove the first use of timer $x$ in the untimed behavior 
 %$\emptyset \xrightarrow{i/o,~ x:=1 } \{ x\} \xrightarrow{i/o,~ x:=5 } \{ x\} \xrightarrow{\toevent{x}/o} \emptyset$ and obtain
 %$\emptyset \xrightarrow{i/o } \emptyset \xrightarrow{i/o,~ x:=5 } \{ x\} \xrightarrow{\toevent{x}/o} \emptyset$.
-Write $\beta \sqsubseteq \beta'$ if $\beta$ can be obtained from $\beta'$ by zero or more applications of rules A and B.
+Write $\beta \sqsubseteq \beta'$ if $\beta'$ can be obtained from $\beta$ by zero or more applications of function $\mathsf{addtimer}$.
 Observe that $\sqsubseteq$ is a partial order with as minimal elements untimed behaviors in which every timer that is started also times out.
 We call such untimed behaviors \emph{lean}.
 We say that $\beta$ is a \emph{partial} untimed behavior of MMT $\M$ iff $\M$ has an untimed behavior $\beta'$ such that $\beta \sqsubseteq \beta'$.
-In the untimed framework, the teacher replies with partial untimed behaviors of $M$, brought in canonical form.
+\todofv{Add example}
+%In the untimed framework, the teacher replies with partial untimed behaviors of $M$, brought in canonical form.
 
 An \emph{untimed input word} over $I$ is a sequence $u = i_1 \cdots i_k$ over $\extinputs$ such that (1)
 for all indices $j, l$, $i_j = \toevent{x_l}$ implies $l < j$, and (2) each timer occurs at most once in a timeout event.
@@ -57,7 +53,7 @@ each timer may expire at most once.
 Let $\beta$ be an untimed behavior in canonical form.
 We can associate a unique input word $\untimedinputword(\beta)$ to $\beta$ by removing all the output events,
 updates, and timer sets from $\beta$.
-\iflong
+\todofv{Add example}
 \begin{figure}
 \begin{center}
  \begin{tikzpicture}[>=stealth]
@@ -75,7 +71,6 @@ updates, and timer sets from $\beta$.
 \caption{Untimed MAT framework}
 \label{fig:untimed MAT}
 \end{figure}
-\fi
 
 Our untimed learning setup, illustrated in Figure~\ref{fig:untimed MAT}, is similar to the timed setup:
 again the teacher knows an MMT $\M$ and the learner initially only knows the set of inputs $I$ of $\M$.
@@ -88,15 +83,13 @@ Upon receiving $\CH$, the teacher answers \emph{yes} if $\CH \approx_{\mathit{un
 Otherwise it answers \emph{no} and supplies a counterexample, which now is a feasible untimed behavior $\beta$ (in canonical form) that
 is a partial untimed behavior of $\M$ but not of $\CH$.
 
-\iflong
 \input{reachability}
-\else
-Note that for an untimed behavior $\beta$, the set $\zone{\beta}$ of valuations that can be reached with a timed behavior $\sigma$ with $\untime(\sigma) = \beta$ can be symbolically represented using DBMs \cite{Di89}.
-We can do this since the transition relations $\xrightarrow{d}$ and $\xrightarrow{i_1/o_1, \rho_1}$ can be decomposed 
-into elementary operations on DBMs such as reset, conjunction, and delay successors \cite{BengtssonY03}.
-This allows us to compute whether an untimed behavior $\beta$ is feasible ($\zone{\beta}$ is empty), and
-whether a timer $x$ may expire after $\beta$ ($\zone{\beta}$ contains a valuation in which $x$ is minimal).
-\fi
+
+%Note that for an untimed behavior $\beta$, the set $\zone{\beta}$ of valuations that can be reached with a timed behavior $\sigma$ with %$\untime(\sigma) = \beta$ can be symbolically represented using DBMs \cite{Di89}.
+%We can do this since the transition relations $\xrightarrow{d}$ and $\xrightarrow{i_1/o_1, \rho_1}$ can be decomposed 
+%into elementary operations on DBMs such as reset, conjunction, and delay successors \cite{BengtssonY03}.
+%This allows us to compute whether an untimed behavior $\beta$ is feasible ($\zone{\beta}$ is empty), and
+%whether a timer $x$ may expire after $\beta$ ($\zone{\beta}$ contains a valuation in which $x$ is minimal).
 
 \subsection{Building an untimed teacher from a timed teacher}
 We will now show how to construct an adapter that transforms a teacher for the timed setting into a teacher for the untimed setting.
@@ -107,46 +100,74 @@ the timed teacher.
 Suppose the untimed teacher receives a membership query, consisting of an untimed input word
 $u = i_1 \cdots i_k$.
 By induction on the length of $u$, 
-we construct a response for $u$, that is, a feasible partial untimed behavior $\beta$ of $\M$ (in canonical form)
-with $\untimedinputword(\beta)$ a maximal prefix of $u$.
-If $k=0$, then the response $\beta$ is the trivial partial untimed behavior $\emptyset$.
+we construct a response for $u$, that is, a feasible partial untimed behavior $\beta_k$ of $\M$ (in canonical form)
+with $\untimedinputword(\beta_k)$ a maximal prefix of $u$.
+If $k=0$, then response $\beta_0$ is the trivial partial untimed behavior $\emptyset$.
 For the induction step, suppose that $k>0$.
-Let $\beta'$ be the response for $i_1 \cdots i_{k-1}$.
-If $\beta'$ contains less than $k-1$ inputs, then the response $\beta$ for $u$ is equal to $\beta'$.
-Now assume that $\beta'$ contains $k-1$ inputs. There are two cases:
+Let $\beta_{k-1}$ be the response for $i_1 \cdots i_{k-1}$.
+If $\beta_{k-1}$ contains less than $k-1$ inputs, then response $\beta_k$ is equal to $\beta_{k-1}$.
+Now assume that $\beta_{k-1}$ contains $k-1$ inputs. We consider two cases:
 \begin{enumerate}
 \item
-If $i_k \in I$, let $\beta'' = \beta' ~ i_k ~ \omega ~ \emptyset$, where $\omega \in O$ is some arbitrary output that acts as a placeholder.
-Since $\beta'$ is feasible (by induction hypothesis), $\beta''$ is also feasible 
-(by Lemma~\ref{feasible plus input is feasible}).
-Thus the constraints in $\Constraints{\beta''}$ are satisfiable and we may compute a solution $t_1 ,\ldots, t_k$.
-Let $o_1 ,\ldots, o_{k-1}$ be the outputs occurring in $\beta'$. Then
+$i_k \in I$. Set $\beta := \beta_{k-1} ~ i_k ~ \omega ~ \emptyset$, where $\omega \in O$ is an arbitrary output that acts as placeholder.
+Since $\beta_{k-1}$ is feasible (by induction hypothesis), it follows by Lemma~\ref{feasible plus input is feasible} that
+$\beta$ is also feasible.
+Thus the constraints in $\Constraints{\beta}$ are satisfiable and we may compute a solution $t_1 ,\ldots, t_k$.
+Let $o_1 ,\ldots, o_{k-1}$ be the outputs occurring in $\beta_{k-1}$. Then
 $w = t_1 ~ i_1 ~ o_1 ~ t_2 - t_1 ~ i_2 ~ o_2 ~ t_3- t_2 \cdots t_k - t_{k-1} ~ i_k ~ \omega$ is a transparent timed word.
-Let $u = \timedinputword(w)$ be the timed input word associated to $w$.
-We forward membership query $u$ to the timed teacher.
+Let $u' = \timedinputword(w)$ be the transparent timed input word associated to $w$.
+We forward membership query $u'$ to the timed teacher.
 Let $w'$ be the response from the timed teacher.
-If $w'$ and $w$ are equal except for the last symbol, which is $o_k$ in $w'$ and $\omega$ in $w$,
-the response $\beta$ for $u$ is $\beta' ~ i_k ~ o_k ~ \emptyset$.
-Otherwise, it must be that $w'$ contains some timeout event that was not supposed to happen according to our input word $u$.
-We now use the info to enrich $\beta'$ with information about this timer and perform step (1) again.
-
-\paragraph{Example}
-Consider a scenario where the timed teacher knows the MMT of Figure~\ref{fig:nondeterminism} (bottom).
+If $w'$ and $w$ are equal, except possibly for the last output symbol, which is $o_k$ in $w'$,
+the response $\beta_k$ is equal to $\beta_{k-1} ~ i_k ~ o_k ~ \emptyset$.
+Otherwise, $w'$ contains some timeout event that was not supposed to happen according to untimed input word $u$.
+Since $u'$ is transparent, $w'$ is transparent as well. Thus we may extract from $w'$ which event $l$ started the timer, to which value
+$d$ the timer was set, and the index $j$ of the timeout event.
+We set $\beta_{k-1} := \Addtimer{l}{d}{j-1}{\beta_{k-1}}$ and perform step (1) again. 
+Note that the number of iterations is finite.
+\item
+$i_k = \toevent{x_l}$, for $l < k$.
+If $\beta_{k-1}$ assigns value $e$ to timer $x_l$ then
+we set $\beta := \Addtimer{l}{e}{k-1}{\beta_{k-1}} ~ \toevent{x_l} ~ \omega ~ \emptyset$ and check whether $\Constraints{\beta}$ is
+satisfiable. If not then response $\beta_k$ is equal to $\beta_{k-1}$.
+If $\beta_{k-1}$ does not assign a value to $x_l$ then define, for $1 \leq e \leq d_{\max}$,
+$\beta^e = \Addtimer{l}{e}{k-1}{\beta_{k-1}} ~ \toevent{x_l} ~ \omega ~ \emptyset$.
+Search for the smallest $e$ for which $\Constraints{\beta^e}$ is satisfiable and set $\beta := \beta^e$.
+If there is no such $e$ then response $\beta_k$ is equal to $\beta_{k-1}$.
+Otherwise, we compute a solution $t_1 ,\ldots, t_k$ for $\Constraints{\beta}$.
+Let $o_1 ,\ldots, o_{k-1}$ be the outputs occurring in $\beta_{k-1}$. Then
+$w = t_1 ~ i_1 ~ o_1 ~ t_2 - t_1 ~ i_2 ~ o_2 ~ t_3- t_2 \cdots t_k - t_{k-1} ~ \toevent{x_l} ~ \omega$ is a transparent timed word.
+Let $u' = \timedinputword(w)$ be the transparent timed input word associated to $w$.
+We forward membership query $u'$ to the timed teacher.
+Let $w'$ be the response from the timed teacher. Since $u'$ is transparent, $w'$ is transparent as well.
+If $w'$ and $w$ are equal, except possibly for the last output symbol, which is $o_k$ in $w'$,
+the response $\beta_k$ is equal to $\beta$ with the last output set to $o_k$.
+It may also occur that, even though the last event of $w'$ is a timeout triggered by event $i_l$, the value $e'$ to which this timer is
+set is different from $e$. In this case response $\beta_k$ is set to
+$\beta_k = \Addtimer{l}{e'}{k-1}{\beta_{k-1}} ~ \toevent{x_l} ~ o_k ~ \emptyset$, where $o_k$ is the last output in $w'$.
+Finally, it may occur that $w'$ contains some timeout event that was not supposed to happen according to untimed input word $u$.
+In this case, we extract from $w'$ which event $l$ started the timer, to which value
+$d$ the timer was set, and the index $j$ of the timeout event.
+We set $\beta_{k-1} := \Addtimer{l}{d}{j-1}{\beta_{k-1}}$ and perform step (2) again. 
+Again the number of iterations is finite.
 \end{enumerate}
-\todofv{Subsection unfinished from here}
-If $i_k = \toevent{x}$ for some timer $x$ that is not expirable after $\beta$ then there exists no feasible partial untimed behavior
-with untimed input word $u$. This means that $\beta$ is maximal and the teacher returns answer $\beta$.
-Otherwise, there exists a feasible behavior that extends $\beta$ with input $i_k$. 
-%continue here
-We compute
-a corresponding transparent timed behavior, extract a timed input word from it and pose this as a query to the timed teacher.
-Since the resulting timed word $w$ is transparent, it has a unique causality map.
-This allows us to transform $w$ into a feasible untimed behavior of the form $\beta' ~ i ~ o ~ Y$.
-Now several cases may occur:
-(1) $\beta' \sqsubseteq \beta$ and $i = i_k$. In this case the untimed teacher returns response $\beta ~ i ~ o ~ Y$.
-(2) $\beta' \sqsubseteq \beta$ and $i \neq i_k$. In this case we return the response $\beta$.
-(3) $\beta' \not\sqsubseteq \beta$.
-
+\todofv{Add example!}
+%\paragraph{Example}
+%Consider a scenario where the timed teacher knows the MMT of Figure~\ref{fig:nondeterminism} (bottom).
+%Suppose that $d_{\max} = 5$ and the untimed teacher receives a query for input word $i ~ i$. The adapter starts with defining
+%\[
+%\beta_0 = \emptyset
+%\]
+%Next it solves $\Constraints{\emptyset ~ i ~ \omega ~ \emptyset} = \{ 0 < t_1 \leq 5 \}$.
+%Suppose it arrives at the solution $t_1 = 1$. Based on this, the timed input word $1 ~ i ~ 0$ is
+%forwarded to the timed teacher. The timed teacher responds with $1 ~ i ~ o$ and the adapter defines
+%\[
+%\beta_1 = \emptyset ~ i ~ o ~ \emptyset
+%\]
+%The constraints in $\Constraints{\emptyset ~ i ~ o ~ \emptyset ~ i ~ \omega ~ \emptyset}$ are still trivial.
+%Suppose adapter finds solution $t_1 = 1,~ t_2 = 4.1$ and forwards timed input word  $1 ~ i ~ 3.1 ~ i ~ 0$ to the timed teacher.
+%Based on the response $1 ~ i ~ o ~ 2 ~ \mathit{to} ~ o$, the adapter realized that the first transition starts a timer
+%and solves $\Constraints{\emptyset ~ i,x:=1 ~ o ~ \{ x \} ~ i ~ \omega ~ \emptyset}$.
 
 Implementing equivalence queries is easy.
 Suppose that the untimed teacher receives an equivalence query $\CH$.
@@ -159,9 +180,7 @@ then $w$ is a transparent timed word of $\M$ but not of $\CH$.
 In this case, by Theorem~\ref{untimedimpliestimed}, we may conclude that
 $\CH \not\approx_{\mathit{untimed}} \M$, and thus the untimed teacher should also return a result \emph{no}.
 Since $w$ is a transparent timed word of $\M$, it 
-\iflong
 follows by Lemma~\ref{lemma unique causality map} that $w$ 
-\fi
 has a unique causality map $c$.
 This allows us to transform $w$ into a feasible untimed behavior $\beta$ (in canonical form) that is a partial untimed
 behavior of $\M$ but not of $\CH$: the causality map tells us exactly which timers are set and timeout. 
