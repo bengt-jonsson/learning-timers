@@ -3,7 +3,8 @@
 
 Active automata learning aims to construct black-box state diagram models of software and hardware systems
 by providing inputs and observing outputs.
-In 1987, Angluin \cite{Ang87} published a seminal paper in which she showed that finite automata can be learned using so-called \emph{membership} and \emph{equivalence queries}.
+In 1987, Angluin \cite{Ang87} published a seminal paper in which she showed that finite automata can be learned using so-called 
+\emph{membership queries} and \emph{equivalence queries}.
 Many (if not most) efficient active learning algorithms used
 today are designed following Angluin's approach of a \emph{minimally adequate teacher (MAT)}.
 In this approach, learning is viewed as a game in which a learner has to infer the behavior of
@@ -83,27 +84,53 @@ with the roles of $0$ and $1$ swapped.
 \fi
 The approaches of \cite{MensM15,CCF16} cannot model this protocol.
 
-The remainder of this article is structured as follows.
-In Section 2, we present the definition of MMTs and their timed semantics.
-Our timed semantics is based on observations that record the timing of inputs and outputs. 
+%The remainder of this article is structured as follows.
+In Section 2, we present the definition of MMTs, their timed semantics, and a minimally adequate teacher for MMTs.
+Our timed semantics is based on \emph{timed words} that record the timing of inputs and outputs. 
 Since we assume that each timeout immediately triggers an observable output, we may observe
-the occurrence of a timeout indirectly. In general, however, we cannot observe which timer times out.
-In Section 3, we present a surprising result, namely that under certain mild restrictions the timed semantics
+the occurrence of a timeout indirectly. However, we cannot observe which timer times out.
+In a membership query, a learner specifies at which specific times input events occur. In response, the teacher
+specifies which outputs occur in response to these inputs, as well as the timing of these outputs.
+Via an equivalence query, the learner asks whether an hypothesis MMT that it has constructed accepts the same timed words
+as the (unknown) MMT of the teacher. The teacher answers `yes' if this is the case and `no' otherwise.
+In case of a `no' answer, a timed word is provided that illustrates why the hypothesis is incorrect.
+
+In Section 3, we present a surprising result, namely that under certain mild restrictions our timed semantics for MMTs
 is the same as an untimed semantics in which behaviors record when and how timers are set and when they expire.
 Intuitively, causality of timeouts can be inferred in the timed semantics since a slight change in the timing of an input event leads to a corresponding change in the timing of any timeout that it induces.
-\iflong
-Section 4, we use some basic timed automata theory (zones and DBMs) to compute the set of timers that may expire  following some untimed run.
-\fi
-Section~\ref{algorithm} presents our learning algorithm for MMTs. 
-Due to the equivalence of the timed and the untimed semantics, we only need a learning algorithm for untimed behaviors.
-In fact, a Myhill-Nerode theorem for untimed behaviors allows us to reduce learning MMTs
-to the learning of (untimed) Mealy machines, meaning that we can use existing tools (such as LearnLib) and add an adapter layer.
-The main technical problem is to infer when timers are set, and whether timers that have been previously set may expire
-in the future.
-In theory, this is a hard problem, since a timer may only expire after some specific sequence of inputs.
-In applications such ``combination lock'' scenarios do not arise: typically, if we just wait and provide no inputs at all,
-all the timers that have been set will expire one after the other.
 
+The result of Section 3 suggests an architecture for our learning algorithm that is shown in Figure~\ref{architecture}.
+The idea is to define an alternative (and simpler) MAT framework in which the learner uses membership queries (MQ) and equivalence queries (EQ)
+to obtain information about the untimed behaviors of an MMT.
+An adapter then implements each untimed membership query via a series of timed membership queries for the timed teacher,
+and each untimed equivalence query via a timed equivalence query.
+\begin{figure}[h]
+\begin{center}
+ \begin{tikzpicture}[>=stealth]
+ \draw [dashed] (-0.1,-0.1) rectangle (4.6,3.6);
+ \node [above,right] at (-0.1,3.8) {Untimed teacher};
+            \draw [thick] (0,0) rectangle (1.5,3.5) node[midway] {\small Adapter};
+            \draw [thick] (3,0) rectangle (4.5,3.5) node[midway,above] {\small Timed};
+            \draw [thick] (3,0) rectangle (4.5,3.5) node[midway,below] {\small teacher};
+            \draw [->] (1.5,3) -- (3,3) node[midway,below] {MQ};
+            \draw [<-] (1.5,2.5) -- (3,2.5);
+            \draw [->] (1.5,1) -- (3,1) node[midway,below] {EQ};
+            \draw [<-] (1.5,0.5) -- (3,0.5);
+            \draw [->] (0,3) -- (-1.5,3) node[midway,below] {MQ};
+            \draw [<-] (0,2.5) -- (-1.5,2.5);
+            \draw [->] (0,1) -- (-1.5,1) node[midway,below] {EQ};
+            \draw [<-] (0,0.5) -- (-1.5,0.5);
+            \draw [thick] (-3,0) rectangle (-1.5,3.5) node[midway,above] {\small Untimed};
+            \draw [thick] (-3,0) rectangle (-1.5,3.5) node[midway,below] {\small learner};
+        \end{tikzpicture}
+\end{center}
+\caption{Learning architecture}
+\label{architecture}
+\end{figure}
+Section~\ref{algorithm} describes the untimed MAT framework for MMTs and the adapter that implements an untimed teacher using
+a timed teacher.
+
+Section~\ref{sec:approx} then presents an algorithm for the untimed MMT learner, based on a Myhill-Nerode theorem for the untimed semantics. 
 Section~\ref{conclusions} contains some concluding remarks and lists topics for future research.
 \ifshort
 A full version of this article including proofs is available at \url{http://www.sws.cs.ru.nl/publications/papers/fvaan/MMT}.
