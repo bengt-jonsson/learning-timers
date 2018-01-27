@@ -50,33 +50,42 @@ may fail to overapproximate the Nerode equivalence of Definition~\ref{def:nerode
 
 Let us introduce a formal {\em timer parameter}, denoted $p$, and the
 {\em generic timeout event} $\toevent{p}$,
-which intuitively denotes the occurrence of any timout event.
-Let a {\em generic untimed input word} be a sequence of symbols in
-$I \cup \set{\toevent{p}}$.
-A {\em instance} of a generic untimed input word is an untimed input
-word obtained by replacing all generic timeout events
-$\toevent{p}$ by some concrete timeout event $\toevent{x_i}$.
-For a set $V$ of generic untimed behaviors, let $\instancesof{V}$ be the
-set of instances of generic untimed behaviors in $V$. For a canonical untimed
+which denotes the occurrence of an arbitrary timout event.
+Let $(I \cup \set{\toevent{p}})^*$ be the set of
+{\em generic untimed input words}.
+An {\em instance} of a generic untimed input word is an untimed input
+word obtained by replacing each generic timeout event
+$\toevent{p}$ by a concrete timeout event.
+For a set $V$ of generic untimed input words, let $\instancesof{V}$ be the
+set of instances of words in $V$. For a canonical untimed
 behavior $\beta$, let $\suffixbehs{S}{\beta}{V}$ be the set of untimed behaviors
 $\gamma$ with $\untimedinputword(\gamma) \in \instancesof{V}$ such that
 $\beta\cdot\gamma$ is a canonical untimed behavior in $S$. Let
-$\getmemorable{S}{\beta}{V}$ be the set of timers among
-$x_1 , \ldots x_{|\beta|}$ for which the corresponding timeout event
+$\getmemorable{S}{\beta}{V}$ be the set of timers in
+$x_1 , \ldots x_{|\beta|}$ whose corresponding timeout event
 (of form $\toevent{x_i}$) occurs (as an input) in some untimed behavior in
 $\suffixbehs{S}{\beta}{V}$.
-Let $\suffbij{\beta}{\beta'}$ be the mapping on timers that map each
+
+Let $\suffbij{\beta}{\beta'}$ be the partial injective mapping
+on timers that maps each
 timer $x_i$ with $i > |\beta|$ to $x_{i + |\beta'| - |\beta|}$.
-The purpose of $\suffbij{\beta}{\beta'}$ is that if timer $x_j$ is assigned
-in the $j$th transition of $\gamma$ in a canonical behavior of form
-$\beta\gamma$, then timer $\suffbij{\beta}{\beta'}(x_j)$ is assigned 
-in the $j$th transition of $\gamma$ in a canonical behavior of form
-$\beta'\gamma$.
+Intuitively, $\suffbij{\beta}{\beta'}$ maps a timer that is assigned 
+in a transition of $\gamma$, where $\gamma$ is a suffix of the canonical
+untimed behavior $\beta \cdot \gamma$, to the corresponding timer of
+the canonical untimed behavior $\beta'\cdot\gamma$.
+For two partial mappings $f$, $g$ on $X$, we let $f \sqcup g$ be their
+union. \todobj{Does this need to be further clarified?}
 
 \todobj{An illustrating example would help the reader here}
 
-The approximated Nerode equivalence can now be defined as follows.
-Let $\beta$ and $\beta'$ be behaviors in $S$, and let  $V$ be a set of
+We can now defined the approximated Nerode equivalence, which is parameterized
+on a set of generic untimed input words.
+
+\begin{definition}
+  \label{def:approx-nerode}
+Let $S$ be a timer language \todobj{Define this},
+let $\beta$ and $\beta'$ be canonical untimed behaviors in $S$,
+and let  $V$ be a set of
 generic untimed input words.
 Let $f : \getmemorable{S}{\beta}{V} \to \getmemorable{S}{\beta'}{V}$
 be a bijection
@@ -86,12 +95,14 @@ $\beta \equiv_{S,V}^f \beta'$,
 \[
 \gamma \in \suffixbehs{S}{\beta}{V}
 \qquad \mbox{iff} \qquad
-(\suffbij{\beta}{\beta'} \circ f) (\gamma) \in \suffixbehs{S}{\beta'}{V}
+(f \sqcup \suffbij{\beta}{\beta'}) (\gamma) \in \suffixbehs{S}{\beta'}{V}
 \]
+\end{definition}
 Intuitively, $\beta \equiv_{S,V}^f \beta'$ means that $\beta$ and $\beta'$
-have the same suffixes with inputs in $\instancesof{V}$, after performing the
-obvious renamings of timers that rename timers in $\beta$ according to
-$f$ and timers in each suffix according to $\suffbij{\beta}{\beta'}$.
+allow the same suffixes with inputs in $\instancesof{V}$, after using
+$f$ to rename timers that are assined in the prefix $\beta$ and used in some
+suffix, and $\suffbij{\beta}{\beta'}$ to rename timers in suffixes in the
+natural way.
 We write $\beta \equiv_{S,V} \beta'$ to denote that
 $\beta \equiv_{S,V}^f \beta'$ for some
 $f : \getmemorable{S}{\beta}{V} \to \getmemorable{S}{\beta'}{V}$.
@@ -99,6 +110,8 @@ $f : \getmemorable{S}{\beta}{V} \to \getmemorable{S}{\beta'}{V}$.
 \todobj{We now need to prove theorems about this approximating equivalence.
   We should make the definition of Nerode use the same notation, whenever
   reasonable, to make this easier}
+
+\subsection{Realizing untimed queries by timed queries}
 
 In order to use the above approximated equivalence for learning, we need to
 present a procedure for constructing the set
@@ -191,63 +204,116 @@ Thereafter, the following procedure is performed
   Note that conjunctions of constraints on delays $\delay{j}{k}$ can be represented as DBM, as is standard for timed automata.
 
 \section{Algorithm for Learning of MMTs}
+\label{sec:learning}
 
-In this section, we provide a more specialized approach for learning MMTs based
-on queries for untimed behaviors, outlined previously in this section.
-It might potentially replace the text in Section~\ref{sect:learn-mm}.
-
+In this section, we present an algorithm for learning MTTs using the untimed
+MAT framework presented in~\ref{sec:untimed-mat}.
+\todobj{Should we repeat that framework here?}
 The learning algorithm follows the standard pattern for automata learning
-algorithms, such as $L^*$. It maintains
+algorithms, such as $L^*$~\cite{Ang87}. It maintains
 a set $U$ of {\em short prefixes}, and
-  an overapproximation of the Nerode equivalence,
-  represented by a set $V$ of generic untimed behaviors.
-  Each short prefix is an untimed
-behavior, which represent a state in the MMT to be constructed.
+  an overapproximation of the Nerode equivalence
+  parameterized represented by a set $V$ of generic untimed input words.
+Each short prefix in $U$ is a feasible canonical untimed
+behavior, which represents a state in the MMT to be constructed.
+The learning algorithm iterates two phases: hypothesis construction and
+hypothesis validation.
 During hypothesis construction,
+the approximation of the Nerode equivalence triggers the expansion of
+$U$ and $V$ until two convergence conditions are satisfied, that allow
+a hypothesis automaton can be formed.
+During hypothesis validation, returned counterexamples are used to refine
+the Nerode equivalence by expanding $V$.
+Let us introduce the two conditions for convergence of the construction phase.
+
+A set $V$ of generic untimed input words is {\em adequate} if it includes
+$I \cup \set{\toevent{p}}$
+Let $U$ be prefix-closed set of feasible untimed behaviors,
+and let $V$ be an adequate set of generic untimed input words.
+let $\lambda:  U \times \extinputs \hookrightarrow O$
+map each $\beta \in U$ and $i \in \extinputs$ to the unique 
+output $o$ such that there exists a $\rho$ with
+$(\beta \xrightarrow{i/o,\rho} \emptyset) \in S$; if no such $o$ exists, then
+$\lambda(\beta,i)$ is undefined.
+\begin{itemize}
+\item
+$U$ is {\em closed} wrt.\ $V$ if 
+  for each $\beta \in U$ and each
+  $i$, which is either in $I$ or
+  of form $\toevent{x_i}$ where $x_i$ is expirable after $\beta$ if
+  there is an assignment $\rho$, and a $\beta' \in U$ such that
+  $(\beta \xrightarrow{i/\lambda(\beta,i),\rho} \emptyset) \equiv_{S,V} \beta'$.
+\item
+$U$ is {\em timer-consistent} wrt.\ $V$ if 
+  for each $\beta \in U$ and each
+  $i$, which is either in $I$ or
+  of form $\toevent{x_i}$ for $x_i$ expirable after $\beta$, there is a $\rho$
+  such that
+  $\getmemorable{S}{\beta \xrightarrow{i/\lambda(\beta,i),\rho} \emptyset}{V} \subseteq
+  (\getmemorable{S}{\beta}{V} \cup \domof{\rho})$.
+\end{itemize}
+Closedness ensures that each transition in the MMT to be constructed has a target location. 
+Timer-consistency states that each timer which is needed after such
+a transition (i.e., a timer set during $(\beta \xrightarrow{i/\lambda(\beta,i),\rho} \emptyset)$)
+is either a timer active after $\beta$ or is started by the transition
+labeled $i/o,\rho$.
+
+Whenever the set $U$ is not closed wrt.\ $V$, then $U$ is extended:
+if there is some $\beta \in U$ and $i$ in $I$ or of form $\toevent{x_i}$ with
+$x_i$ expirable, for which there is no $o$, $\rho$, and $\beta' \in U$ such that
+$(\beta \xrightarrow{i/\lambda(\beta,i),\rho} \emptyset) \equiv_{S,V} \beta'$, 
+then $(\beta \xrightarrow{i/\lambda(\beta,i),\rho} \emptyset)$ is added to $U$,
+triggering new membership queries.
+Whenever the set $U$ is not timer-consistent wrt.\ $V$, then $V$ is extended:
+for timer $x_j$ in
+$\getmemorable{S}{\beta \xrightarrow{i/\lambda(\beta,i),\rho} \emptyset}{V} \setminus (\getmemorable{S}{\beta}{V} \cup \domof{\rho})$, find an 
+untimed behavior of form $(\gamma \xrightarrow{\toevent{x_i}/o',\rho'} X')$ in
+$\suffixbehs{S}{(\beta \xrightarrow{i/\lambda(\beta,i),\rho} \emptyset}{V}$.
+Then add $i\cdot\untimedinputword(\gamma)\cdot\toevent{p}$ to $V$.
+
+\todobj{Got this far. Will continue here}
+%% \begin{itemize}
+%%   \item 
+%%     During {\em hypothesis construction}, membership queries are performed for
+%%     all untimed input words in $UV \cup U\alphabet V$.
+%%     The purpose of this is to compute the relation
+%%     $\apprnerodeof{\Lang}{V}$ on $U \cup U\alphabet$.
+%%     Whenever the set $U$ is not closed wrt.\ $V$, then it is extended:
+%%     if there is some
+%%     $ua$ with $u \in U$ such that $ua \not\apprnerodeof{\Lang}{V} u'$ for all $u' \in U$, then $ua$ is added to $U$,  triggering new membership queries. The
+%%     extension of $U$ is continued in this way until $U$ is closed wrt.\ $V$.
+%%   \item
+%%     When $U$ is closed wrt.\ $V$, then the hypothesis $\hypoof UV$ is
+%%     validated by submitting it in an equivalence query.
+%%     If the query returns ``yes'', then
+%%     the learning is completed, and $\hypoof UV$ accepts $\Lang$.
+%%     If the query returns a counterexample word $w$, this is used to extend
+%%     $V$ as follows. By the fact that $w$ is a counterexample, there is a suffix
+%%     $av$ of $w$ such that $ua \apprnerodeof{\Lang}{V} u'$ but 
+%%     $uav \in \Lang \notiff  u'v \in \Lang$ for some $u,u' \in U$.
+%%     (To se this, let $w = a_1 \cdots a_n$, and
+%%     define the sequence $u_0, u_1, \ldots ,u_{n}$ of short prefixes
+%%     in $U$ by $u_0 = \emptyword$ and $u_{i-1}a_i \apprnerodeof{\Lang}{V} u_{i}$ for
+%%     $i = 1, \ldots n$, i.e., $u_0 \ldots u_n$ is the sequence of states
+%%     visited when $\hypoof UV$ processes $w$.
+%%     Let $v_i$ be the suffix $a_{i+1} \cdots a_n$ of $w$ length $n-i$. 
+%%     By the fact that $w$ is a counterexample, we have
+%%     $u_0v_0 \in \Lang \notiff  u_{n} \in \Lang$, which implies that
+%%     $u_{i-1}v_{i-1} \in \Lang \notiff  u_iv_i \in \Lang$ for some $i$;
+%%     we can then take $u_{i-1}$ as $u$ and $u_i$ as $u'$.)
+%%     This means that $v$ is a new separating suffix that should be added to
+%%     $V$. After adding $v$ to $V$, $U$ is no longer closed
+%%     wrt.\ $V$, so the algorithm can resume a next round of
+%%     hypothesis construction, which will eventually generate a new hypothesis,
+%%     etc.
+%% \end{itemize}
+
+During hypothesis construction, 
 the approximation of the Nerode equivalence triggers the expansion of
 $U$ until it is closed, so that a hypothesis MMT can be formed.
 During hypothesis validation, returned counterexamples are used to refine
 the Nerode equivalence by expanding $V$.
 
-It is required that 
-Let $U$ be a set of untimed behaviors, and let $V$ be a set of generic suffix
-inputs, which contains all one-symbol words, including $\toevent{p}$.
-\begin{itemize}
-\item
-$U$ is {\em closed} wrt.\ $V$ if 
-  for each $\beta \in U$ and each
-  $i$ in $I$ or of form $\toevent{x_i}$ such thas $x_i$ is expirable
-  after $\beta$,
-  there is an output $o$ and a $\beta' \in U$ such that
-  $\beta \cdot i/o,\rho_{i+1} \equiv_{S,V} \beta'$.
-\item
-$U$ is {\em timer-consistent} wrt.\ $V$ if 
-  for each $\beta \in U$ and each
-  $i$ in $I$ or of form $\toevent{x_i}$ such thas $x_i$ is expirable
-  after $\beta$, we have
-  $\getmemorable{S}{\beta \cdot i/o,\rho_{i+1}}{V} \subseteq
-  (\getmemorable{S}{\beta}{V} \cup \domof{\rho_{i+1}})$.
-\end{itemize}
-Closedness ensures 
-that each transition in the MMT to be constructed has a target location. 
-Timer-consistency states that each timer in $\beta \cdot i/o,\rho_{i+1}$
-is either a timer in $\beta$ or is started by the transition $i/o,\rho_{i+1}$.
-In the automaton to be constructed, it ensures that
-any timer started during $\beta$ that is active in $\beta \cdot i/o,\rho_{i+1}$
-is also active in $\beta$.
-
-Whenever the set $U$ is not closed wrt.\ $V$, then $U$ is extended:
-if there is some $\beta \in U$ and $i$ in $I$ or of form $\toevent{x_i}$ with
-$x_i$ expirable, for which there is no $o$ and $\beta' \in U$ such that
-$\beta \cdot i/o,\rho_{i+1} \equiv_{S,V} \beta'$, 
-then $\beta \cdot i/o,\rho_{i+1}$ is added to $U$,
-triggering new membership queries.
-Whenever the set $U$ is not timer-consistent wrt.\ $V$, then $V$ is extended:
-for any suffix of form $\gamma \cdot \toevent{x_j}$, where
-$x_j$ is a ``missing timer'', we make sure that $i/o,\rho_{i+1} \cdot \gamma \cdot \toevent{p}$ is in $V$.
-    This process of
-    extending $U$ and $V$ is continued until $U$ is closed
-    and timer consistent wrt.\ $V$.
 
 \begin{definition}[Hypothesis automaton]
   Let $U$ be a prefix-closed set
