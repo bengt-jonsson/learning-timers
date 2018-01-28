@@ -65,6 +65,10 @@ $\getmemorable{S}{\beta}{V}$ be the set of timers in
 $x_1 , \ldots x_{|\beta|}$ whose corresponding timeout event
 (of form $\toevent{x_i}$) occurs (as an input) in some untimed behavior in
 $\suffixbehs{S}{\beta}{V}$.
+Let $\getmemorable{S}{\beta}{V}$ map each timer $x_j$ in
+$\getassignment{S}{\beta}{V}$ to the unique positive integer to which it
+is assigned in the $j$th transition of that behavior.
+
 
 Let $\suffbij{\beta}{\beta'}$ be the partial injective mapping
 on timers that maps each
@@ -107,11 +111,13 @@ We write $\beta \equiv_{S,V} \beta'$ to denote that
 $\beta \equiv_{S,V}^f \beta'$ for some
 $f : \getmemorable{S}{\beta}{V} \to \getmemorable{S}{\beta'}{V}$.
 
+
 \todobj{We now need to prove theorems about this approximating equivalence.
   We should make the definition of Nerode use the same notation, whenever
   reasonable, to make this easier}
 
 \subsection{Realizing untimed queries by timed queries}
+\todobj{This subsection has been untouched for a while. Ignore it for now.}
 
 In order to use the above approximated equivalence for learning, we need to
 present a procedure for constructing the set
@@ -226,98 +232,46 @@ During hypothesis validation, returned counterexamples are used to refine
 the Nerode equivalence by expanding $V$.
 Let us introduce the two conditions for convergence of the construction phase.
 
+\todobj{Say somewhere that we assume a fixed (un)timed language $S$.}
+  
+For a feasible untimed word $\beta$, let $\feasibleinputs{\beta}{S}$ be the
+set of $i \in \extinputs$ such that there is a feasible
+untimed word of form $(\beta \xrightarrow{i/o,\rho} \emptyset)$ in $S$.
 A set $V$ of generic untimed input words is {\em adequate} if it includes
-$I \cup \set{\toevent{p}}$
+$I \cup \set{\toevent{p}}$.
 Let $U$ be prefix-closed set of feasible untimed behaviors,
 and let $V$ be an adequate set of generic untimed input words.
-let $\lambda:  U \times \extinputs \hookrightarrow O$
-map each $\beta \in U$ and $i \in \extinputs$ to the unique 
-output $o$ such that there exists a $\rho$ with
-$(\beta \xrightarrow{i/o,\rho} \emptyset) \in S$; if no such $o$ exists, then
-$\lambda(\beta,i)$ is undefined.
+define $\lambda:  U \times \extinputs \hookrightarrow O$ by
+letting $\lambda(\beta,i)$ be the unique 
+output $o$ such that $(\beta \xrightarrow{i/o} \emptyset) \in S$ if
+$i \in \feasibleinputs{\beta}{S}$; otherwise $\lambda(\beta,i)$ is undefined. 
 \begin{itemize}
 \item
 $U$ is {\em closed} wrt.\ $V$ if 
   for each $\beta \in U$ and each
-  $i$, which is either in $I$ or
-  of form $\toevent{x_i}$ where $x_i$ is expirable after $\beta$ if
+  $i \in \feasibleinputs{\beta}{S}$
+%%   , which is either in $I$ or of form $\toevent{x_i}$ where $x_i$ is expirable after $\beta$ if
   there is an assignment $\rho$, and a $\beta' \in U$ such that
-  $(\beta \xrightarrow{i/\lambda(\beta,i),\rho} \emptyset) \equiv_{S,V} \beta'$.
+  $\extend{\beta}{i}{\lambda(\beta,i)} \equiv_{S,V} \beta'$.
 \item
 $U$ is {\em timer-consistent} wrt.\ $V$ if 
   for each $\beta \in U$ and each
-  $i$, which is either in $I$ or
-  of form $\toevent{x_i}$ for $x_i$ expirable after $\beta$, there is a $\rho$
-  such that
-  $\getmemorable{S}{\beta \xrightarrow{i/\lambda(\beta,i),\rho} \emptyset}{V} \subseteq
+  $i \in \feasibleinputs{\beta}{S}$
+  %% $i$, which is either in $I$ or
+  %% of form $\toevent{x_i}$ for $x_i$ expirable after $\beta$,
+  there is a $\rho$  such that
+  $\getmemorable{S}{\extend{\beta}{i}{\lambda(\beta,i)}}{V} \subseteq
   (\getmemorable{S}{\beta}{V} \cup \domof{\rho})$.
 \end{itemize}
 Closedness ensures that each transition in the MMT to be constructed has a target location. 
 Timer-consistency states that each timer which is needed after such
-a transition (i.e., a timer set during $(\beta \xrightarrow{i/\lambda(\beta,i),\rho} \emptyset)$)
+a transition (i.e., a timer set during $\extend{\beta}{i}{\lambda(\beta,i)}$)
 is either a timer active after $\beta$ or is started by the transition
-labeled $i/o,\rho$.
-
-Whenever the set $U$ is not closed wrt.\ $V$, then $U$ is extended:
-if there is some $\beta \in U$ and $i$ in $I$ or of form $\toevent{x_i}$ with
-$x_i$ expirable, for which there is no $o$, $\rho$, and $\beta' \in U$ such that
-$(\beta \xrightarrow{i/\lambda(\beta,i),\rho} \emptyset) \equiv_{S,V} \beta'$, 
-then $(\beta \xrightarrow{i/\lambda(\beta,i),\rho} \emptyset)$ is added to $U$,
-triggering new membership queries.
-Whenever the set $U$ is not timer-consistent wrt.\ $V$, then $V$ is extended:
-for timer $x_j$ in
-$\getmemorable{S}{\beta \xrightarrow{i/\lambda(\beta,i),\rho} \emptyset}{V} \setminus (\getmemorable{S}{\beta}{V} \cup \domof{\rho})$, find an 
-untimed behavior of form $(\gamma \xrightarrow{\toevent{x_i}/o',\rho'} X')$ in
-$\suffixbehs{S}{(\beta \xrightarrow{i/\lambda(\beta,i),\rho} \emptyset}{V}$.
-Then add $i\cdot\untimedinputword(\gamma)\cdot\toevent{p}$ to $V$.
-
-\todobj{Got this far. Will continue here}
-%% \begin{itemize}
-%%   \item 
-%%     During {\em hypothesis construction}, membership queries are performed for
-%%     all untimed input words in $UV \cup U\alphabet V$.
-%%     The purpose of this is to compute the relation
-%%     $\apprnerodeof{\Lang}{V}$ on $U \cup U\alphabet$.
-%%     Whenever the set $U$ is not closed wrt.\ $V$, then it is extended:
-%%     if there is some
-%%     $ua$ with $u \in U$ such that $ua \not\apprnerodeof{\Lang}{V} u'$ for all $u' \in U$, then $ua$ is added to $U$,  triggering new membership queries. The
-%%     extension of $U$ is continued in this way until $U$ is closed wrt.\ $V$.
-%%   \item
-%%     When $U$ is closed wrt.\ $V$, then the hypothesis $\hypoof UV$ is
-%%     validated by submitting it in an equivalence query.
-%%     If the query returns ``yes'', then
-%%     the learning is completed, and $\hypoof UV$ accepts $\Lang$.
-%%     If the query returns a counterexample word $w$, this is used to extend
-%%     $V$ as follows. By the fact that $w$ is a counterexample, there is a suffix
-%%     $av$ of $w$ such that $ua \apprnerodeof{\Lang}{V} u'$ but 
-%%     $uav \in \Lang \notiff  u'v \in \Lang$ for some $u,u' \in U$.
-%%     (To se this, let $w = a_1 \cdots a_n$, and
-%%     define the sequence $u_0, u_1, \ldots ,u_{n}$ of short prefixes
-%%     in $U$ by $u_0 = \emptyword$ and $u_{i-1}a_i \apprnerodeof{\Lang}{V} u_{i}$ for
-%%     $i = 1, \ldots n$, i.e., $u_0 \ldots u_n$ is the sequence of states
-%%     visited when $\hypoof UV$ processes $w$.
-%%     Let $v_i$ be the suffix $a_{i+1} \cdots a_n$ of $w$ length $n-i$. 
-%%     By the fact that $w$ is a counterexample, we have
-%%     $u_0v_0 \in \Lang \notiff  u_{n} \in \Lang$, which implies that
-%%     $u_{i-1}v_{i-1} \in \Lang \notiff  u_iv_i \in \Lang$ for some $i$;
-%%     we can then take $u_{i-1}$ as $u$ and $u_i$ as $u'$.)
-%%     This means that $v$ is a new separating suffix that should be added to
-%%     $V$. After adding $v$ to $V$, $U$ is no longer closed
-%%     wrt.\ $V$, so the algorithm can resume a next round of
-%%     hypothesis construction, which will eventually generate a new hypothesis,
-%%     etc.
-%% \end{itemize}
-
-During hypothesis construction, 
-the approximation of the Nerode equivalence triggers the expansion of
-$U$ until it is closed, so that a hypothesis MMT can be formed.
-During hypothesis validation, returned counterexamples are used to refine
-the Nerode equivalence by expanding $V$.
-
+labeled $i/o,\rho$. 
+Closedness nd timer-consistency allow the construction of hypothesis MMTs.
 
 \begin{definition}[Hypothesis automaton]
-  Let $U$ be a prefix-closed set
-  of untimed behaviors, which contains $\emptyword$,
+  Let $U$ be a non-empty prefix-closed set of untimed behaviors,
   and $V$ a set of generic suffix inputs such that
 $U$ is closed and timer consistent wrt.\ $V$. Then the
 {\em hypothesis automaton} $\hypoof UV$ is the MMT
@@ -325,20 +279,88 @@ $\hypoof UV = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$, where
 \begin{itemize}
 \item $Q = U$ and $q_0 = \emptyword$,
 \item $\vars$ maps each location $\beta\in U$ to $\getmemorable{S}{\beta}{V}$,
-\item $\delta$ maps each $\beta \in U$ and input
-  $i$, either in $I$ or of form $\toevent{x_i}$,
-  to the unique $\beta' \in U$ such that
-$\beta \cdot i/o,\rho_{i+1} \equiv_{S,V}^f \beta'$.
+\item $\delta$ maps each $\beta \in U$ and
+  $i \in \feasibleinputs{\beta}{S}$ to
+  to the unique $\beta' \in U$ such that there is an $f$ with
+  $\extend{\beta}{i}{\lambda(\beta,i)} \equiv_{S,V}^f \beta'$.
 \item $\lambda$ maps each $\beta \in U$ and input
   $i$, either in $I$ or of form $\toevent{x_i}$, to the output observed in
   reponse to $i$ after $\beta$.
 \item $\remap$
- maps each $\beta \in U$ and input
-$i$, either in $I$ or of form $\toevent{x_i}$, to the function
-  $\remap(\beta,i):\getmemorable{S}{\beta'}{V} \mapsto (\getmemorable{S}{\beta}{V} \cup \natplus)$ defined as $\rho_{i+1} \circ f^{-1}$, where $\rho_{i+1}$ and $f$
-  are as in the definition of $\delta$.
+ maps each $\beta \in U$ and $i \in \feasibleinputs{\beta}{S}$ to
+  the function
+  $\remap(\beta,i):\getmemorable{S}{\beta'}{V} \mapsto (\getmemorable{S}{\beta}{V} \cup \natplus)$ defined as $\rho \circ f^{-1}$, where $\rho$ maps
+  timer $x_{(|\beta|+1)}$ to
+ $\getassignment{S}{\beta'}{V}(x_{(|\beta|+1)})$.
 \end{itemize}
 \end{definition}
 
-\paragraph{Counterexample processing}
-We should also indicate a procedure for processing counterexamples.
+
+Our learning algorithm iterates two phases: hypothesis construction and
+hypothesis validation.
+During hypothesis construction, 
+the approximation of the Nerode equivalence triggers the expansion of
+$U$ until it is closed, so that a hypothesis MMT can be formed.
+During hypothesis validation, returned counterexamples are used to refine
+the Nerode equivalence by expanding $V$.
+
+During {\bf hypothesis construction}, membership queries are performed:
+\begin{itemize}
+\item for all untimed input words of form $\untimedinputword{\beta} \cdot i$
+   for $\beta \in U$ and $i \in \extinputs$: this allows to determine
+   $\feasibleinputs{\beta}{S}$ and $\lambda(\beta,i)$ for
+   for $\beta \in U$ and $i \in \feasibleinputs{\beta}{S}$.
+\item
+  for all untimed input words of form $\untimedinputword{\beta} \cdot v$ and
+  $\untimedinputword{\beta} \cdot i \cdot v$, where
+  $\beta \in U$, $v \in \instancesof{V}$, and
+  $i \in \feasibleinputs{\beta}{S}$.
+    This allows to compute the approximated Nerode equivalence $\equiv_{S,V}$ on
+    the set of untimed words of form $\beta$ and
+    $\extend{\beta}{i}{\lambda(\beta,i)}$ with
+    $\beta \in U$ and $i \in \feasibleinputs{\beta}{S}$.
+    Whenever the set $U$ is not closed wrt.\ $V$, then it is extended:
+if there is some $\beta \in U$ and $i$ in $\feasibleinputs{\beta}{S}$
+for which there is no $o$ and $\beta' \in U$ such that
+$\extend{\beta}{i}{\lambda(\beta,i)} \equiv_{S,V} \beta'$, 
+then $\extend{\beta}{i}{\lambda(\beta,i)}$ is added to $U$,
+triggering new membership queries.
+Whenever the set $U$ is not timer-consistent wrt.\ $V$, then $V$ is extended:
+for timer $x_j$ in
+$\getmemorable{S}{\extend{\beta}{i}{\lambda(\beta,i)}}{V} \setminus (\getmemorable{S}{\beta}{V} \cup \domof{\rho})$, find an 
+untimed behavior of form $\extend{\gamma}{\toevent{x_i}}{o'}$ in
+$\suffixbehs{S}{\extend{\beta}{i}{\lambda(\beta,i)}}{V}$.
+Then add $i\cdot\untimedinputword(\gamma)\cdot\toevent{p}$ to $V$.
+\end{itemize}
+
+When $U$ is closed and timer-consistent wrt.\ $V$, then
+    a hypothesis MMT $\hypoof UV$ is constructed and
+    validated by submitting it in an equivalence query.
+    If the query returns ``yes'', then
+    the learning is completed, and $\hypoof UV$ accepts $S$.
+    If the query returns a counterexample word $\alpha$, this is used to extend
+    $V$ as follows.
+    \todobj{The rest of this must still be written}
+    %% By the fact that $w$ is a counterexample, there is a suffix
+    %% $av$ of $w$ such that $ua \apprnerodeof{\Lang}{V} u'$ but 
+    %% $uav \in \Lang \notiff  u'v \in \Lang$ for some $u,u' \in U$.
+    %% (To se this, let $w = a_1 \cdots a_n$, and
+    %% define the sequence $u_0, u_1, \ldots ,u_{n}$ of short prefixes
+    %% in $U$ by $u_0 = \emptyword$ and $u_{i-1}a_i \apprnerodeof{\Lang}{V} u_{i}$ for
+    %% $i = 1, \ldots n$, i.e., $u_0 \ldots u_n$ is the sequence of states
+    %% visited when $\hypoof UV$ processes $w$.
+    %% Let $v_i$ be the suffix $a_{i+1} \cdots a_n$ of $w$ length $n-i$. 
+    %% By the fact that $w$ is a counterexample, we have
+    %% $u_0v_0 \in \Lang \notiff  u_{n} \in \Lang$, which implies that
+    %% $u_{i-1}v_{i-1} \in \Lang \notiff  u_iv_i \in \Lang$ for some $i$;
+    %% we can then take $u_{i-1}$ as $u$ and $u_i$ as $u'$.)
+    %% This means that $v$ is a new separating suffix that should be added to
+    %% $V$. After adding $v$ to $V$, $U$ is no longer closed
+    %% wrt.\ $V$, so the algorithm can resume a next round of
+    %% hypothesis construction, which will eventually generate a new hypothesis,
+    %% etc.
+
+
+
+
+
