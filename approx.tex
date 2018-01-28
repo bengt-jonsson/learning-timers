@@ -1,3 +1,91 @@
+\section{Another Try on the Precise Nerode Equivalence}
+
+
+For a set $V$ of generic untimed input words, let $\instancesof{V}$ be the
+set of instances of words in $V$. For a canonical untimed
+behavior $\beta$, let $\suffixbehs{S}{\beta}$ be the set of untimed behaviors
+$\gamma$ such that
+$\beta\cdot\gamma$ is a canonical untimed behavior in $S$. Let
+$\getmemorable{S}{\beta}$ be the set of timers $x_i$ in
+$x_1 , \ldots x_{|\beta|}$ whose corresponding timeout event
+(of form $\toevent{x_i}$) occurs (as an input) in some untimed behavior in
+$\suffixbehs{S}{\beta}$.
+Let $\getassignment{S}{\beta}$ map each timer $x_i$ in
+$\getmemorable{S}{\beta}$ to the unique positive integer to which it
+is assigned in the $i$th transition of that behavior.
+
+
+Let $\suffbij{\beta}{\beta'}$ be the partial injective mapping
+on timers that maps each
+timer $x_i$ with $i > |\beta|$ to $x_{i + |\beta'| - |\beta|}$.
+Intuitively, $\suffbij{\beta}{\beta'}$ maps a timer that is assigned 
+in a transition of $\gamma$, where $\gamma$ is a suffix of the canonical
+untimed behavior $\beta \cdot \gamma$, to the corresponding timer of
+the canonical untimed behavior $\beta'\cdot\gamma$.
+For two partial mappings $f$, $g$ on $X$, we let $f \sqcup g$ be their
+union. \todobj{Does this need to be further clarified?}
+
+We can now defined the Nerode equivalence, which is parameterized
+on a set of generic untimed input words.
+
+\begin{definition}
+  \label{def:bj-nerode}
+Let $S$ be a timer language \todobj{Define this},
+let $\beta$ and $\beta'$ be canonical untimed behaviors in $S$,
+and let $f : \getmemorable{S}{\beta}{V} \to \getmemorable{S}{\beta'}{V}$
+be a bijection
+from $\getmemorable{S}{\beta}$ to $\getmemorable{S}{\beta'}$.
+Then $\beta$ and $\beta'$ are \emph{equivalent} under $f$, written
+$\beta \equiv_{S}^f \beta'$ iff
+\[
+\gamma \in \suffixbehs{S}{\beta}
+\qquad \mbox{iff} \qquad
+(f \sqcup \suffbij{\beta}{\beta'}) (\gamma) \in \suffixbehs{S}{\beta'}
+\]
+\end{definition}
+Intuitively, $\beta \equiv_{S}^f \beta'$ means that $\beta$ and $\beta'$
+allow the same suffixes, after renaming
+timers assigned in $\beta$ by $f$, and timers assigned in the suffix by
+$\suffbij{\beta}{\beta'}$.
+We write $\beta \equiv_{S} \beta'$ to denote that
+$\beta \equiv_{S}^f \beta'$ for some
+$f : \getmemorable{S}{\beta} \to \getmemorable{S}{\beta'}$.
+
+\begin{theorem}
+  \label{thm:bj-nerode}
+Let $S$ be a timer language.
+Then there exists an MMT with feasible canonical untimed behaviors $S$ iff 
+$\equiv_S$ has finitely many equivalence classes (finite index).
+\end{theorem}
+\begin{proof} 
+\todobj{This is just a sketch. More care is needed with timers}
+``$\Rightarrow$'' Let $\M$ be an MMT, let $S$ be its set of feasible untimed
+  behaviors. It follows from \todobj{fix} that $S$ is a timer language.
+Suppose that $\beta, \beta' \in S$.
+Then there exist (unique) $\delta, \delta$ of $T$ with
+$\can{\delta}=\beta$ and $\can{\delta'}=\beta'$.
+Suppose $\delta$ and $\delta'$ lead to the same state $q$ of $\M$.
+We claim that $\beta \equiv_S \beta'$.
+Since $\beta = \can{\delta}$, there exist isomorphisms
+$g = g_0 ,\ldots, g_k$  $\beta$ to $\delta$.
+Similarly, there exists isomorphisms $g' = g'_0 ,\ldots, g'_l$ from
+$\beta'$ to $\delta'$.
+Let $f = (g'_l)^{-1} \circ g_k$.
+Suppose that, for some untimed behavior $\gamma$, $\beta \cdot \gamma \in S$.
+Then there exists an untimed behavior $\zeta$ such that $\delta \cdot \zeta \in T$ and $\can{\delta \cdot \zeta} = \beta \cdot \gamma$.
+Moreover, there exists an isomorphism $h = g_k ,\ldots, g_m$ from $\gamma$ to $\zeta$.
+Since $\delta \cdot \zeta$ is a feasible behavior in $T$, it follows that
+$\delta' \cdot \zeta$ is a feasible behavior in $T$
+\todobj{This should follow from the observation that the same paths are possible
+  after $\delta$ and $\delta'$ (we have the assumption that all paths are
+  feasible}
+Thus there exists an untimed behavior $\gamma'$ such that $\can{\delta' \cdot \zeta} = \beta' \cdot \gamma' \in S$.
+Moreover, we may construct an isomorphism $h' = g'_l ,\ldots, g'_n$ from $\gamma'$ to $\zeta$.
+Then $f = (g'_l)^{-1} \circ g_k \cdots (g'_n)^{-1} \circ g_m$ is an isomorphism from $\gamma$ to $\gamma'$ that extends $f_0$.
+We then have $\beta' \cdot f(\gamma) \in S$, as required.
+\todobj{To be continued}
+\end{proof}
+
 \section{Approximating the Nerode Equivalence}
 \label{sec:approx}
 
@@ -69,15 +157,15 @@ word obtained by replacing each generic timeout event
 $\toevent{p}$ by a concrete timeout event.
 For a set $V$ of generic untimed input words, let $\instancesof{V}$ be the
 set of instances of words in $V$. For a canonical untimed
-behavior $\beta$, let $\suffixbehs{S}{\beta}{V}$ be the set of untimed behaviors
+behavior $\beta$, let $\apprsuffixbehs{S}{\beta}{V}$ be the set of untimed behaviors
 $\gamma$ with $\untimedinputword(\gamma) \in \instancesof{V}$ such that
 $\beta\cdot\gamma$ is a canonical untimed behavior in $S$. Let
-$\getmemorable{S}{\beta}{V}$ be the set of timers $x_i$ in
+$\apprgetmemorable{S}{\beta}{V}$ be the set of timers $x_i$ in
 $x_1 , \ldots x_{|\beta|}$ whose corresponding timeout event
 (of form $\toevent{x_i}$) occurs (as an input) in some untimed behavior in
-$\suffixbehs{S}{\beta}{V}$.
-Let $\getassignment{S}{\beta}{V}$ map each timer $x_i$ in
-$\getmemorable{S}{\beta}{V}$ to the unique positive integer to which it
+$\apprsuffixbehs{S}{\beta}{V}$.
+Let $\apprgetassignment{S}{\beta}{V}$ map each timer $x_i$ in
+$\apprgetmemorable{S}{\beta}{V}$ to the unique positive integer to which it
 is assigned in the $i$th transition of that behavior.
 
 
@@ -102,15 +190,15 @@ Let $S$ be a timer language \todobj{Define this},
 let $\beta$ and $\beta'$ be canonical untimed behaviors in $S$,
 and let  $V$ be a set of
 generic untimed input words.
-Let $f : \getmemorable{S}{\beta}{V} \to \getmemorable{S}{\beta'}{V}$
+Let $f : \apprgetmemorable{S}{\beta}{V} \to \apprgetmemorable{S}{\beta'}{V}$
 be a bijection
-from $\getmemorable{S}{\beta}{V}$ to $\getmemorable{S}{\beta'}{V}$.
+from $\apprgetmemorable{S}{\beta}{V}$ to $\apprgetmemorable{S}{\beta'}{V}$.
 Then $\beta$ and $\beta'$ are \emph{equivalent wrp $V$} under $f$, written
-$\beta \equiv_{S,V}^f \beta'$, 
+$\beta \equiv_{S,V}^f \beta'$ iff
 \[
-\gamma \in \suffixbehs{S}{\beta}{V}
+\gamma \in \apprsuffixbehs{S}{\beta}{V}
 \qquad \mbox{iff} \qquad
-(f \sqcup \suffbij{\beta}{\beta'}) (\gamma) \in \suffixbehs{S}{\beta'}{V}
+(f \sqcup \suffbij{\beta}{\beta'}) (\gamma) \in \apprsuffixbehs{S}{\beta'}{V}
 \]
 \end{definition}
 Intuitively, $\beta \equiv_{S,V}^f \beta'$ means that $\beta$ and $\beta'$
@@ -119,7 +207,7 @@ timers assigned in $\beta$ by $f$, and timers assigned in the suffix by
 $\suffbij{\beta}{\beta'}$.
 We write $\beta \equiv_{S,V} \beta'$ to denote that
 $\beta \equiv_{S,V}^f \beta'$ for some
-$f : \getmemorable{S}{\beta}{V} \to \getmemorable{S}{\beta'}{V}$.
+$f : \apprgetmemorable{S}{\beta}{V} \to \apprgetmemorable{S}{\beta'}{V}$.
 
 
 \todobj{What theorems should we prove about this approximating equivalence?
@@ -177,8 +265,8 @@ $U$ is {\em timer-consistent} wrt.\ $V$ if
   %% $i$, which is either in $I$ or
   %% of form $\toevent{x_i}$ for $x_i$ expirable after $\beta$,
   we have
-  $\getmemorable{S}{\extend{\beta}{i}{\lambda(\beta,i)}}{V} \subseteq
-  (\getmemorable{S}{\beta}{V} \cup \set{x_{(|\beta|+1)}})$.
+  $\apprgetmemorable{S}{\extend{\beta}{i}{\lambda(\beta,i)}}{V} \subseteq
+  (\apprgetmemorable{S}{\beta}{V} \cup \set{x_{(|\beta|+1)}})$.
 \end{itemize}
 Closedness ensures that each transition in the MMT to be constructed has a target location. 
 Timer-consistency states that each timer which is needed after such
@@ -195,7 +283,7 @@ $U$ is closed and timer consistent wrt.\ $V$. Then the
 $\hypoof UV = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$, where
 \begin{itemize}
 \item $Q = U$ and $q_0 = \emptyword$,
-\item $\vars$ maps each location $\beta\in U$ to $\getmemorable{S}{\beta}{V}$,
+\item $\vars$ maps each location $\beta\in U$ to $\apprgetmemorable{S}{\beta}{V}$,
 \item $\lambda$ maps each $\beta \in U$ and $i \in \feasibleinputs{\beta}{S}$ to
   the unique $o$ such that $\extend{\beta}{i}{o} \in S$. 
   %% $i$, either in $I$ or of form $\toevent{x_i}$, to the output observed in
@@ -207,9 +295,9 @@ $\hypoof UV = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$, where
 \item $\remap$
  maps each $\beta \in U$ and $i \in \feasibleinputs{\beta}{S}$ to
   the function
-  $\remap(\beta,i):\getmemorable{S}{\beta'}{V} \mapsto (\getmemorable{S}{\beta}{V} \cup \natplus)$ defined as $\rho \circ f^{-1}$, where $\rho$ maps  d
+  $\remap(\beta,i):\apprgetmemorable{S}{\beta'}{V} \mapsto (\apprgetmemorable{S}{\beta}{V} \cup \natplus)$ defined as $\rho \circ f^{-1}$, where $\rho$ maps  d
   timer $x_{(|\beta|+1)}$ to
- $\getassignment{S}{\extend{\beta}{i}{\lambda(\beta,i)}}{V}(x_{(|\beta|+1)})$.
+ $\apprgetassignment{S}{\extend{\beta}{i}{\lambda(\beta,i)}}{V}(x_{(|\beta|+1)})$.
 \end{itemize}
 \end{definition}
 
@@ -245,9 +333,9 @@ then $\extend{\beta}{i}{\lambda(\beta,i)}$ is added to $U$,
 triggering new membership queries.
 Whenever the set $U$ is not timer-consistent wrt.\ $V$, then $V$ is extended:
 for timer $x_j$ in
-$\getmemorable{S}{\extend{\beta}{i}{\lambda(\beta,i)}}{V} \setminus (\getmemorable{S}{\beta}{V} \cup \set{x_{(|\beta|+1)}})$, find an 
+$\apprgetmemorable{S}{\extend{\beta}{i}{\lambda(\beta,i)}}{V} \setminus (\apprgetmemorable{S}{\beta}{V} \cup \set{x_{(|\beta|+1)}})$, find an 
 untimed behavior of form $\extend{\gamma}{\toevent{x_i}}{o'}$ in
-$\suffixbehs{S}{\extend{\beta}{i}{\lambda(\beta,i)}}{V}$.
+$\apprsuffixbehs{S}{\extend{\beta}{i}{\lambda(\beta,i)}}{V}$.
 Then add $i\cdot\untimedinputword(\gamma)\cdot\toevent{p}$ to $V$.
 \end{itemize}
 
@@ -284,7 +372,7 @@ When $U$ is closed and timer-consistent wrt.\ $V$, then
 
 In order to use the above approximated equivalence for learning, we need to
 present a procedure for constructing the set
-$\suffixbehs{S}{\beta}{V}$ by a sequence of timed membership queries.
+$\apprsuffixbehs{S}{\beta}{V}$ by a sequence of timed membership queries.
 
 We should also construct an automaton from a set of results of such
 suffix queries, provided they satisfy some conditions
@@ -294,7 +382,7 @@ Let us first present a procedure for answering suffix queries. It is
 sufficient to perform them for one generic suffix at a time.
 The input to a suffix query is a (feasible) untimed behavior $\beta$ an a
 generic untimed input behavior $v$. It returns
-$\suffixbehs{S}{\beta}{\set{v}}$. To compute this, it must be determined
+$\apprsuffixbehs{S}{\beta}{\set{v}}$. To compute this, it must be determined
 \begin{itemize}
 \item which instantiations of generic timeouts in $v$ are feasible after $\beta$, and
 \item what is the output in response to an input.
