@@ -1,5 +1,125 @@
 \section{Untimed semantics}
 \label{section untimed semantics}
+In this section, we present an untimed semantics for MMTs and prove that is equivalent with the timed semantics.
+In order to define the untimed semantics, we need to define a number of abstractions of timed runs.
+
+\subsection{Timed and untimed runs and behaviors}
+Configurations consists of pairs of states and timer valuations. This means that there are two natural abstractions of
+timed runs: an abstraction $\untime$ that forgets all timing information and keeps the transitions of the MMT, 
+and an abstraction $\beh$ that forgets information on states and preserves the timing information.
+When we compose these abstractions we obtain \emph{untimed behaviors} in which only information about inputs, outputs,
+updates and active timers is preserved.
+The abstractions commute, $\beh(\untime(\alpha))=\untime(\beh(\alpha))$, and play a key role in
+the technical development of this paper.
+%
+Formally, an \emph{untimed behavior} over inputs $I$ and outputs $O$ is a sequence 
+\begin{eqnarray*}
+\beta & = & X_0 \xrightarrow{i_1/o_1, \rho_1} X_1  \cdots \xrightarrow{i_k/o_k, \rho_k} X_{k},
+\end{eqnarray*}
+where $X_0 \subseteq X$ and, for each $j>0$,  $i_j \in \extinputs$, $o_j \in O$, $\rho_j \in X \hookrightarrow \natplus$, and
+ $X_j \setminus X_{j-1}  \subseteq \domof{\rho_j} \subseteq X_j \subseteq X$.
+Moreover, if $i_j = \toevent{x}$, for some $j>0$, then $x \in X_{j-1}$ and $x \not\in X_j \setminus \domof{\rho_j}$.
+%
+An \emph{untimed run} of an MMT $\M$ is a sequence
+\begin{eqnarray*}
+\gamma & = & q_0 \xrightarrow{i_1/o_1, \rho_1} q_1   \cdots \xrightarrow{i_k/o_k, \rho_k} q_k
+\end{eqnarray*}
+of transitions of $\M$ that starts with the initial state $q_0$. 
+To each untimed run $\gamma$ we associate an untimed behavior by replacing all
+states by their sets of timers:
+\begin{eqnarray*}
+\beh(\gamma) & = & \vars(q_0) \xrightarrow{i_1/o_1, \rho_1} \vars(q_1)  \cdots \xrightarrow{i_k/o_k, \rho_k} \vars(q_k).
+\end{eqnarray*}
+We say that $\beta$ is an untimed behavior of $\M$ if $\M$ has an untimed run $\gamma$ with $\beh(\gamma) = \beta$.
+Note that the initial timer set of an untimed behavior of $\M$ is empty.
+%
+A \emph{timed behavior} over inputs $I$ and outputs $O$ is an alternating sequence
+\begin{eqnarray}
+\label{timedbehavior}
+\sigma & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \cdots
+\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}
+\end{eqnarray}
+of delay transitions and discrete transitions with, for each $j$,
+$\tvals_j, \tvals'_j$ valuations and,
+for each $j>0$,  $d_j \in \delays$, $i_j \in \extinputs$, $o_j \in O$, and $\rho_j \in X \hookrightarrow \natplus$.
+To each timed behavior $\sigma$ we associate an untimed behavior by forgetting the
+delay transitions and by replacing valuations by their domain:
+\begin{eqnarray*}
+\untime(\sigma) & = & \domof{\tvals_0} \xrightarrow{i_1/o_1, \rho_1}  \cdots \xrightarrow{i_k/o_k, \rho_k} \domof{\tvals_k}.
+\end{eqnarray*}
+We say that untimed behavior $\beta$ is \emph{feasible} if there exists a timed behavior $\sigma$ such that $\untime(\sigma) = \beta$.
+The following technical lemma follows directly from the definitions:
+
+\begin{lemma}
+\label{feasible plus input is feasible}
+Suppose $\beta$ is a feasible untimed behavior that ends with timer set $Y$, and 
+$Y \xrightarrow{i/o, \rho} Y'$ is an untimed behavior with $i \in I$.
+Then $\beta \xrightarrow{i/o, \rho} Y'$ is a feasible untimed behavior.
+\end{lemma}
+
+We also associate a timed word to timed behavior $\sigma$ by forgetting valuations, timers, and update functions:
+\begin{eqnarray*}
+\timedword(\sigma) & = & d_ 1 ~ i'_1 ~ o_1 ~ i'_2 ~ o_2 \cdots d_k ~ i'_k ~ o_k, 
+\end{eqnarray*} 
+where for all  $j$,
+\begin{eqnarray*}
+i'_j  & = &  \left\{ \begin{array}{ll}
+i_j & \mbox{if } i_j \in I,\\
+\mathit{to} & \mbox{if } i_j \in \toevents.
+\end{array} \right.
+\end{eqnarray*}
+Let $\alpha$ be a timed run of an MMT $\M$: 
+\begin{eqnarray*}
+\alpha & = & (q_0, \tvals_0) \xrightarrow{d_1} (q_0, \tvals'_0) \xrightarrow{i_1/o_1} (q_1, \tvals_1)  \cdots
+ \xrightarrow{i_k/o_k} (q_k, \tvals_k).
+\end{eqnarray*}
+Then $\alpha$ can be projected both to an untimed run of $\M$
+\begin{eqnarray*}
+\untime (\alpha) & = & q_0 \xrightarrow{i_1/o_1, \rho_1} q_1  \cdots \xrightarrow{i_k/o_k, \rho_k} q_k
+\end{eqnarray*}
+(the $\rho_j$'s are determined since $\M$ is deterministic) and to a timed behavior
+\begin{eqnarray*}
+\beh(\alpha) & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1  \cdots
+\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}.
+\end{eqnarray*}
+\iflong
+We say that $\sigma$ is an timed behavior of $\M$ if $\M$ has an timed run $\alpha$ with $\beh(\alpha) = \sigma$.
+\fi
+Note that $\beh(\untime(\alpha))=\untime(\beh(\alpha))$ and $\timedword(\alpha) = \timedword(\beh(\alpha))$.
+\iflong
+Thus the diagram of Figure~\ref{fig:diagram}, which summarizes the various types of runs and behaviors that we consider
+in this article, commutes.
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.5cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
+  \node[state,align=center] (1) {timed \\ runs of\\ $\M$};
+  \node[state,align=center] (2) [below of=1] {untimed \\ runs of\\ $\M$};
+  \node[state,align=center] (3) [right of=1] {timed\\ behaviors};
+  \node[state,align=center] (4) [right of=2] {untimed\\ behaviors};
+  \node[state,align=center] (5) [right of=3] {timed \\words};
+
+  \path[every node/.style={font=\sffamily\scriptsize}]
+    (1) edge  node {$\untime$} (2)
+        edge  node {$\beh$} (3)
+        edge[bend left=40]  node {$\timedword$} (5)
+    (2) edge  node {$\beh$} (4)
+    (3) edge  node {$\untime$} (4)
+        edge  node {$\timedword$} (5);
+\end{tikzpicture}
+\caption{Relating different types of runs and behaviors}
+\label{fig:diagram}
+\end{figure}
+\fi
+Conversely, if $\gamma$ is an untimed run  of $\M$ and $\sigma$ is a timed behavior such that $\beh(\gamma) = \untime(\sigma)$,
+then there exists a unique timed run $\alpha$ of $\M$ with $\untime(\alpha) = \gamma$ and $\beh(\alpha) = \sigma$.
+We refer to $\alpha$ as $\run(\gamma,\sigma)$.
+
+For any nonempty sequence $\sigma$, $\Head{\sigma}$ denotes the first element, $\Tail{\sigma}$ denotes the sequence obtained by removing the first element, and $\Last{\sigma}$ denotes the last element.
+Suppose $\beta, \beta'$ are untimed behaviors over $I$ and $O$ such that $\Last{\beta} = \Head{\beta'}$.
+Then the \emph{sequential composition} of $\beta$ and $\beta'$, written $\beta \cdot \beta'$, is the untimed behavior $\beta ~ \Tail{\beta'}$.
+Behavior $\beta$ is a \emph{prefix} of behavior $\gamma$ if there exists an behavior $\beta'$ such that $\gamma = \beta \cdot \beta'$.
+
+\subsection{Definition untimed semantics}
 We would, intuitively, like to define the untimed semantics of an MMT $\M$ as the set of its feasible untimed behaviors.
 However, this semantics would then depend heavily on the identity of the timers. Therefore, we define an equivalence relation
 on untimed behaviors, which deems two untimed behaviors equivalent if there is a consistent renaming of timers that transforms
@@ -18,7 +138,6 @@ In this case, since $\beta'$ is fully determined by $\beta$ and $f$, we write $\
 We say that $\beta$ and $\beta'$ are \emph{isomorphic} if there exists an isomorphism $f$ from $\beta$ to $\beta'$.
 Two sets of untimed behaviors $A$ and $B$ are \emph{isomorphic} if for each untimed behavior of $A$ there is an isomorphic untimed behavior in $B$,
 and vice versa.
-\iflong
 
 Isomorphisms can be lifted to timed behaviors in the obvious way. 
 Let $\sigma$ and $\sigma'$ be two timed behaviors with the same length and outputs:
@@ -46,11 +165,15 @@ Then $\untime(f(\sigma)) = f(\untime(\sigma))$.
 If untimed behaviors $\beta$ and $\beta'$ are isomorphic, then $\beta$ is feasible iff $\beta'$ is feasible.
 \end{lemma}
 
-\fi
-Two MMTs $\M$ and $\N$ with the same sets of inputs are \emph{untimed equivalent}, denoted $\M \approx_{\mathit{untimed}} \N$, iff their sets of feasible untimed behaviors are isomorphic.
-\iflong
-Untimed equivalence is finer than timed equivalence.
-\fi
+Two MMTs $\M$ and $\N$ with the same sets of inputs are \emph{untimed equivalent}, denoted $\M \approx_{\mathit{untimed}} \N$, iff their sets of feasible untimed behaviors are isomorphic. The following basic property will be needed later on:
+
+\begin{lemma}
+\label{not untimed}
+Suppose $\M, \N$ are MMTs with $\M \not\approx_{\mathit{untimed}} \N$.
+Then there exists a feasible untimed behavior $\beta$ of $\M$ that is not isomorphic to any feasible untimed behavior of $\N$.
+\end{lemma}
+
+Untimed equivalence is finer than timed equivalence:
 
 \begin{theorem}
 \label{untimedimpliestimed}
@@ -134,7 +257,7 @@ in which at most one timer is (re)set per transition.
   \node[initial, state] (1) {$q_0$};
   \node[state] (2) [right of=1] {$q_1$};
   \node[state] (3) [right of=2] {$q_2$};
-  \node[state] (4) [right of=3] {$q_3$};
+  \node[state] (4) [below of=3] {$q_3$};
   \node[state] (5) [below of=2] {$q_4$};
 
   \path[every node/.style={font=\sffamily\scriptsize}]
@@ -162,7 +285,7 @@ omitting the update $y :=60$ on the transition from $q_1$ to $q_2$.
   \node[initial, state] (1) {$q_0$};
   \node[state] (2) [right of=1] {$q_1$};
   \node[state] (3) [right of=2] {$q_2$};
-  \node[state] (4) [right of=3] {$q_3$};
+  \node[state] (4) [below of=3] {$q_3$};
   \node[state] (5) [below of=2] {$q_4$};
 
   \path[every node/.style={font=\sffamily\scriptsize}]
@@ -190,7 +313,7 @@ timer $y$ expires.
 
 We will show that the timed semantics and the untimed semantics coincide for timer live MMTs in which at most one timer is (re)started on each transition. However, in order prove this result we need to do some prepatory work.
 
-\paragraph{Wiggling.}
+\subsection{Wiggling}
 Often it is possible to slightly change the timing of events in a timed behavior, 
 while preserving the associated untimed behavior.
 \iflong
@@ -198,7 +321,7 @@ Consider, for instance, a timed behavior
 \[
 \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \cdots
 \xrightarrow{d_j} \tvals'_{j-1} \xrightarrow{i_j/o_j, \rho_j} \tvals_j  \xrightarrow{d_{j+1}} \cdots
-\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}
+%\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}
 \]
 that contains an $i_j$-transition that is not a timeout and does not (re)start any timer.
 We can then schedule this transition slightly earlier.
@@ -206,7 +329,7 @@ More precisely, if $0 < e < d_j$ and $e' = d_j + d_{j+1}- e $ then we can find $
 \[
 \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \cdots
 \xrightarrow{e} \tvals' \xrightarrow{i_j/o_j, \rho_j} \tvals  \xrightarrow{e'} \cdots
-\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}
+%\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}
 \]
 is a timed behavior with the same underlying untimed behavior.
 
@@ -256,12 +379,16 @@ and $\{ 4, 5 \}$:
 \fi
 \[
 \emptyset \xrightarrow{7} \emptyset \xrightarrow{i_1/o_1, x \mapsto 2} (x=2) \xrightarrow{1} (x=1)
-\xrightarrow{i_2/o_2, y \mapsto 1} (x=y=1) \xrightarrow{1} (x=y=0) 
+\xrightarrow{i_2/o_2, y \mapsto 1} (x=y=1)  
 \]
 \[
+\xrightarrow{1} (x=y=0)
 \xrightarrow{\toevent{x}/o_3, u \mapsto 2} (u=2)
 \xrightarrow{1} (u=1)
-\xrightarrow{i_4/o_4, z \mapsto 1} (u=z=1)
+\xrightarrow{i_4/o_4, z \mapsto 1} 
+\]
+\[
+(u=z=1)
 \xrightarrow{1} (u=z=0)\xrightarrow{\toevent{z}/o_5} (u=0).
 \]
 

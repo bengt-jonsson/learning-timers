@@ -82,7 +82,7 @@ $\untimedinputword(\beta)$ is a prefix of $u$.
 With an \emph{equivalence query}, the learner asks if a hypothesis $\CH$ with inputs $I$ is correct.
 Upon receiving $\CH$, the teacher answers \emph{yes} if $\CH \approx_{\mathit{untimed}} \M$.
 Otherwise it answers \emph{no} and supplies a counterexample, which now is a feasible untimed behavior $\beta$ (in canonical form) that
-is a partial untimed behavior of $\M$ but not of $\CH$.
+is a partial untimed behavior of $\M$ but not of $\CH$ (by Lemma~\ref{not untimed} such a counterexample exists).
 
 \input{reachability}
 
@@ -186,7 +186,9 @@ has a unique causality map $c$.
 This allows us to transform $w$ into a feasible untimed behavior $\beta$ (in canonical form) that is a partial untimed
 behavior of $\M$ but not of $\CH$: the causality map tells us exactly which timers are set and timeout. 
 Thus the untimed teacher may return $\beta$ as counterexample.
-
+If our estimate $d_{\max}$ of the maximal timeout value of $\M$ is too low, then it may occur that in $w$ the timeout value of some
+timer is larger than $d_{\max}$. In this case, the value of $d_{\max}$ is updated to the newly observed maximal timeout value.
+\todofv{Think through implications of updating $d_{\max}$.}
 
 
 
