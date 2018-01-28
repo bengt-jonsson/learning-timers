@@ -51,13 +51,14 @@ appear in the DBM's that represent the sets $\Zone{\beta}$. Thus all the sets $\
 collection of DBMs.
 \end{proof}
 
-%Let $\beta$ be a feasible untimed behavior and let $x \in X$ be a timer. Then we say that $x$ is \emph{expirable} after $\beta$
-%if there exists a valuation in $\Zone{\beta}$ in which $x$ is minimal.
-%
-%\begin{lemma}
-%Suppose $\beta$ is a feasible untimed behavior with $\Last{\beta} = Y$ and $Y \xrightarrow{\toevent{x}/o, \rho} Y'$ is an untimed behavior.
-%Then $x$ is expirable after $\beta$ iff $\beta \xrightarrow{\toevent{x}/o, \rho} Y'$ is feasible.
-%\end{lemma}
+Let $\beta$ be a feasible untimed behavior and let $x \in X$ be a timer. Then we say that $x$ is \emph{expirable} after $\beta$
+if there exists a valuation in $\Zone{\beta}$ in which $x$ is minimal.
+
+\begin{lemma}
+\label{expirable}
+Suppose $\beta$ is a feasible untimed behavior with $\Last{\beta} = Y$ and $Y \xrightarrow{\toevent{x}/o, \rho} Y'$ is an untimed behavior.
+Then $x$ is expirable after $\beta$ iff $\beta \xrightarrow{\toevent{x}/o, \rho} Y'$ is feasible.
+\end{lemma}
 
 Suppose that $\beta$ is an untimed behavior in canonical form:
 \begin{eqnarray*}

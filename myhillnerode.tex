@@ -1,20 +1,31 @@
 \subsection{A Myhill Nerode Theorem for MMTs}
 
-\todobj{I suggest to extract the first paragraph of this definition into
-  a class of ``timed languages'', e.g., ``feasible timer language''}
 \begin{definition}
-\label{def:nerode}
-Let $S$ be a set of feasible untimed behaviors in canonical form over $I$ and $O$. Then $S$ is
-\emph{prefix closed} if $\beta \beta' \in S \Rightarrow \beta \in S$,
-\emph{behavior deterministic} if
+\label{def:timer language}
+A \emph{timer language} over $I$ and $O$ is a nonempty set 
+$S$ of feasible untimed behaviors in canonical form over $I$ and $O$ that satisfies the following five properties:
+\begin{itemize}
+\item
+\emph{no initial timers}: $\beta \in S \Rightarrow \Head{\beta} = \emptyset$,
+\item
+\emph{prefix closed}: $\beta \cdot \gamma \in S \Rightarrow \beta \in S$,
+\item
+\emph{behavior deterministic}:
 $\beta \xrightarrow{i/o_1, \rho_1} X_1 \in S \wedge \beta \xrightarrow{i/o_2, \rho_2} X_2 \in S \Rightarrow o_1 = o_2 \wedge \rho_1 = \rho_2 \wedge X_1 = X_2$,
-\emph{input complete} if
+\item
+\emph{input complete}:
 $\beta \in S \wedge i \in I \Rightarrow \exists o, \rho, Y : \beta \xrightarrow{i/o, \rho} Y \in S$,
 and
-\emph{timeout complete} if
+\item
+\emph{timeout complete}:
 $\beta \in S \wedge x \mbox{ expirable after } \beta \Rightarrow
 \exists o, \rho, Y: \beta \xrightarrow{\toevent{x}/o, \rho} Y \in S$.
+\end{itemize}
+\end{definition}
 
+\begin{definition}
+\label{def:nerode}
+Let $S$ be a timer language.
 Suppose $\beta$ and $\beta'$ are behaviors in $S$ with $\Last{\beta} = X$ and $\Last{\beta'} = X'$.
 Then $\beta$ and $\beta'$ are \emph{equivalent}, written $\beta \equiv_S \beta'$, iff there exists a bijection
 $f_0 : X \to X'$ such that for any untimed behavior $\gamma$:
@@ -25,47 +36,38 @@ We write $[\beta]$ to denote the equivalence class of $\beta$ with respect to $\
 
 \begin{theorem}
 \label{Myhill Nerode}
-Let $S$ be a set of feasible untimed behaviors in canonical form over finite sets of inputs $I$ and outputs $O$.
-Then there exists an MMT with feasible untimed behaviors $T$ such that $S = \can{T}$ iff 
-$S$ is nonempty, all untimed behaviors in $S$
-start with the empty set of timers, $S$ is prefix closed, 
-there is a bound on the number of timers that can be active simultaneously 
-($\exists n \in \nat ~ \forall \beta \in S : \mid \Last{\beta} \mid \leq n$),
-$S$ is behavior deterministic, input complete, timeout complete,
-and $\equiv_S$ has only finitely many equivalence classes (finite index).
+Let $S$ be a timer language.
+Then there exists an MMT with feasible untimed behaviors $T$ and $\can{T} = S$ iff 
+$\equiv_S$ has finitely many equivalence classes (finite index).
 \end{theorem}
-\iflong
-\begin{proof} (Needs work)
+\begin{proof} 
 
 ``$\Rightarrow$'' Let $\M$ be an MMT, let $T$ be its set of feasible untimed behaviors, and let $S = \can{T}$.
-Then it is immediate from the definitions that $T$ is nonempty, all untimed behaviors in $S$
-start with the empty set of timers, 
-$S$ is prefix closed, 
-there is a bound on the number of timers that can be active simultaneously,
-$S$ is behavior deterministic, input complete, and timeout complete.
+Then it follows from the definitions, Lemma~\ref{feasible plus input is feasible} and Lemma~\ref{expirable} that $S$ is a timer language.
 Suppose that $\beta, \beta' \in S$.
-Then there exist (unique) $\beta_1, \beta'_1 \in T$ with
-$\can{\beta_1}=\beta$ and $\can{\beta'_1}=\beta'$.
-Suppose $\beta_1$ and $\beta'_1$ lead to the same state $q$ and moreover $\Post_{\beta_1} = \Post_{\beta'_1}$.
-Since $\beta$ and $\beta_1$ are isomorphic, and $\beta'$ and $\beta'_1$ are isomorphic,
-there exists a bijection $f_0 : X \to X'$ such that $f_0(\Post_{\beta}) = \Post_{\beta'}$.
-Suppose that, for some untimed behavior $\gamma$, $\beta \gamma \in S$.
-Then there exists an untimed behavior $\gamma_1$ such that $\beta_1 \gamma_1 \in T$ and $\can{\beta_1 \gamma_1} = \beta \gamma$.
-By Lemma~\ref{lemma: feasibility concatenation},
-$\beta'_1 \cdot \gamma_1 \in T$.
-This implies $\beta' f(\gamma) \in S$ (elaborate this).
-Since $\M$ only has finitely many states and by Lemma~\ref{lemma finitely many zones} the set
-$\{ \Post_{\beta} \mid \beta \mbox{ is a feasible untimed behavior of } \M \}$ is finite, this means that
-$\equiv_S$ has finite index.
+Then there exist (unique) $\delta, \delta \in T$ with
+$\can{\delta}=\beta$ and $\can{\delta'}=\beta'$.
+Suppose $\delta$ and $\delta'$ lead to the same state $q$ of $\M$ and moreover $\Zone{\delta} = \Zone{\delta'}$.
+We claim that $\beta \equiv_S \beta'$.
+Since $\beta$ and $\delta$ are isomorphic, there exists an isomorphism $g = g_0 ,\ldots, g_k$ from $\beta$ to $\delta$.
+Similarly, since $\beta'$ and $\delta'$ are isomorphic, there exists an isomorphism $g' = g'_0 ,\ldots, g'_l$ from $\beta'$ to $\delta'$.
+Let $f_0 = (g'_l)^{-1} \circ g_k$.
+Suppose that, for some untimed behavior $\gamma$, $\beta \cdot \gamma \in S$.
+Then there exists an untimed behavior $\zeta$ such that $\delta \cdot \zeta \in T$ and $\can{\delta \cdot \zeta} = \beta \cdot \gamma$.
+Moreover, there exists an isomorphism $h = g_k ,\ldots, g_m$ from $\gamma$ to $\zeta$.
+Since $\delta \cdot \zeta$ is a feasible behavior in $T$, it follows by Lemma~\ref{lemma: feasibility concatenation} that
+$\delta' \cdot \zeta$ is a feasible behavior in $T$.
+Thus there exists an untimed behavior $\gamma'$ such that $\can{\delta' \cdot \zeta} = \beta' \cdot \gamma' \in S$.
+Moreover, we may construct an isomorphism $h' = g'_l ,\ldots, g'_n$ from $\gamma'$ to $\zeta$.
+Then $f = (g'_l)^{-1} \circ g_k \cdots (g'_n)^{-1} \circ g_m$ is an isomorphism from $\gamma$ to $\gamma'$ that extends $f_0$.
+We then have $\beta' \cdot f(\gamma) \in S$, as required.
+Clause (b) of Definition~\ref{def:nerode} follows by a symmetric argument.
+Since $\M$ only has finitely many states and by Lemma~\ref{lemma finitely many zones} the number of zones of feasible
+untimed behaviors of $M$ is finite, it follows that $\equiv_S$ has finite index.
 
-``$\Leftarrow$'' Suppose $S$ is nonempty, etc.
-Let $n$ be a bound on the number of timers that are active in a behavior in $S$ at any point.
-We can construct a function that maps each untimed behavior $\beta \in S$
-to an isomorphic behavior $\uncan{\beta}$ in such a way that only timers $\{ x_1 ,\ldots, x_n \}$ occur 
-in all the behaviors in the range of $\mathit{uncan}$.
-For instance, if a transition occurs in a state and this transition
-starts a new timer, then $\mathit{uncan}$ may compute the smallest index $j$
-such that $x_j$ is not unaffected by this transition, and then choose $x_j$ as the name of the new timer.
+``$\Leftarrow$'' 
+\todofv{This direction still needs work, but I know how to do it. Easy once you allow renaming of timers.}
+Suppose $S$ is a timer language with finite index.
 Let MMT $\M = (I, O \cup \{ \perp \}, Q, q_0, \vars, \delta, \lambda, \remap)$ be defined as follows:
 \begin{itemize}
 \item
@@ -92,4 +94,3 @@ We define $\delta([\beta],\toevent{x}) = [\beta]$, $\lambda([\beta],\toevent{x})
 \end{itemize}
 It is routine to verify that $\M$ is a well-defined MMT whose set of feasible untimed behaviors equals $S$.
 \end{proof}
-\fi
