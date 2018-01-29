@@ -27,7 +27,7 @@ $\beta \in S \wedge x \mbox{ expirable after } \beta \Rightarrow
 \label{def:nerode}
 Let $S$ be a timer language.
 Suppose $\beta$ and $\beta'$ are behaviors in $S$ with $\Last{\beta} = X$ and $\Last{\beta'} = X'$.
-Then $\beta$ and $\beta'$ are \emph{equivalent}, written $\beta \equiv_S \beta'$, iff there exists a bijection
+Then $\beta$ and $\beta'$ are \emph{equivalent}, written $\beta \equiv_S \beta'$, iff there exists a \emph{matching}, a bijection
 $f_0 : X \to X'$ such that for any untimed behavior $\gamma$:
 (a) if $\beta \cdot \gamma \in S$ then there exists an isomorphism $f$ that extends $f_0$ such that $\beta' \cdot f(\gamma) \in S$, and conversely,
 (b) if $\beta' \cdot \gamma \in S$ then there exists an isomorphism $f$ that extends $f_0^{-1}$ such that $\beta \cdot f(\gamma) \in S$.
@@ -92,23 +92,26 @@ is not equivalent to any behavior in $Q$, but nevertheless has not been added to
 Using basis $Q$, MMT $\M = (I, O \cup \{ \perp \}, Q, q_0, \vars, \delta, \lambda, \remap)$ is defined as follows:
 \begin{itemize}
 \item
-$\perp$ is a special, fresh output event.
-\item
 $q_0 = \emptyset$.
 \item
 $\varsof{\beta} = \Last{\beta}$.
 \item
-(rest needs doing). Let $\beta \in S$ and $i \in I$. Then, since $S$ is both input complete and behavior deterministic, there exist unique
-$o$, $\rho$ and $Y$ such that $\beta' = \beta \xrightarrow{i/o, \rho} Y \in S$.
-We define $\delta([\beta],i) = [\beta']$, $\lambda([\beta],i) = o$, and $\remap([\beta],i) = \rho$.
+Let $\beta \in Q$ and $i \in I$. Then, since $S$ is input complete and behavior deterministic, there are unique
+$o$, $\rho$ and $Y$ such that $\delta = \beta \xrightarrow{i/o, \rho} Y \in S$.
+Let $\delta'$ be the unique element of $Q$ with $\delta' \equiv_S \delta$, and
+let $f_0$ be a matching for $\delta' \equiv_S \delta$.
+Then $\delta(\beta,i) = \delta'$, $\lambda(\beta,i) = o$, and $\remap(\beta,i) = \rho  \circ f_0$.
 \item
-Assume $\beta \in S$ and $x\in \Last{\beta}$ expirable after $\beta$. 
-Then, since $S$ is both timeout complete and behavior deterministic, there exist unique
-$o$, $\rho$ and $Y$ such that $\beta' = \beta \xrightarrow{\toevent{x}/o, \rho} Y \in S$.
-We define $\delta([\beta],\toevent{x}) = [\beta']$, $\lambda([\beta],\toevent{x}) = o$, and $\remap([\beta],\toevent{x}) = \rho$.
+Assume $\beta \in Q$ and $x\in \Last{\beta}$ expirable after $\beta$. 
+Then, since $S$ is  timeout complete and behavior deterministic, there exist unique
+$o$, $\rho$ and $Y$ such that $\delta = \beta \xrightarrow{\toevent{x}/o, \rho} Y \in S$.
+Let $\delta'$ be the unique element of $Q$ with $\delta' \equiv_S \delta$, and
+let $f_0$ be a matching for $\delta' \equiv_S \delta$.
+Then $\delta(\beta,\toevent{x}) = \delta'$, $\lambda(\beta,\toevent{x}) = o$, and $\remap(\beta,\toevent{x}) = \rho \circ f_0$.
 \item
-Assume $\beta \in S$ and $x \in \Last{\beta}$ not expirable after $\beta$.
-We define $\delta([\beta],\toevent{x}) = [\beta]$, $\lambda([\beta],\toevent{x}) = \perp$, and $\remap([\beta],\toevent{x}) = \rho_0$, where $\domof{\rho_0} = \emptyset$.
+Assume $\beta \in Q$ and $x \in \Last{\beta}$ not expirable after $\beta$.
+We define $\delta(\beta,\toevent{x}) = \beta$, $\lambda(\beta,\toevent{x}) = \perp$, and $\remap(\beta,\toevent{x}) = \rho_0$, 
+where $\perp$ is a special, fresh output event and $\domof{\rho_0} = \emptyset$.
 \end{itemize}
 It is routine to verify that $\M$ is a well-defined MMT whose set of feasible untimed behaviors is isomorphic to $S$.
 \end{proof}
