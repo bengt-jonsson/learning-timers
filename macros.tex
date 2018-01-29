@@ -67,6 +67,8 @@
 \newcommand{\lengthof}[1]{|#1|}
 \newcommand{\true}{{\it true}}
 \newcommand{\false}{{\it false}}
+%% \newcommand{\iff}{\Leftrightarrow}
+\newcommand{\notiff}{\centernot\iff}
 
 %% macros for ``approximation''
 \newcommand{\acttimers}{\mathit{active}}
@@ -91,7 +93,7 @@
 \newcommand{\apprgetmemorable}[3]{\mathit{mem}_{#1,#3}(#2)}
 \newcommand{\getassignment}[2]{\mathit{val}_{#1,#2}}
 \newcommand{\apprgetassignment}[3]{\mathit{val}_{#1,#3,#2}}
-\newcommand{\feasibleinputs}[2]{\mathit{feas}_{#2}(#1)}
+\newcommand{\feasibleinputs}[2]{\mathit{en}_{#2}(#1)}
 \newcommand{\extend}[3]{(#1 \xrightarrow{#2/#3} \emptyset)}
 \newcommand{\suffbij}[2]{g_{|#1| \to |#2|}}
 \newcommand{\suftraces}{\textsf{Tr}_s}

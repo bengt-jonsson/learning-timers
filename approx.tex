@@ -306,15 +306,16 @@ Our learning algorithm iterates two phases: hypothesis construction and
 hypothesis validation.
 During hypothesis construction, 
 the approximation of the Nerode equivalence triggers the expansion of
-$U$ until it is closed, so that a hypothesis MMT can be formed.
+$U$ and $V$ until $U$ is closed and timer-consistent wrpt.\ $V$,
+so that a hypothesis MMT can be formed.
 During hypothesis validation, returned counterexamples are used to refine
-the Nerode equivalence by expanding $V$.
+the approximated Nerode equivalence by expanding $V$.
 
 During {\bf hypothesis construction}, membership queries are performed:
 \begin{itemize}
 \item for all untimed input words of form $\untimedinputword(\beta) \cdot i$
    for $\beta \in U$ and $i \in \extinputs$: this allows to determine
-   $\feasibleinputs{\beta}{S}$ and $\lambda(\beta,i)$ for
+   $\feasibleinputs{\beta}{S}$ and $\lambda(\beta,i)$
    for $\beta \in U$ and $i \in \feasibleinputs{\beta}{S}$.
 \item
   for all untimed input words of form $\untimedinputword(\beta) \cdot v$ and
@@ -345,30 +346,38 @@ When $U$ is closed and timer-consistent wrt.\ $V$, then
     If the query returns ``yes'', then
     the learning is completed, and $\hypoof UV$ accepts $S$.
     If the query returns a counterexample word $\alpha$, this is used to extend
-    $V$ as follows.
-    \todobj{The rest of this must still be written}
-    %% By the fact that $w$ is a counterexample, there is a suffix
-    %% $av$ of $w$ such that $ua \apprnerodeof{\Lang}{V} u'$ but 
-    %% $uav \in \Lang \notiff  u'v \in \Lang$ for some $u,u' \in U$.
-    %% (To se this, let $w = a_1 \cdots a_n$, and
-    %% define the sequence $u_0, u_1, \ldots ,u_{n}$ of short prefixes
-    %% in $U$ by $u_0 = \emptyword$ and $u_{i-1}a_i \apprnerodeof{\Lang}{V} u_{i}$ for
-    %% $i = 1, \ldots n$, i.e., $u_0 \ldots u_n$ is the sequence of states
-    %% visited when $\hypoof UV$ processes $w$.
-    %% Let $v_i$ be the suffix $a_{i+1} \cdots a_n$ of $w$ length $n-i$. 
-    %% By the fact that $w$ is a counterexample, we have
-    %% $u_0v_0 \in \Lang \notiff  u_{n} \in \Lang$, which implies that
-    %% $u_{i-1}v_{i-1} \in \Lang \notiff  u_iv_i \in \Lang$ for some $i$;
-    %% we can then take $u_{i-1}$ as $u$ and $u_i$ as $u'$.)
-    %% This means that $v$ is a new separating suffix that should be added to
-    %% $V$. After adding $v$ to $V$, $U$ is no longer closed
-    %% wrt.\ $V$, so the algorithm can resume a next round of
-    %% hypothesis construction, which will eventually generate a new hypothesis,
-    %% etc.
+    $V$ as follows. We assume w.l.o.g.\ that no proper prefix of $\alpha$ is
+    a counterexample. 
+    By the fact that $\alpha$ is a counterexample, there is a suffix
+    $i/o,\rho \cdot \gamma$ of $\alpha$
+    such that $\beta\cdot i/o,\rho \equiv_{S,V} \beta'$ but
+    $\beta \cdot i/o,\rho \cdot \gamma \in S \notiff \beta' \cdot \gamma \in S$
+    for some $\beta,\beta' \in U$.
+    (To se this, let $\alpha = i_1/o_1,\rho_1 \cdots i_n/o_n,\rho_n$, and
+    define the sequence $\beta_0, \beta_1, \ldots ,\beta_{n}$ of short prefixes
+    in $U$ by $\beta_0 = \emptyword$ and
+    $\beta_{j-1}i_j/o_j,\rho_j \equiv_{S,V} \beta_{i}$ for
+    $j = 1, \ldots n$, i.e., $\beta_0 \ldots \beta_n$ is the sequence of states
+    visited when $\hypoof UV$ processes $\alpha$.
+    Let $\gamma_j$ be the suffix $i_{j+1}/o_{j+1}\rho_{j+1} \cdots i_n/o_n,\rho_n$
+    of $\alpha$ of length $n-j$. 
+    By the fact that $\alpha$ is a counterexample, we have
+    $\beta_0\cdot\gamma_0 \in S \notiff  \beta_{n} \in S$, which implies that
+    $\beta_{j-1}\cdot\gamma_{j-1} \in S \notiff \beta_j\cdot\gamma_j \in S$
+    for some $j$;
+    we can then take $\beta_{j-1}$ as $\beta$ and $\beta_j$ as $\beta'$.)
+    This means that $\gamma$ is a new separating suffix, and that $V$ should be
+    extended with the $v$ such that
+    $\untimedinputword(\gamma) \in \instancesof{\set{v}}$
+    should be added to
+    $V$. After adding $v$ to $V$, $U$ is no longer closed
+    wrt.\ $V$, so the algorithm can resume a next round of
+    hypothesis construction, which will eventually generate a new hypothesis,
+    etc.
 
 
 \section{Realizing untimed queries by timed queries}
-\todobj{This ection has been untouched for a while. Ignore it for now.}
+\todobj{This section has been untouched for a while. Ignore it for now.}
 
 In order to use the above approximated equivalence for learning, we need to
 present a procedure for constructing the set
