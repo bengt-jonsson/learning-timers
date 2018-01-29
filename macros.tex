@@ -94,8 +94,10 @@
 \newcommand{\getassignment}[2]{\mathit{val}_{#1,#2}}
 \newcommand{\apprgetassignment}[3]{\mathit{val}_{#1,#3,#2}}
 \newcommand{\feasibleinputs}[2]{\mathit{en}_{#2}(#1)}
-\newcommand{\extend}[3]{(#1 \xrightarrow{#2/#3} \emptyset)}
+%% \newcommand{\extend}[3]{(#1 \xrightarrow{#2/#3} \emptyset)}
+\newcommand{\extend}[3]{#1;#2/#3}
 \newcommand{\suffbij}[2]{g_{|#1| \to |#2|}}
+\newcommand{\suffmap}[1]{g_{+{#1}}}
 \newcommand{\suftraces}{\textsf{Tr}_s}
 \newcommand{\pinpof}[1]{\textit{inp}_p(#1)}
 \newcommand{\sinpof}[1]{\textit{inp}_s(#1)}
