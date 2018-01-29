@@ -23,7 +23,7 @@ $\beta \in S \wedge x \mbox{ expirable after } \beta \Rightarrow
 \end{itemize}
 \end{definition}
 
-\begin{definition}
+\begin{definition}[Nerode congruence]
 \label{def:nerode}
 Let $S$ be a timer language.
 Suppose $\beta$ and $\beta'$ are behaviors in $S$ with $\Last{\beta} = X$ and $\Last{\beta'} = X'$.
@@ -31,8 +31,14 @@ Then $\beta$ and $\beta'$ are \emph{equivalent}, written $\beta \equiv_S \beta'$
 $f_0 : X \to X'$ such that for any untimed behavior $\gamma$:
 (a) if $\beta \cdot \gamma \in S$ then there exists an isomorphism $f$ that extends $f_0$ such that $\beta' \cdot f(\gamma) \in S$, and conversely,
 (b) if $\beta' \cdot \gamma \in S$ then there exists an isomorphism $f$ that extends $f_0^{-1}$ such that $\beta \cdot f(\gamma) \in S$.
-We write $[\beta]$ to denote the equivalence class of $\beta$ with respect to $\equiv_S$.
 \end{definition}
+
+One easily sees that $\equiv_S$ is an equivalence relation. It is also a \emph{right-congruence}, meaning that it satisfies,
+for all $\delta = \beta \xrightarrow{i/o, \rho} Y \in S$ and $\delta' = \beta' \xrightarrow{i/o', \rho'} Y' \in S$,
+\begin{eqnarray*}
+\beta \equiv_S \beta' & \Rightarrow & o = o' \wedge \delta \equiv_S \delta'.
+\end{eqnarray*}
+We write $[\beta]$ to denote the equivalence class of $\beta$ w.r.t.\  $\equiv_S$.
 
 \begin{theorem}
 \label{Myhill Nerode}
@@ -66,19 +72,31 @@ Since $\M$ only has finitely many states and by Lemma~\ref{lemma finitely many z
 untimed behaviors of $M$ is finite, it follows that $\equiv_S$ has finite index.
 
 ``$\Leftarrow$'' 
-\todofv{This direction still needs work, but I know how to do it. Easy once you allow renaming of timers.}
 Suppose $S$ is a timer language with finite index.
-Let MMT $\M = (I, O \cup \{ \perp \}, Q, q_0, \vars, \delta, \lambda, \remap)$ be defined as follows:
+We call a subset $Q \subseteq S$ a \emph{basis} for $S$ if it is nonempty, finite, prefix closed, and contains a unique representative from
+each equivalence class of $\equiv_S$.
+We construct a basis for $S$ using a simple greedy algorithm. Start by setting $Q := \{ \emptyset \}$, where $\emptyset$ is the trivial untimed behavior. Then, as long as an untimed behavior $\beta$ exists that extends a behavior in $Q$ with a single transition and
+is not equivalent to any behavior in $Q$, add it to $Q$.  Since $\equiv_S$ has finite index this algorithm will terminate.
+By construction, the resulting set $Q$ is nonempty, finite and prefix closed.
+By contradiction, we prove that $Q$ contains a representative from each equivalence class.
+Suppose $\beta \in S$ is an untimed behavior that is not equivalent to any behavior in $Q$.
+W.l.o.g.\ we may assume that all proper prefixes of $\beta$ are equivalent to a behavior in $Q$.
+Thus $\beta$ is of the form $\delta \xrightarrow{i/o, \rho} Y$, for some behavior $\delta$ not in $Q$ (otherwise our algorithm would
+have added $\beta$ to $Q$) but equivalent to some $\delta'$ in $Q$.
+Because $S$ is input complete, it contains a behavior $\beta' = \delta' \xrightarrow{i/o', \rho'} Y'$.
+Since $\equiv_S$ is a right-congruence, it follows that $\beta \equiv_S \beta'$.
+Since $\beta$ is not equivalent to any behavior in $Q$, the same holds for $\beta'$.
+This is a contradiction, because we have found a behavior $\beta'$ that extends a behavior in $Q$ with a single transition,
+is not equivalent to any behavior in $Q$, but nevertheless has not been added to $Q$.
+
+Using basis $Q$, MMT $\M = (I, O \cup \{ \perp \}, Q, q_0, \vars, \delta, \lambda, \remap)$ is defined as follows:
 \begin{itemize}
 \item
 $\perp$ is a special, fresh output event.
 \item
-$Q = \{ ( [\beta], \Post_{\uncan{\beta}}) \mid \beta \in S \}$.
+$q_0 = \emptyset$.
 \item
-$q_0 = ([\emptyset], Z_0)$. (Note that $\emptyset \in S$ since $S$ is nonempty, prefix closed, and all untimed behaviors in $S$ start
-with the empty set of timers; $Z_0$ is the unique zone for the empty set of variables.)
-\item
-$\varsof{([\beta], Z)} = \domof{Z}$.
+$\varsof{\beta} = \Last{\beta}$.
 \item
 (rest needs doing). Let $\beta \in S$ and $i \in I$. Then, since $S$ is both input complete and behavior deterministic, there exist unique
 $o$, $\rho$ and $Y$ such that $\beta' = \beta \xrightarrow{i/o, \rho} Y \in S$.
@@ -92,5 +110,5 @@ We define $\delta([\beta],\toevent{x}) = [\beta']$, $\lambda([\beta],\toevent{x}
 Assume $\beta \in S$ and $x \in \Last{\beta}$ not expirable after $\beta$.
 We define $\delta([\beta],\toevent{x}) = [\beta]$, $\lambda([\beta],\toevent{x}) = \perp$, and $\remap([\beta],\toevent{x}) = \rho_0$, where $\domof{\rho_0} = \emptyset$.
 \end{itemize}
-It is routine to verify that $\M$ is a well-defined MMT whose set of feasible untimed behaviors equals $S$.
+It is routine to verify that $\M$ is a well-defined MMT whose set of feasible untimed behaviors is isomorphic to $S$.
 \end{proof}

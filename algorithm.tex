@@ -125,7 +125,7 @@ Otherwise, $w'$ contains some timeout event that was not supposed to happen acco
 Since $u'$ is transparent, $w'$ is transparent as well. Thus we may extract from $w'$ which event $l$ started the timer, to which value
 $d$ the timer was set, and the index $j$ of the timeout event.
 We set $\beta_{k-1} := \Addtimer{l}{d}{j-1}{\beta_{k-1}}$ and perform step (1) again. 
-Note that the number of iterations is finite.
+Note that the number of iterations is linear in the size of $u$.
 \item
 $i_k = \toevent{x_l}$, for $l < k$.
 If $\beta_{k-1}$ assigns value $e$ to timer $x_l$ then
@@ -133,7 +133,7 @@ we set $\beta := \Addtimer{l}{e}{k-1}{\beta_{k-1}} ~ \toevent{x_l} ~ \omega ~ \e
 satisfiable. If not then response $\beta_k$ is equal to $\beta_{k-1}$.
 If $\beta_{k-1}$ does not assign a value to $x_l$ then define, for $1 \leq e \leq d_{\max}$,
 $\beta^e = \Addtimer{l}{e}{k-1}{\beta_{k-1}} ~ \toevent{x_l} ~ \omega ~ \emptyset$.
-Search for the smallest $e$ for which $\Constraints{\beta^e}$ is satisfiable and set $\beta := \beta^e$.
+Search for an $e$ for which $\Constraints{\beta^e}$ is satisfiable and set $\beta := \beta^e$.
 If there is no such $e$ then response $\beta_k$ is equal to $\beta_{k-1}$.
 Otherwise, we compute a solution $t_1 ,\ldots, t_k$ for $\Constraints{\beta}$.
 Let $o_1 ,\ldots, o_{k-1}$ be the outputs occurring in $\beta_{k-1}$. Then
@@ -150,7 +150,7 @@ Finally, it may occur that $w'$ contains some timeout event that was not suppose
 In this case, we extract from $w'$ which event $l$ started the timer, to which value
 $d$ the timer was set, and the index $j$ of the timeout event.
 We set $\beta_{k-1} := \Addtimer{l}{d}{j-1}{\beta_{k-1}}$ and perform step (2) again. 
-Again the number of iterations is finite.
+Again the number of iterations is linear in the size of $u$.
 \end{enumerate}
 \todofv{Add example!}
 %\paragraph{Example}
