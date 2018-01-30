@@ -72,27 +72,28 @@ Since $\M$ only has finitely many states and by Lemma~\ref{lemma finitely many z
 untimed behaviors of $M$ is finite, it follows that $\equiv_S$ has finite index.
 
 ``$\Leftarrow$'' 
-Suppose $S$ is a timer language with finite index.
-We call a subset $Q \subseteq S$ a \emph{basis} for $S$ if it is nonempty, finite, prefix closed, and contains a unique representative from
+Suppose $S$ is a timer language such that $\equiv_S$ has a finite index.
+A subset $Q \subseteq S$ is a \emph{basis} for $S$ if it contains a unique representative from
 each equivalence class of $\equiv_S$.
-We construct a basis for $S$ using a simple greedy algorithm. Start by setting $Q := \{ \emptyset \}$, where $\emptyset$ is the trivial untimed behavior. Then, as long as an untimed behavior $\beta$ exists that extends a behavior in $Q$ with a single transition and
-is not equivalent to any behavior in $Q$, add it to $Q$.  Since $\equiv_S$ has finite index this algorithm will terminate.
-By construction, the resulting set $Q$ is nonempty, finite and prefix closed.
-By contradiction, we prove that $Q$ contains a representative from each equivalence class.
-Suppose $\beta \in S$ is an untimed behavior that is not equivalent to any behavior in $Q$.
-W.l.o.g.\ we may assume that all proper prefixes of $\beta$ are equivalent to a behavior in $Q$.
-Thus $\beta$ is of the form $\delta \xrightarrow{i/o, \rho} Y$, for some behavior $\delta$ not in $Q$ (otherwise our algorithm would
-have added $\beta$ to $Q$) but equivalent to some $\delta'$ in $Q$.
-Because $S$ is input complete, it contains a behavior $\beta' = \delta' \xrightarrow{i/o', \rho'} Y'$.
-Since $\equiv_S$ is a right-congruence, it follows that $\beta \equiv_S \beta'$.
-Since $\beta$ is not equivalent to any behavior in $Q$, the same holds for $\beta'$.
-This is a contradiction, because we have found a behavior $\beta'$ that extends a behavior in $Q$ with a single transition,
-is not equivalent to any behavior in $Q$, but nevertheless has not been added to $Q$.
-
-Using basis $Q$, MMT $\M = (I, O \cup \{ \perp \}, Q, q_0, \vars, \delta, \lambda, \remap)$ is defined as follows:
+%We construct a basis for $S$ using a simple greedy algorithm. Start by setting $Q := \{ \emptyset \}$, where $\emptyset$ is the trivial untimed behavior. Then, as long as an untimed behavior $\beta$ exists that extends a behavior in $Q$ with a single transition and
+%is not equivalent to any behavior in $Q$, add it to $Q$.  Since $\equiv_S$ has finite index this algorithm will terminate.
+%By construction, the resulting set $Q$ is nonempty, finite and prefix closed.
+%By contradiction, we prove that $Q$ contains a representative from each equivalence class.
+%Suppose $\beta \in S$ is an untimed behavior that is not equivalent to any behavior in $Q$.
+%W.l.o.g.\ we may assume that all proper prefixes of $\beta$ are equivalent to a behavior in $Q$.
+%Thus $\beta$ is of the form $\delta \xrightarrow{i/o, \rho} Y$, for some behavior $\delta$ not in $Q$ (otherwise our algorithm would
+%have added $\beta$ to $Q$) but equivalent to some $\delta'$ in $Q$.
+%Because $S$ is input complete, it contains a behavior $\beta' = \delta' \xrightarrow{i/o', \rho'} Y'$.
+%Since $\equiv_S$ is a right-congruence, it follows that $\beta \equiv_S \beta'$.
+%Since $\beta$ is not equivalent to any behavior in $Q$, the same holds for $\beta'$.
+%This is a contradiction, because we have found a behavior $\beta'$ that extends a behavior in $Q$ with a single transition,
+%is not equivalent to any behavior in $Q$, but nevertheless has not been added to $Q$.
+%
+Since $\equiv_S$ has finite index, $S$ has a finite basis $Q$.
+Now MMT $\M = (I, O \cup \{ \perp \}, Q, \beta_0, \vars, \delta, \lambda, \remap)$ is defined as follows:
 \begin{itemize}
 \item
-$q_0 = \emptyset$.
+$\beta_0$ is the unique element of $Q$ such that $\beta_0 \equiv_S \emptyset$.
 \item
 $\varsof{\beta} = \Last{\beta}$.
 \item
