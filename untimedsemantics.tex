@@ -378,52 +378,43 @@ and $\{ 4, 5 \}$, visualized in Figure~\ref{fig:races}:
 and $\{ 4, 5 \}$:
 \fi
 \[
-\emptyset \xrightarrow{7} \emptyset \xrightarrow{i_1/o_1, x \mapsto 2} (x=2) \xrightarrow{1} (x=1)
-\xrightarrow{i_2/o_2, y \mapsto 1} (x=y=1)  
+\emptyset \xrightarrow{7} \emptyset \xrightarrow{i1/o1, x \mapsto 2} (x=2) \xrightarrow{1} (x=1)
+\xrightarrow{i2/o2, y \mapsto 1} (x=y=1)  
 \]
 \[
 \xrightarrow{1} (x=y=0)
-\xrightarrow{\toevent{x}/o_3, u \mapsto 2} (u=2)
+\xrightarrow{\toevent{x}/o3, u \mapsto 2} (u=2)
 \xrightarrow{1} (u=1)
-\xrightarrow{i_4/o_4, z \mapsto 1} 
+\xrightarrow{i4/o4, z \mapsto 1} 
 \]
 \[
 (u=z=1)
-\xrightarrow{1} (u=z=0)\xrightarrow{\toevent{z}/o_5} (u=0).
+\xrightarrow{1} (u=z=0)\xrightarrow{\toevent{z}/o5} (u=0).
 \]
-
-\iflong
-\begin{figure}
-\vspace{-2em}
-\begin{center}
-\includegraphics[width=.45\textwidth]{wiggling.jpg}
-\end{center}
-\caption{A timed behavior with two races}
-\label{fig:races}
-\end{figure}
-\fi
 This timed behavior contains two races, after two and four time units, respectively.
 The first races is won by block $\{ 1, 3 \}$, and the second race is won by block $\{ 4, 5 \}$.
 As a result of these races we cannot wiggle the timing of block $\{ 1, 3 \}$ by any amount:
 if $i_1$ occurs just a bit later then timer $y$ must expire before timer $x$,
 and if $i_1$ occurs just a bit earlier then timer $u$ must expire before timer $z$.
 Note that when timer $x$ expires timer $y$ is stopped.
-%
-The above scenario is similar to the well-known Rush Hour puzzle game,
+This scenario is similar to the well-known Rush Hour puzzle game,
 in which one has to slide blocking vehicles out of the way to find a path for one specific red car to exit a parking lot.
 The next lemma asserts that we can always solve the puzzle for MMTs: for any timed behavior that contains races,
 an equivalent timed behavior exists without races.
 We may for instance slightly modify the timed behavior
-\iflong
 of Figure~\ref{fig:races} 
-\fi
 by scheduling block $\{ 2  \}$
 a bit later and block $\{ 4, 5 \}$ a bit earlier.
 Then all races have been eliminated and we can wiggle block $\{ 1, 3 \}$.
 
-%We call a valuation $\tvals$ \emph{fraction-injective} if, for all distinct timers $x$ and $y$ in the domain of $\tvals$,
-%the fractional parts of $x$ and $y$ are different.
-%Note the any fraction-injective valuation is also injective.
+\begin{figure}[h]
+\vspace{-1em}
+\begin{center}
+\includegraphics[width=.45\textwidth]{wiggling.pdf}
+\end{center}
+\caption{A timed behavior with two races}
+\label{fig:races}
+\end{figure}
 
 \begin{lemma}
 \label{race elimination}
@@ -434,8 +425,8 @@ Then there exists a timed behavior $\sigma'$ without races such that $\untime(\s
 \begin{proof}
 (Sketch) Let
 \begin{eqnarray*}
-\sigma & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \xrightarrow{d_2} \tvals'_1 \xrightarrow{i_2/o_2, \rho_2} \tvals_2 \cdots
-\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}.
+\sigma & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \cdots
+\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}
 \end{eqnarray*}
 be a timed behavior.
 %
@@ -595,9 +586,9 @@ and thus trivially isomorphic.
 
 For the induction step, suppose $\beta$ and $\beta'$ contain $k+1$ events:
 \begin{eqnarray*}
-\beta & = & X_0 \xrightarrow{i_1/o_1, \rho_1} X_1  \xrightarrow{i_2/o_2, \rho_2} X_2 \cdots \xrightarrow{i_k/o_k, \rho_k} X_{k}
+\beta & = & X_0 \xrightarrow{i_1/o_1, \rho_1} X_1 \cdots \xrightarrow{i_k/o_k, \rho_k} X_{k}
  \xrightarrow{i_{k+1}/o_{k+1}, \rho_{k+1}} X_{k+1},\\
-\beta' & = & Y_0 \xrightarrow{i'_1/o_1, \tau_1} Y_1  \xrightarrow{i'_2/o_2, \tau_2} Y_2 \cdots \xrightarrow{i'_k/o_k, \tau_k} Y_{k} 
+\beta' & = & Y_0 \xrightarrow{i'_1/o_1, \tau_1} Y_1  \cdots \xrightarrow{i'_k/o_k, \tau_k} Y_{k} 
  \xrightarrow{i'_{k+1}/o_{k+1}, \tau_{k+1}} Y_{k+1}.
 \end{eqnarray*}
 Let $\delta$ and $\delta'$ be the prefixes of $\beta$ and $\beta'$, respectively,
