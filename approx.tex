@@ -173,6 +173,8 @@ Since the sequence of timer sets in a lean behavior is
 uniquely determined by the labels on its transition, we can
 denote a lean behavior simply by the sequence
 $\utlabel{i_1}{o_1}{\rho_1} \cdots \utlabel{i_n}{o_n}{\rho_n}$ of its labels.
+If some $\rho_j$ is empty, can omit it. In particular, the last assignment of
+any lean behavior is always empty.
 For behaviors that are to be appended as suffixes, we need to distinguish
 timers that are assigned in the suffix from timers that are assigned in a prefix.
 Therefore, extend the set of timers by the set $Y = \set{y_1,y_2,\ldots}$ of

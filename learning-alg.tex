@@ -6,11 +6,12 @@ MAT of~\ref{sec:untimed-mat}, using the approximated Nerode equivalence
 presented in Section~\ref{sec:approx}.
 The learning algorithm follows the standard pattern for active automata learning
 algorithms, such as $L^*$~\cite{Ang87}. It maintains
-a set $U$ of {\em short prefixes}, and
-  an overapproximation of the Nerode equivalence,
-  parameterized by a set $V$ of input suffixes.
-Each short prefix in $U$ is a feasible canonical untimed
-behavior, which represents a state in the MMT to be constructed.
+a set $U$ of lean behaviors, called {\em short prefixes}, which
+represent states in the MMT to be constructed,
+and an overapproximation of the Nerode equivalence,
+parameterized by a set $V$ of input suffixes.
+%% Each short prefix in $U$ is a feasible canonical untimed
+%% behavior, which represents a state in the MMT to be constructed.
 The learning algorithm iterates two phases: hypothesis construction and
 hypothesis validation.
 During hypothesis construction,
@@ -21,17 +22,20 @@ During hypothesis validation, the hypothesis automaton is submitted in an
 equivalence query, and returned counterexamples are used to refine
 the Nerode equivalence by expanding $V$.
 
-\todobj{Say somewhere that we assume a fixed (un)timed language $S$.}
+\todobj{Say somewhere that we assume a fixed (un)timed language $S$.
+  Make sure we make clear that it is the set of {\bf feasible} lean
+behaviors of the SUL}
 
 Let us introduce the two conditions for convergence of the construction phase.
-For a feasible untimed word $\beta$, let $\feasibleinputs{\beta}{S}$ be the
-set of $i \in \extinputs$ such that there is a $\beta$-suffix of form
-$\utlabel{i}{o}{\rho}$ for some $o$ and $\rho$.
+For a feasible lean behavior $\beta$, let $\feasibleinputs{\beta}{S}$ be the
+set of $i \in \extinputs$ such that
+$\beta ; \simpleutlabel{i}{o} \in S$ for some $o$ (recall that the
+last assignment of a lean behavior is always empty).
 For $i \in \feasibleinputs{\beta}{S}$, let $\lambda(\beta,i)$ be the unique
-output $o$ such that $\utlabel{i}{o}{\rho}$ is a $\beta$-suffix for some $\rho$.
+output $o$ such that $\beta ; \simpleutlabel{i}{o} \in S$.
 %% A set $V$ of generic untimed input words is {\em adequate} if it includes
 %% $I \cup \set{\toevent{p}}$.
-Let $U$ be a prefix-closed set of feasible lean behaviors.
+Let $U$ be a prefix-closed set of lean behaviors.
 and let $V$ be an adequate set of input suffixes.
 \begin{itemize}
 \item
@@ -40,7 +44,7 @@ $U$ is {\em closed} wrt.\ $V$ if
   $i \in \feasibleinputs{\beta}{S}$
 %%   , which is either in $I$ or of form $\toevent{x_i}$ where $x_i$ is expirable after $\beta$ if
   there is a $\beta' \in U$ such that
-  $\beta;i/\lambda(\beta,i) \equiv_{S,V} \beta'$.
+  $\beta;\simpleutlabel{i}{\lambda(\beta,i)} \equiv_{S,V} \beta'$.
 \item
 $U$ is {\em timer-consistent} wrt.\ $V$ if 
   for each $\beta \in U$ and
@@ -48,22 +52,19 @@ $U$ is {\em timer-consistent} wrt.\ $V$ if
   %% $i$, which is either in $I$ or
   %% of form $\toevent{x_i}$ for $x_i$ expirable after $\beta$,
   we have
-  $\apprgetmemorable{S}{\beta;\lambda(\beta,i)}{V} \subseteq
+  $\apprgetmemorable{S}{\beta;\simpleutlabel{i}{\lambda(\beta,i)}}{V} \subseteq
   (\apprgetmemorable{S}{\beta}{V} \cup \set{x_{(|\beta|+1)}})$.
 \end{itemize}
-Closedness ensures that each transition in the MMT to be constructed has a target location. 
+Closedness ensures that each transition in the MMT to be constructed has a target state. 
 Timer-consistency states that each timer which is needed after such
-a transition (i.e., a timer set during $\beta;7O\lambda(\beta,i)$)
+a transition (i.e., a timer set during $\beta;\simpleutlabel{i}{\lambda(\beta,i)}$)
 is either a timer active after $\beta$ or is started by the last transition, thus
 getting the name $x_{(|\beta|+1)}$.
 Closedness and timer-consistency allow the construction of a hypothesis MMT.
 
-\todobj{Note that lean behaviors of form $\beta;i/\lambda(\beta,i),\rho$
-  always have an empty $\rho$, hence we can omit $\rho$}
-
 \begin{definition}[Hypothesis automaton]
 \label{def:hypo}
-  Let $U$ be a non-empty prefix-closed set of untimed behaviors,
+  Let $U$ be a non-empty prefix-closed set of lean behaviors,
   and $V$ an adequate set of input suffixes such that
   $U$ is closed and timer consistent wrt.\ $V$. Then the
 {\em hypothesis automaton} $\hypoof UV$ is the MMT
@@ -71,32 +72,26 @@ $\hypoof UV = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$, where
 \begin{itemize}
 \item $Q = U$ and $q_0 = \emptyword$,
 \item $\vars$ maps each location $\beta\in U$ to $\apprgetmemorable{S}{\beta}{V}$,
-\item $\lambda$ maps each $\beta \in U$ and $i \in \feasibleinputs{\beta}{S}$ to
-  the unique $o$ such that $\extend{\beta}{i}{o} \in S$. 
-  %% $i$, either in $I$ or of form $\toevent{x_i}$, to the output observed in
-  %% reponse to $i$ after $\beta$.
-\item $\delta$ maps each $\beta \in U$ and
-  $i \in \feasibleinputs{\beta}{S}$ to
-  to the unique $\beta' \in U$ such that there is an $f$ with
+\item Let $\beta \in U$ and $i \in \feasibleinputs{\beta}{S}$. Then
+  \begin{itemize}
+    \item $\lambda(\beta,i)$ is
+     the unique $o$ such that $\extend{\beta}{i}{o} \in S$. 
+    \item $\delta(\beta,i)$ is is
+        the unique $\beta' \in U$ such that there is an $f$ with
   $\extend{\beta}{i}{\lambda(\beta,i)} \equiv_{S,V}^f \beta'$.
-\item $\remap$
- maps each $\beta \in U$ and $i \in \feasibleinputs{\beta}{S}$ to
-  the function
-  $\remap(\beta,i):\apprgetmemorable{S}{\beta'}{V} \mapsto (\apprgetmemorable{S}{\beta}{V} \cup \natplus)$ defined as $\rho \circ f^{-1}$, where $\rho$ maps 
-  timer $x_{(|\beta|+1)}$ to
+  \item $\remap(\beta,i):\apprgetmemorable{S}{\beta'}{V} \mapsto (\apprgetmemorable{S}{\beta}{V} \cup \natplus)$ is defined as $\rho \circ f^{-1}$, where $\rho$ maps timer $x_{(|\beta|+1)}$ to
 $\apprgetassignment{S}{(\extend{\beta}{i}{\lambda(\beta,i)})}{V}(x_{(|\beta|+1)})$.
+  \end{itemize}
+\item When $\beta \in U$ and $i$ is of form $\toevent{x_j}$ in
+  $\apprgetmemorable{S}{\beta}{V} \setminus \feasibleinputs{\beta}{S}$, we let
+  $\lambda(\beta,i) = \bot$, 
+  $\delta(\beta,i) = \beta$, and let
+  $\remap(\beta,i)$ be the identity mapping on $\apprgetmemorable{S}{\beta}{V}$.
 \end{itemize}
 \end{definition}
-
-
-Our learning algorithm iterates two phases: hypothesis construction and
-hypothesis validation.
-During hypothesis construction, 
-the approximation of the Nerode equivalence triggers the expansion of
-$U$ and $V$ until $U$ is closed and timer-consistent wrpt.\ $V$,
-so that a hypothesis MMT can be formed.
-During hypothesis validation, returned counterexamples are used to refine
-the approximated Nerode equivalence by expanding $V$.
+The last case in the construction constructs a transition that is not feasible,
+but which must anyway be present since its input is a timeout event for
+ a timer which can expire in some other continuation of $\beta$.
 
 During {\bf hypothesis construction}, membership queries are performed:
 \begin{itemize}
