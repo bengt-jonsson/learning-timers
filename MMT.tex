@@ -6,6 +6,7 @@ Let $\toevents$ be the set of {\em timeout events} of the form
 $\toevent{x}$ for $x \in X$.
 For a set $I$, let $\extinputs$ be $I \cup \toevents$.
 %
+We view (partial) functions as sets of pairs.
 We write $A \hookrightarrow B$ for the set of partial functions from $A$ to $B$.
 With $f \lceil A$ we denote the restriction of function $f$ to $\domof{f} \cap A$.
 %For arbitrary functions $f$ and $g$, $f [g]$ is the function with domain $\domof{f}$ that behaves like $f$
@@ -15,11 +16,10 @@ We write $\finitesubsets{A}$ for the set of finite subsets of set $A$.
 \begin{definition}
 \label{def:MMT}
 A \emph{Mealy machine with timers (MMT)} is a tuple
-\\
 $\M = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$, where
 \begin{itemize}
 \item
-$I$ and $O$ are finite sets of input events and output events, respectively,
+$I$ and $O$ are finite sets of input events and output events, respectively, with $I \cap \toevents = \emptyset$,
 \item
 $Q$ is a finite set of states,
 with
@@ -32,33 +32,24 @@ $\delta: Q \times \extinputs \hookrightarrow  Q$ is a transition function,
 \item
 $\lambda: Q \times \extinputs \hookrightarrow O$ is an output function, 
 \item
-$\remap : Q \times \extinputs \hookrightarrow (X \hookrightarrow \natplus)$ is a timer update function.
+$\remap : Q \times \extinputs \hookrightarrow (X \hookrightarrow (X \cup \natplus))$ is a timer update function.
 \end{itemize}
 Let $q \in Q$, $i \in \extinputs$, $q'=\delta(q,i)$ and $\rho=\remap(q,i)$. 
-We require that $\varsof{q'} \setminus \varsof{q} \subseteq \domof{\rho} \subseteq\varsof{q'}$. 
-When timer $x$ expires it is either stopped or restarted:
-if $i=\toevent{x}$, for some $x$, then $x \not\in \varsof{q'} \setminus \domof{\rho}$.
+We require that $\domof{\rho} = \varsof{q'}$ and $\ranof{\rho} \subseteq \varsof{q} \cup \natplus$. 
+When a timer expires it is stopped: if $i=\toevent{x}$, for some $x$, then $x \not\in \ranof{\rho}$.
 %
-We also require that input events are always enabled and timeout events are enabled
+We require that input events are always enabled and timeout events are enabled
 for timers that are active in the current state:
 $\delta(q,i)$, $\lambda(q,i)$ and $\pi(q,i)$ are defined iff either
 $i \in I$ or $i=\toevent{x}$, for some $x \in\varsof{q}$.
-We write $q \xrightarrow{i/o,\rho} q'$ if $\delta(q,i) = q'$, $\lambda(q,i)= o$ and $\remap(q,i) = \rho$.
+We write $q \xrightarrow{i/o/\rho} q'$ if $\delta(q,i) = q'$, $\lambda(q,i)= o$ and $\remap(q,i) = \rho$.
 \end{definition}
-Update function $\remap$ determines how timers are affected when an event occurs. Suppose $q \xrightarrow{i/o,\rho} q'$.
-Basically, four things may happen:
+Update function $\remap$ determines how timers are affected when an event occurs. Suppose $q \xrightarrow{i/o/\rho} q'$.
 %\marginpar{Add Venn diagram to illustrate situation?}
 %Let $q \in Q$, $i \in \extinputs$, $\delta(q,i)=q'$ and $\remap(q,i)=\rho$.
-\begin{enumerate}
-\item
-If $x \in\varsof{q} \setminus \varsof{q'}$ then input $i$ \emph{stops} timer $x$.
-\item
-If $x \in \varsof{q'} \setminus \varsof{q}$ then $i$ \emph{starts} timer $x$ with value $\rho(x)$.
-\item
-If $x \in \varsof{q} \cap \domof{\rho}$ then $i$ \emph{restarts} timer $x$ with value $\rho(x)$.
-\item
-Finally, if $x \in \varsof{q'} \setminus \domof{\rho}$ then timer $x$ is \emph{unaffected} by $i$.
-\end{enumerate}
+If $x \in \varsof{q} \setminus \ranof{\rho}$ then we say that input $i$ \emph{stops} timer $x$.
+If $x \in \varsof{q'}$ and $\rho(x) \in \natplus$ then $i$ \emph{starts} timer $x$ with value $\rho(x)$.
+Finally, if $x \in \varsof{q'}$ and $\rho(x) \in \varsof{q}$ then we say that input $i$ \emph{renames} timer $\rho(x)$ to $x$.
 
 \paragraph{Semantics.}
 We define the semantics of an MMT $\M = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$ 
@@ -79,24 +70,20 @@ Formally, for $\tvals, \tvals'$ valuations and $d \in \delays$, we define a dela
 \]
 If the current valuation is $\tvals$, then timeout event $\toevent{x}$ may occur only if $\tvals(x)=0$.
 If an input or a timeout event occurs, $\tvals$ is updated as specified by update function $\rho$.
-The values of timers that are not affected by $\rho$ remain unchanged.
-Formally, for $\tvals, \tvals'$ valuations, $i \in \extinputs$, $o \in O$ and $\rho \in X \hookrightarrow \natplus$,
-we define a discrete transition relation by: $\tvals \xrightarrow{i/o, \rho}  \tvals'$ iff
+Let $\iota$ denote the embedding of $\natplus$ in $\realsplus$.
+Then, for $\tvals, \tvals'$ valuations, $i \in \extinputs$, $o \in O$ and $\rho \in X \hookrightarrow (X \cup \natplus)$,
+we define a discrete transition relation by: $\tvals \xrightarrow{i/o/\rho}  \tvals'$ iff
 \begin{eqnarray*}
-&& \domof{\tvals'} \setminus \domof{\tvals}  \subseteq \domof{\rho} \subseteq \domof{\tvals'} ~ \wedge\\
-&& [\forall x \in\domof{\tvals'} : \tvals'(x) = \mbox{ if } x \in\domof{\rho} \mbox{ then } \rho(x) \mbox{ else } \tvals(x)] ~ \wedge\\
-%More concise but harder to understand:
-%&& \tvals' =  \tvals'[\tvals][\rho] ~ \wedge \\
-&& \forall x \in X : i=\toevent{x} \Rightarrow (\tvals(x) = 0 \wedge x \not\in\domof{\tvals'} \setminus \domof{\rho}).
+&& \domof{\rho} = \domof{\tvals'} ~ \wedge \ranof{\rho} \subseteq \domof{\tvals} \cup \natplus ~ \wedge\\
+&&\kappa' = (\kappa \cup \iota) \circ \rho ~ \wedge\\
+&& \forall x \in X : i=\toevent{x} \Rightarrow (\tvals(x) = 0 \wedge x \not\in \ranof{\rho}).
 \end{eqnarray*}
-%Condition $\tvals' =  \tvals'[\tvals][\rho]$ expresses that $\tvals'$ is obtained by giving variables
-%in $\domof{\rho}$ the value specified by $\rho$, and all remaining variables the value specified by $\tvals$.
-Transition relations $\xrightarrow{d}$ and $\xrightarrow{i/o, \rho}$ can be easily lifted to configurations.
+Transition relations $\xrightarrow{d}$ and $\xrightarrow{i/o/\rho}$ can be lifted to configurations.
 For all configurations $(q, \tvals)$, $(q', \tvals')$ of an MMT $\M$,
 \[
 \frac{q = q' \quad \tvals \xrightarrow{d} \tvals'}{(q,\tvals) \xrightarrow{d} (q',\tvals')}
 \quad\quad
-  \frac{q \xrightarrow{i/o,\remapinst} q' \quad \tvals \xrightarrow{i/o, \rho} \tvals'}{(q,\tvals) \xrightarrow{i/o} (q',\tvals')}
+  \frac{q \xrightarrow{i/o/\rho} q' \quad \tvals \xrightarrow{i/o/\rho} \tvals'}{(q,\tvals) \xrightarrow{i/o} (q',\tvals')}
 \]
 A \emph{timed run} of $\M$ over $w$ is a sequence 
 \begin{eqnarray*}
@@ -138,8 +125,7 @@ they have the same sets of timed words.
 \iflong
 \paragraph{Remark.}
 In our semantics we assume that discrete transitions occur instantaneously and take no time. In applications, however, i/o interactions
-often take a significant amount of time. In \cite{SHV16}, for instance, a case study of an interventional X-ray system is
-described in which a single i/o interaction may take several seconds. If it is important to model such delays
+often take a significant amount of time, see e.g.\  \cite{SHV16}. If it is important to model such delays
 explicitly, this can be done within the MMT framework by splitting a transition with input $i$ and output $o$ into
 a pair of consecutive transitions: a first transition with input $i$ and some default output $\Lambda$ that starts
 a timer $x$, and a second transition in which $x$ times out and output $o$ is produced.
@@ -174,18 +160,38 @@ may reach a timelock following the timed word $1 ~ i ~ o ~ 1 ~ i ~ o$: at this p
 \label{fig:timelock}
 \end{center}
 \end{figure}
-Once solution would be to disable inputs in $I$ whenever a timer has become $0$. 
-In Section~\ref{section untimed semantics}, we will elaborate
-a different approach in which we only consider runs in which no ``races'' occur. This eliminates the problematic
-behavior of the above MMT in which there is a race between the second $i$ event and the timeout.
+Our learning algorithm will only explore runs in which no ``races'' occur. This eliminates the above timelock,
+which is cause by a race between an $i$ event and a timeout.
 \fi
 
-\paragraph{Experiments and nondeterminism.}
-Due to our assumption that we cannot observe the identity of a timer in a timeout event, an MMT may exhibit nondeterministic
-behavior: even if we offer exactly the same inputs at exactly the same time, different outputs may occur in different runs. 
-The MMT of Figure~\ref{fig:nondeterminism} (top), for instance, has timed words
+\paragraph{Experiments.}
+We may perform experiments on an MMT in which we
+provide a series of inputs at specific times, and observe the outputs that occur in response to these inputs.
+An experiment can be formally described by a \emph{timed input word}: a sequence
+$u = d_1 ~ i_1 \cdots d_k ~ i_k ~ d_{k+1}$, where $d_j \in \delays$ and $i_j \in I$, for all $1 \leq j \leq k$,
+and $d_{k+1} \in \realsplus$.
+%A timed input word describes  up to time $\sum_{j=1}^{k+1} d_j$.
+%
+We may associate a timed input word $\timedinputword(w)$ to each timed word $w$ by 
+removing the outputs events, 
+removing the occurrences of $\mathit{to}$, 
+replacing consecutive numbers by their sum, 
+and possibly placing $0$ at the end of the sequence.
+Thus, for instance,
+$\timedinputword (7 ~ i ~ o ~ 1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o') = 7 ~ i ~ 1 ~ i ~ 1$ and
+$\timedinputword (3 ~ i_1 ~ o_1 ~ 1.1 ~ i_2 ~ o_2 ~ 2 ~ \mathit{to} ~ o_3 ~ 2.1 ~ i_4 ~ o_4) = 3 ~ i_1 ~ 1.1 ~ i_2 ~ 4.1 ~ i_4 ~ 0$.
+%
+If $u$ and $u'$ are timed input words, then we write $u \propto u'$ if $u$ and $u'$ are equal, except that the final delay of $u$ is less or equal than the final delay of $u'$.
+For any timed input word $u$ over $I$,  there exists a maximal timed word $w$ of $\M$ such that $\timedinputword(w) \propto u$.
+We call $w$ an \emph{outcome of running experiment} $u$ on $\M$.
+For instance, if we perform the experiment $1 ~ i ~ 0.5 ~ i ~ 1$ on the MMT of Figure~\ref{fig:timelock},
+then the unique outcome is $1 ~ i ~ o ~ 0.5 ~ i ~ o ~ 0.5 ~ \mathit{to} ~ o'$.
+
+\paragraph{Nondeterminism.}
+Due to our assumption that we cannot observe the identity of a timer in a timeout event, 
+experiments do not always have a unique outcome and MMTs may exhibit nondeterministic behavior.
+For the MMT of Figure~\ref{fig:nondeterminism} (top), for instance, experiment $1 ~ i ~ 1$ has outcomes
 $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'$ and $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o''$.
-(For clarity, we omit some self-loop transitions.)
 \begin{figure}[ht]
 \vspace{-1em}
 \begin{center}
@@ -212,71 +218,35 @@ $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'$ and $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o''$.
    (3) edge  [loop below] node {$\toevent{x}/o'$, $x:=1$} (3)
    edge  [loop above] node {$\toevent{y}/o''$, $y:=1$} (3);
 \end{tikzpicture}
-\caption{MMTs with ``uncontrollable'' and ``controllable'' nondeterminism}
+\caption{MMTs with ``uncontrollable'' and ``controllable'' nondeterminism. For clarity, we omitted some self-loops.}
 \label{fig:nondeterminism}
 \end{center}
 \end{figure}
 
-%In order to rule out this type of nondeterminism, it is not enough to require that the timer update functions are injective,
-%that is, it is not allowed to assign the same value to multiple timers in a single transition.
-%This is illustrated by the MMT of Figure~\ref{fig:nondeterminism2}, which accepts both the timed words
-%$1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'~ 1 ~ \mathit{to} ~ o'$ and $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o' ~ 1 ~ \mathit{to} ~ o''$.
-%\begin{figure}[ht]
-%\begin{center}
-%\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.5cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
-%  \node[initial, state] (1) {$q_0$};
-%  \node[state] (2) [below of=1] {$q_1$};
-%  \node[state] (4) [left of=2] {$q_2$};
-%
-%  \path[every node/.style={font=\sffamily\scriptsize}]
-%    (1) edge node {$i/o$, $~x:=1$, $y:=2$} (2)  
-%    (2) edge  node {$\toevent{y}/o''$} (4)
-%      edge  [loop right] node {$\toevent{x}/o'$, $~x:=1$} (2);
-%\end{tikzpicture}
-%\caption{Another MMT with nondeterministic behavior}
-%\label{fig:nondeterminism2}
-%\end{center}
-%\end{figure}
-%
 The nondeterminism of the MMT of Figure~\ref{fig:nondeterminism} (top)
-%and \ref{fig:nondeterminism2} 
-is ``uncontrollable'' and occurs after any (nonempty) input sequence.
-Figure~\ref{fig:nondeterminism} (bottom) gives an example of an MMT that exhibits nondeterminism when the second input occurs \emph{exactly} one time unit after the first input: the MMT has timed words
-$7 ~ i ~ o ~ 1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'$ and $7 ~ i ~ o ~ 1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o''$.
+is ``uncontrollable'' in the sense that it occurs irrespective of the timing of the inputs.
+Figure~\ref{fig:nondeterminism} (bottom) gives an example of an MMT that exhibits nondeterminism when the second input occurs \emph{exactly} one time unit after the first input: experiment $1 ~ i ~ 1 ~ i ~ 1$ has outcomes
+$1 ~ i ~ o ~ 1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'$ and $1 ~ i ~ o ~ 1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o''$.
 This type of nondeterminism is ``controllable'' and will not occur if we carefully
 select the timing of inputs.
 
-Let us formalize these ideas.
-A \emph{timed input word} is a sequence
-$u = d_1 ~ i_1 \cdots d_k ~ i_k ~ d_{k+1}$, where $d_j \in \delays$ and $i_j \in I$, for all $1 \leq j \leq k$,
-and $d_{k+1} \in \realsplus$.
-A timed input word describes an experiment that may be carried out on an MMT in which we
-provide a series of inputs at specific times, and observe the outputs that occur in response to these inputs up to time $\sum_{j=1}^{k+1} d_j$.
-%
-We associate a timed input word $\timedinputword(w)$ to each timed word $w$ by 
-removing the outputs events, 
-removing the occurrences of $\mathit{to}$, 
-replacing consecutive numbers by their sum, 
-and possibly placing $0$ at the end of the sequence.
-Thus, for instance,
-$\timedinputword (7 ~ i ~ o ~ 1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o') = 7 ~ i ~ 1 ~ i ~ 1$ and
-$\timedinputword (3 ~ i_1 ~ o_1 ~ 1.1 ~ i_2 ~ o_2 ~ 2 ~ \mathit{to} ~ o_3 ~ 2.1 ~ i_4 ~ o_4) = 3 ~ i_1 ~ 1.1 ~ i_2 ~ 4.1 ~ i_4 ~ 0$.
-%
-If $u$ and $u'$ are timed input words, then we write $u \propto u'$ if $u$ and $u'$ are equal, except that the final delay of $u$ is less or equal than the final delay of $u'$.
-For any timed input word $u$ over $I$,  there exists a maximal timed word $w$ of $\M$ such that $\timedinputword(w) \propto u$.
-We call $w$ an \emph{outcome of running experiment} $u$ on $\M$.
-In general, outcome $w$ is not uniquely determined, and thus an MMT may exhibit nondeterminism. 
-In the example of Figure~\ref{fig:nondeterminism} (bottom), for instance, experiment $7 ~ i ~ 1 ~ i ~ 1$ has outcomes
-$7 ~ i ~ o ~ 1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'$ and  $7 ~ i ~ o ~ 1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o''$.
+\paragraph{Further restrictions on MMTs.}
+Although learning of nondeterministic systems has been studied in the literature \cite{VolpatoT14},
+nondeterminism clearly is a major complication for learning algorithms. For this reason, we impose two additional
+restrictions on the timer update functions in the remainder of this article:
+for each transition $q \xrightarrow{i/o/\rho} q'$
+of an MMT (a) $\rho$ is injective, and (b) at most one timer is started by $\rho$.
+Condition (b) rules out the nondeterminism of Figure~\ref{fig:nondeterminism} (top).
+Condition (a) is needed to rule out a variation of this MMT in which a timer $z$ is started and then copied to distinct
+timers $x$ and $y$.
 
-We call timed input word $u$ \emph{transparent} if the fractional part of the absolute times of occurrence of
-all the inputs are different. A timed word $w$ is transparent iff $\timedinputword(w)$ is transparent.
-If $u$ is transparent, there is a unique outcome of running experiment $u$ on $\M$.
-\todofv{clarify this section}
-%\iflong
-%Note that the first input occurs at time $3$, the second at time $4.1$, and the third at time $8.2$.
-%Thus the fractional part of the times of the inputs are different. In fact, 
-%\fi
+We call timed input word $u$ \emph{transparent} if the fractional parts of the absolute times of occurrence of
+all the inputs are different.
+% A timed word $w$ is transparent iff $\timedinputword(w)$ is transparent.
+It is easy to check that for each MMT $\M$ that satisfies the above conditions,
+each transparent experiment $u$ has a unique outcome: since each timer is started at a different fractional time,
+and each timer expires after an integer amount of time, it is not possible that two timers expire simultanelously.
+
 \subsection{A timed MAT framework for learning MMTs}
 We now propose an instance of Angluin's MAT framework for Mealy machines with timers.
 In our setting, illustrated in Figure~\ref{fig timed MAT}, the teacher knows an MMT $\M$.
@@ -305,8 +275,6 @@ timed words of $\M$, and  pose equivalence queries (EQ) to find out whether a co
 \paragraph{Membership queries.}
 With a \emph{membership query}, the learner asks what the output is in response to a timed input word $u$ over $I$. 
 The teacher answers with a maximal timed word $w$ of $\M$ such that $\timedinputword(w) \propto u$.
-\todobj{Comment: This maximal timed word can be infinite if it gets into a loop
-  driven by repeated timeouts}
 
 \paragraph{Equivalence queries.}
 With an \emph{equivalence query}, the learner asks if a hypothesized MMT $\CH$ is correct, that is, 
@@ -319,5 +287,6 @@ when $\CH \not\approx_{\mathit{timed}} \M$.)
 \vspace{0.5em}
 \noindent
 The main result of this paper is an algorithm that allows the learner to learn an MMT $\CH$ that is timed equivalent to
-$\M$ via a finite number of membership and equivalence queries. \todofv{Point out restrictions on MMTs (only one timer set per transition, no ghost timers)}
+$\M$ via a finite number of membership and equivalence queries. 
+\todofv{I assume we can get rid of the assumption on ghost timers.}
 
