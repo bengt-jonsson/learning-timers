@@ -86,9 +86,7 @@ Then $\beta \cdot \gamma$ is feasible iff $\beta' \cdot \gamma$ is feasible.
 $\{ \Zone{\beta} \mid \beta \mbox{ feasible untimed behavior of } \M \}$ is finite.
 \end{lemma}
 \begin{proof}
-  This follows by noting that each MMT has a fixed set of clocks, and that
-  the constraints in $\Zone(\beta)$ \todobj{This needs some thought and,
-    to truncate zones}
+  An MMT only has a finite number of timers that can only be set to a finite number of integer values. Since in an MMT the values of timers can only decrease, their values are bounded, so that only finitely many integers may appear in the conjuncts of $\Zone{\beta}$. This the set of possible $\Zone{\beta}$ is finite.
 \end{proof}
 
 Let $\beta$ be a feasible untimed behavior and let $x \in X$ be a timer. Then we say that $x$ is \emph{expirable} after $\beta$
