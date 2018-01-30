@@ -45,6 +45,8 @@ Then $\beta \cdot \gamma$ is feasible iff $\beta' \cdot \gamma$ is feasible.
 \label{lemma finitely many zones}
 $\{ \Zone{\beta} \mid \beta \mbox{ feasible untimed behavior of } \M \}$ is finite.
 \end{lemma}
+\todobj{This is not quite true: A TA can have an infinite set of Zones.
+  But one can truncate them in some way. I will ask Wang}
 \begin{proof}
 All the sets $\Zone{\beta}$ can be represented using DBMs. An MMT only has a finite number of timers that can only be set to a finite number of integer values. Since in an MMT the values of timers can only decrease, only finitely many numbers may
 appear in the DBM's that represent the sets $\Zone{\beta}$. Thus all the sets $\Zone{\beta}$ can be represented by a finite
@@ -73,6 +75,7 @@ $0 < t_1 \leq d_{\max}$,
 for each index $j < k$:  $0 <  t_{j+1} - t_j \leq d_{\max}$,
 \item
 for each timeout event $i_j = \toevent{x_l}$: $t_j = t_l + \rho_j(x_l)$,
+\todobj{This is a typo? should be $\rho_l(x_l)$?}
 \item
 for each clock $x_l$ that is started but does not timeout: $t_j \leq t_l + \rho_j(x_l)$,
 where $j$ is the largest index such that $x_l \in X_j$, and
