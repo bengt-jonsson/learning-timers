@@ -177,16 +177,19 @@ For behaviors that are to be appended as suffixes, we need to distinguish
 timers that are assigned in the suffix from timers that are assigned in a prefix.
 Therefore, extend the set of timers by the set $Y = \set{y_1,y_2,\ldots}$ of
 {\em suffix timers}, which is disjoint from $X$.
-Define a {\em suffix behavior} to be a sequence
+Let $\toeventsof{Y}$ be the set of timeout events of form
+$\toevent{y_i}$ for $y_i \in Y$, and let
+$\extextinputs$ be $I \cup \toevents \cup \toeventsof{Y}$.
+Define a {\em lean suffix behavior} to be a sequence
 $\utlabel{i_1}{o_1}{\rho_1} \cdots \utlabel{i_m}{o_m}{\rho_m}$ of input/output/assignment triples,
-in which the inputs are in $I$, of form $\toevent{x_j}$ for $x_j \in X$, or
-of form $\toevent{y_j}$ for $y_j \in Y$, but where assignments may assign only
-to timers in $Y$. Such a suffix behavior is {\em lean} if
-timer $y_j$ is assigned only by $\rho_j$, each timeout event occurs at most once, and all assigned timers in $Y$ expire sometime after their assignment.
+in which each $i_j$ is in $\extextinputs$, 
+each $\rho_j$ may assign only to the timer $y_j$,
+each timeout event occurs at most once,
+and all assigned timers in $Y$ expire sometime after their assignment.
 
 For integer $k \geq 0$, let $\suffmap{k}$ be the injective mapping on
-$Y$ which maps each $y_j$ to $y_{j+k}$.  We apply mappings $\suffmap{k}$ to
-lean suffix behaviors in the natural way.
+$Y$ which maps each $y_j$ to $y_{j+k}$.  We apply mappings of form
+$\suffmap{k}$ to lean suffix behaviors in the natural way.
 
 Let $\beta$ be a lean behavior. We say that 
 a lean suffix behavior $\gamma$ is a {\em $\beta$-suffix} if
@@ -194,21 +197,9 @@ there is a canonical behavior $\beta'$ with $\beta \sqsubseteq \beta'$ such that
 $\beta'\cdot\suffmap{|\beta|}(\gamma)$ is a lean behavior. In this case we
 use $\beta;\gamma$ to denote $\beta'\cdot\suffmap{|\beta|}(\gamma)$.
 
-We can define general residual languages, by letting
-$\suffixbehs{S}{\beta}$ be the set $\beta$-suffixes.
-Let $\getmemorable{S}{\beta}$ be the set of timers $x_i$ in
-$x_1 , \ldots x_{|\beta|}$ whose corresponding timeout event
-(of form $\toevent{x_i}$) occurs (as an input) in some $\beta$-suffix.
-Let $\getassignment{S}{\beta}$ map each timer $x_i$ in
-$\getmemorable{S}{\beta}$ to the unique positive integer to which it
-is assigned in the $i$th transition of $\beta$.
-
-Let an {\em input suffix} be a sequence of elements
-in $I$, of form $\toevent{x_j}$ for $x_j \in X$, or
-of form $\toevent{y_j}$ for $y_j \in Y$.
+Let an {\em input suffix} be a sequence of elements in $\extextinputs$.
 A set $V$ of input suffixes is {\em adequate} if it is closed under permutations
 on $X$ and includes all input suffixes of length one.
-
 For an adequate set $V$ of input suffixes, and a lean behavior $\beta$,
 let $\apprsuffixbehs{S}{\beta}{V}$ be the set of $\beta$-suffixes $\gamma$
 with $\untimedinputword(\gamma) \in V$.
@@ -218,7 +209,7 @@ $x_1 , \ldots x_{|\beta|}$ whose corresponding timeout event
 $\apprsuffixbehs{S}{\beta}{V}$.
 Let $\apprgetassignment{S}{\beta}{V}$ map each timer $x_i$ in
 $\apprgetmemorable{S}{\beta}{V}$ to the unique positive integer to which it
-is assigned in the $i$th transition of that behavior.
+is assigned in the $i$th transition of $\beta$.
 
 
 %% \todobj{Maybe we should point out that two prefixes $\beta$ and $\beta'$
@@ -260,14 +251,16 @@ is assigned in the $i$th transition of that behavior.
 
 %% \todobj{An illustrating example would help the reader here}
 
+\todobj{We really need a few examples here}
+
 We can now defined the approximated Nerode equivalence, which is parameterized
-on an adequate set of input suffixes.
+on an adequate set of lean input suffixes.
 
 \begin{definition}
   \label{def:approx-nerode}
 Let $S$ be a timer language \todobj{Define this},
 let $\beta$ and $\beta'$ be canonical untimed behaviors in $S$,
-and let  $V$ be an adequate set of input suffixes.
+and let  $V$ be an adequate set of lean input suffixes.
 Let $f : \apprgetmemorable{S}{\beta}{V} \to \apprgetmemorable{S}{\beta'}{V}$
 be a bijection
 from $\apprgetmemorable{S}{\beta}{V}$ to $\apprgetmemorable{S}{\beta'}{V}$.
