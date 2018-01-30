@@ -84,7 +84,115 @@ Upon receiving $\CH$, the teacher answers \emph{yes} if $\CH \approx_{\mathit{un
 Otherwise it answers \emph{no} and supplies a counterexample, which now is a feasible untimed behavior $\beta$ (in canonical form) that
 is a partial untimed behavior of $\M$ but not of $\CH$ (by Lemma~\ref{not untimed} such a counterexample exists).
 
-\input{reachability}
+\subsection{Zones and constraints}
+
+In order to implement an untimed teacher using a timed teacher, we need a
+basic machinery to determine whether an untimed behavior is feasible, i.e.,
+whether it can be derived from a timed word. This can be done using
+well-established techniques for manipulating difference-bound matrices
+(DBMs) that are in standard use for analyzing timed
+automata~\cite{Di89,BengtssonY03}.
+In this section, we describe an adaptation of such techniques to
+our setting.
+
+Let $\beta$ be an untimed behavior in canonical form:
+\begin{eqnarray*}
+\beta & = & \emptyset \uttrans{i_1}{o_1}{\rho_1} X_1  \cdots X_{k-1} \uttrans{i_k}{o_k}{\rho_k} X_k.
+\end{eqnarray*}
+We would like to determine for which values $d_1, \ldots , d_{k+1}$
+a corresponding timed behavior
+\[
+\tvals_0 \dtrans{d_1} \tvals'_0 \uttrans{i_1}{o_1}{\rho_1}
+\quad \cdots \quad
+\dtrans{d_k} \tvals'_k \uttrans{i_k}{o_k}{\rho_k} \tvals_k
+\dtrans{d_{k+1}} \tvals'_{k+1}
+%% \uttrans{\toevent{x_i}}{o_{n+1}}{\rho_n}
+\]
+is possible. We solve this problem by producing a constraint over the
+values $d_1, \ldots , d_{k+1}$. In order to use DBM techniques, we first
+change representation by letting
+$t_j = d_1 + \cdots + d_j$ for $j = 1 , \ldots, k+1$. Intuitively, $t_j$ is
+the time of occurrence of the $j$th transition in $\beta$.
+We now associate with $\beta$ a conjunction of difference constraints over
+$t_1, \ldots, t_{k+1}$, denoted $\Constraints{\beta}$, consisting of
+\todobj{We assume that delays are always non-zero. Check how this is said in
+  the paper}
+\begin{itemize}
+%% \item
+%% $0 < t_1 \leq d_{\max}$,
+%% \item
+%% for each index $j < k$:  $0 <  t_{j+1} - t_j \leq d_{\max}$,
+\item
+for each index $j$ with $1 \leq j \leq k$:  $0 <  t_{j+1} - t_j$,
+\item
+for each timeout event $i_j = \toevent{x_l}$: $t_j - t_l = \rho_l(x_l)$,
+\item
+for each clock $x_l$ that is started but does not timeout: $t_j -t_l < \rho_l(x_l)$,
+where $j$ is the largest index such that $x_l \in X_j$,
+%% \item
+%% for each pair of distinct indices $j$ and $l$ with $i_j, i_l \in I$: $\Frac{t_j} \neq \Frac{t_l}$ 
+%% (to express that the fractional parts of $t_j$ and $t_l$ are different).
+\end{itemize}
+By standard DBM techniques, we can check whether $\Constraints{\beta}$ is satisfiable by saturating it (i.e., closing it under implied constraints, which
+will always be of form
+$n < t_j - t_l < m$ or $t_j - t_l = m$ for integers $n,m$), and checking that
+all such differences allow $t_{j+1} - t_j$ be positive for each $j$.
+We infer that $\beta$ is feasible iff $\Constraints{\beta}$ is satisfiable.
+Moreover, if $\beta$ is feasible, it is easy to see that there is a solution
+such that $\Frac{t_j} \neq \Frac{t_l}$ for each pair of distinct indices $j$ and $l$ with $i_j, i_l \in I$.
+
+From the saturated version of $\Constraints{\beta}$, we also derive a constraint,
+denoted $\Zone{\beta}$,
+which characterizes the possible timer valuations $\tvals_k$ in a timed
+behavior of the above form.  The constraint $\Zone{\beta}$
+contains for each pair of timers $x_i,x_j$ in $X_k$ the conjunct
+\[
+(m + \rho_j(x_j) - \rho_i(x_i)) < \tvals_k(x_j) -\tvals_k(x_i) < (n + \rho_j(x_j) - \rho_i(x_i))
+\]
+whenever the saturated version of $\Constraints{\beta}$ contains the conjunct
+\(
+m < t_j - t_i < n
+\).
+(This can be derived using
+$\tvals_k(x_j) = \rho_j(x_j) - (t_k - t_j)$
+and
+$\tvals_k(x_i) = \rho_i(x_i) - (t_k - t_i)$).
+
+We can derive the following lemmas.
+
+\begin{lemma}
+\label{lemma: feasibility concatenation}
+Suppose $\beta, \beta'$ are untimed behaviors such that
+$\Zone{\beta} = \Zone{\beta'}$. Let $\gamma$ be any untimed behavior.
+Then $\beta \cdot \gamma$ is feasible iff $\beta' \cdot \gamma$ is feasible.
+\end{lemma}
+
+\begin{lemma}
+\label{lemma finitely many zones}
+$\{ \Zone{\beta} \mid \beta \mbox{ feasible untimed behavior of } \M \}$ is finite.
+\end{lemma}
+\begin{proof}
+  An MMT only has a finite number of timers that can only be set to a finite number of integer values. Since in an MMT the values of timers can only decrease, their values are bounded, so that only finitely many integers may appear in the conjuncts of $\Zone{\beta}$. This the set of possible $\Zone{\beta}$ is finite.
+\end{proof}
+
+Let $\beta$ be a feasible untimed behavior and let $x \in X$ be a timer. Then we say that $x$ is \emph{expirable} after $\beta$
+if there exists a valuation in $\Zone{\beta}$ in which $x$ is minimal.
+
+\begin{lemma}
+\label{expirable}
+Suppose $\beta$ is a feasible untimed behavior with $\Last{\beta} = Y$ and $Y \uttrans{\toevent{x}}{o}{\rho} Y'$ is an untimed behavior.
+Then $x$ is expirable after $\beta$ iff $\beta \uttrans{\toevent{x}}{o}{\rho} Y'$ is feasible.
+\end{lemma}
+
+
+\todofv{Move next lemma to earlier section}
+
+\begin{lemma}
+\label{not timed}
+Suppose $\M, \N$ are MMTs with $\M \not\approx_{\mathit{timed}} \N$.
+Then there exists a transparent timed word $w$ of $\M$ that is not a timed word of $\N$.
+\end{lemma}
+
 
 %Note that for an untimed behavior $\beta$, the set $\zone{\beta}$ of valuations that can be reached with a timed behavior $\sigma$ with %$\untime(\sigma) = \beta$ can be symbolically represented using DBMs \cite{Di89}.
 %We can do this since the transition relations $\xrightarrow{d}$ and $\xrightarrow{i_1/o_1, \rho_1}$ can be decomposed 

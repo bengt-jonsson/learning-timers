@@ -161,17 +161,31 @@ the transition triggered by $i$ from $\beta$ in $\hypoof UV$.
 \todobj{The rest still to be polished}
 (To se this, let $\alpha = \utlabel{i_1}{o_1}{\rho_1} \cdots \utlabel{i_n}{o_n}{\rho_n}$, and
 define the sequence $\beta_0, \beta_1, \ldots ,\beta_{n}$ of short prefixes
-in $U$ and mappings $\pi_1, \ldots , \pi_n$ by $\beta_0 = \emptyword$ and
-$\beta_{j-1}\utlabel{i_j}{o_j}{\rho_j} \equiv_{S,V} \beta_{i}$ for
-$j = 1, \ldots n$, i.e., $\beta_0 \ldots \beta_n$ is the sequence of states
-visited when $\hypoof UV$ processes $\alpha$. Let $\gamma_j$ be the suffix
-$\utlabel{i_{j+1}}{o_{j+1}}{\rho_{j+1}} \cdots \utlabel{i_n}{o_n}{\rho_n}$
-of $\alpha$ of length $n-j$. 
+in $U$,
+sequence $\gamma_0, \gamma_1, \ldots, \gamma_n$ of lean suffix behaviors,
+and mappings $f_1, \ldots , f_n$ by
+\begin{itemize}
+\item $\beta_0 = \emptyword$,
+  $\gamma_0$ is obtained from $\alpha$ by renaming timer $x_j$ to $y_j$,
+\item
+  Let $\simpleutlabel{\hat{i_j}}{\hat{o_j}}$ be the first transition of
+  $\gamma_{j-1}$, then let $f_j$ be the mapping used to establish
+  $\beta_{j-1};\simpleutlabel{\hat{i_j}}{\hat{o_j}} \equiv_{S,V}^{f_j} \beta_{j}$
+  in the construction of $\hypoof UV$, and let
+  $\gamma_j$ be obtained by removing $\simpleutlabel{\hat{i_j}}{\hat{o_j}}$
+  from the beginning of $\gamma_{j-1}$ and applying $f_j$ to the remainder.
+Intuitively, $\beta_0 \ldots \beta_n$ is the sequence of states
+visited when $\hypoof UV$ processes $\alpha$.
+\end{itemize}
+%% Let $\gamma_j$ be the suffix
+%% $\utlabel{i_{j+1}}{o_{j+1}}{\rho_{j+1}} \cdots \utlabel{i_n}{o_n}{\rho_n}$
+%% of $\alpha$ of length $n-j$. 
 By the fact that $\alpha$ is a counterexample, we have
-$\beta_0\cdot\gamma_0 \in S \notiff  \beta_{n} \in S$, which implies that
-$\beta_{j-1}\cdot\gamma_{j-1} \in S \notiff \beta_j\cdot\gamma_j \in S$
+$\beta_0\;\gamma_0 \in S \notiff  \beta_{n} \in S$, which implies that
+$\beta_{j-1};\gamma_{j-1} \in S \notiff \beta_j;\gamma_j \in S$
 for some $j$;
-we can then take $\beta_{j-1}$ as $\beta$ and $\beta_j$ as $\beta'$.)
+we can then take $\beta_{j-1}$ as $\beta$ and $\beta_j$ as $\beta'$, and
+$\gamma$ as $\gamma_j$.
 This means that $\gamma$ is a new separating suffix, and that $V$ should be
 extended with the $v$ such that
 $\untimedinputword(\gamma) \in \instancesof{\set{v}}$
