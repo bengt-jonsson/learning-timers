@@ -143,7 +143,6 @@ adding $i\cdot\untimedinputword(\gamma)\cdot\toevent{x_j}$ to $V$, the
 timer will also appear in $\apprgetmemorable{S}{\beta}{V}$.
 This extension of $V$ will trigger new membership queries.
 \end{itemize}
-\todobj{The rest still to be polished}
 When $U$ is closed and timer-consistent wrt.\ $V$, then
 a hypothesis MMT $\hypoof UV$ is constructed and
 validated by submitting it in an equivalence query.
@@ -153,13 +152,16 @@ If the query returns a counterexample in the form of a lean behavior
 $\alpha$, this is used to extend $V$ as follows.
 We assume w.l.o.g.\ that no proper prefix of $\alpha$ is a counterexample. 
 By the fact that $\alpha$ is a counterexample, we can write $\alpha$ as
-$(\alpha';\utlabel{i}{o}); \gamma$, where $\gamma$ is a 
-such that $\beta\cdot \simpleutlabel{i}{o} \equiv_{S,V} \beta'$ but
-$\beta ; (\utlabel{i}{o}{\rho} \cdot \gamma) \in S \notiff \beta' \cdot \gamma \in S$
-for some $\beta,\beta' \in U$.
+$(\alpha';\simpleutlabel{i}{o}); \gamma$, where $\gamma$ is a lean suffix
+behavior such that
+$\beta\cdot \simpleutlabel{i}{o} \equiv_{S,V}^f \beta'$ but
+$(\beta ; \simpleutlabel{i}{o}) ; \gamma) \in S \notiff \beta' ; f(\gamma) \in S$ for some $\beta,\beta' \in U$ such that 
+$\beta;\simpleutlabel{i}{o} \equiv_{S,V}^f \beta'$ is used to construct
+the transition triggered by $i$ from $\beta$ in $\hypoof UV$.
+\todobj{The rest still to be polished}
 (To se this, let $\alpha = \utlabel{i_1}{o_1}{\rho_1} \cdots \utlabel{i_n}{o_n}{\rho_n}$, and
 define the sequence $\beta_0, \beta_1, \ldots ,\beta_{n}$ of short prefixes
-in $U$ by $\beta_0 = \emptyword$ and
+in $U$ and mappings $\pi_1, \ldots , \pi_n$ by $\beta_0 = \emptyword$ and
 $\beta_{j-1}\utlabel{i_j}{o_j}{\rho_j} \equiv_{S,V} \beta_{i}$ for
 $j = 1, \ldots n$, i.e., $\beta_0 \ldots \beta_n$ is the sequence of states
 visited when $\hypoof UV$ processes $\alpha$. Let $\gamma_j$ be the suffix
