@@ -11,15 +11,15 @@ $S$ of feasible untimed behaviors in canonical form over $I$ and $O$ that satisf
 \emph{prefix closed}: $\beta \cdot \gamma \in S \Rightarrow \beta \in S$,
 \item
 \emph{behavior deterministic}:
-$\beta \xrightarrow{i/o_1, \rho_1} X_1 \in S \wedge \beta \xrightarrow{i/o_2, \rho_2} X_2 \in S \Rightarrow o_1 = o_2 \wedge \rho_1 = \rho_2 \wedge X_1 = X_2$,
+$\beta \xrightarrow{i/o_1/\rho_1} X_1 \in S \wedge \beta \xrightarrow{i/o_2/\rho_2} X_2 \in S \Rightarrow o_1 = o_2 \wedge \rho_1 = \rho_2 \wedge X_1 = X_2$,
 \item
 \emph{input complete}:
-$\beta \in S \wedge i \in I \Rightarrow \exists o, \rho, Y : \beta \xrightarrow{i/o, \rho} Y \in S$,
+$\beta \in S \wedge i \in I \Rightarrow \exists o, \rho, Y : \beta \xrightarrow{i/o/\rho} Y \in S$,
 and
 \item
 \emph{timeout complete}:
 $\beta \in S \wedge x \mbox{ expirable after } \beta \Rightarrow
-\exists o, \rho, Y: \beta \xrightarrow{\toevent{x}/o, \rho} Y \in S$.
+\exists o, \rho, Y: \beta \xrightarrow{\toevent{x}/o/\rho} Y \in S$.
 \end{itemize}
 \end{definition}
 
@@ -33,11 +33,12 @@ $f_0 : X \to X'$ such that for any untimed behavior $\gamma$:
 (b) if $\beta' \cdot \gamma \in S$ then there exists an isomorphism $f$ that extends $f_0^{-1}$ such that $\beta \cdot f(\gamma) \in S$.
 \end{definition}
 
-One easily sees that $\equiv_S$ is an equivalence relation. It is also a \emph{right-congruence}, meaning that it satisfies,
-for all $\delta = \beta \xrightarrow{i/o, \rho} Y \in S$ and $\delta' = \beta' \xrightarrow{i/o', \rho'} Y' \in S$,
-\begin{eqnarray*}
-\beta \equiv_S \beta' & \Rightarrow & o = o' \wedge \delta \equiv_S \delta'.
-\end{eqnarray*}
+One easily sees that $\equiv_S$ is an equivalence relation.
+%It is also a \emph{right-congruence}, meaning that it satisfies,
+%for all $\delta = \beta \xrightarrow{i/o, \rho} Y \in S$ and $\delta' = \beta' \xrightarrow{i/o', \rho'} Y' \in S$,
+%\begin{eqnarray*}
+%\beta \equiv_S \beta' & \Rightarrow & o = o' \wedge \delta \equiv_S \delta'.
+%\end{eqnarray*}
 We write $[\beta]$ to denote the equivalence class of $\beta$ w.r.t.\  $\equiv_S$.
 
 \begin{theorem}
@@ -98,17 +99,17 @@ $\beta_0$ is the unique element of $Q$ such that $\beta_0 \equiv_S \emptyset$.
 $\varsof{\beta} = \Last{\beta}$.
 \item
 Let $\beta \in Q$ and $i \in I$. Then, since $S$ is input complete and behavior deterministic, there are unique
-$o$, $\rho$ and $Y$ such that $\delta = \beta \xrightarrow{i/o, \rho} Y \in S$.
-Let $\delta'$ be the unique element of $Q$ with $\delta' \equiv_S \delta$, and
-let $f_0$ be a matching for $\delta' \equiv_S \delta$.
-Then $\delta(\beta,i) = \delta'$, $\lambda(\beta,i) = o$, and $\remap(\beta,i) = \rho  \circ f_0$.
+$o$, $\rho$ and $Y$ such that $\zeta = \beta \xrightarrow{i/o/\rho} Y \in S$.
+Let $\zeta'$ be the unique element of $Q$ with $\zeta' \equiv_S \zeta$, and
+let $f_0$ be a matching for $\zeta' \equiv_S \zeta$.
+Then $\delta(\beta,i) = \zeta'$, $\lambda(\beta,i) = o$, and $\remap(\beta,i) = \rho  \circ f_0$.
 \item
 Assume $\beta \in Q$ and $x\in \Last{\beta}$ expirable after $\beta$. 
 Then, since $S$ is  timeout complete and behavior deterministic, there exist unique
-$o$, $\rho$ and $Y$ such that $\delta = \beta \xrightarrow{\toevent{x}/o, \rho} Y \in S$.
-Let $\delta'$ be the unique element of $Q$ with $\delta' \equiv_S \delta$, and
-let $f_0$ be a matching for $\delta' \equiv_S \delta$.
-Then $\delta(\beta,\toevent{x}) = \delta'$, $\lambda(\beta,\toevent{x}) = o$, and $\remap(\beta,\toevent{x}) = \rho \circ f_0$.
+$o$, $\rho$ and $Y$ such that $\zeta = \beta \xrightarrow{\toevent{x}/o/\rho} Y \in S$.
+Let $\zeta'$ be the unique element of $Q$ with $\zeta' \equiv_S \zeta$, and
+let $f_0$ be a matching for $\zeta' \equiv_S \zeta$.
+Then $\delta(\beta,\toevent{x}) = \zeta'$, $\lambda(\beta,\toevent{x}) = o$, and $\remap(\beta,\toevent{x}) = \rho \circ f_0$.
 \item
 Assume $\beta \in Q$ and $x \in \Last{\beta}$ not expirable after $\beta$.
 We define $\delta(\beta,\toevent{x}) = \beta$, $\lambda(\beta,\toevent{x}) = \perp$, and $\remap(\beta,\toevent{x}) = \rho_0$, 
