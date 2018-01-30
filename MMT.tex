@@ -160,10 +160,8 @@ may reach a timelock following the timed word $1 ~ i ~ o ~ 1 ~ i ~ o$: at this p
 \label{fig:timelock}
 \end{center}
 \end{figure}
-Once solution would be to disable inputs in $I$ when a timer is $0$. 
-In Section~\ref{section untimed semantics}, we will elaborate
-a different approach in which we only consider runs in which no ``races'' occur. This eliminates the above problematic
-behavior in which there is a race between the second $i$ event and the timeout.
+Our learning algorithm will only explore runs in which no ``races'' occur. This eliminates the above timelock,
+which is cause by a race between an $i$ event and a timeout.
 \fi
 
 \paragraph{Experiments.}
