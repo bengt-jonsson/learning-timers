@@ -93,13 +93,20 @@ The last case in the construction constructs a transition that is not feasible,
 but which must anyway be present since its input is a timeout event for
  a timer which can expire in some other continuation of $\beta$.
 
-During {\bf hypothesis construction}, membership queries are performed:
+ During {\bf hypothesis construction}, membership queries are performed in order
+ to construct the sets of form $\apprsuffixbehs{S}{\beta}{V}$ and
+ $\apprsuffixbehs{S}{\extend{\beta}{i}{\lambda(\beta,i)}}{V}$ for $\beta \in U$.
+ Moreoever, the sets $U$ and $V$ are expanded if needed to construct
+ a hypothesis automaton.
 \begin{itemize}
-\item for all untimed input words of form $\untimedinputword(\beta) \cdot i$
+\item Membership queries are performed
+  for all untimed input words of form $\untimedinputword(\beta) \cdot i$
    for $\beta \in U$ and $i \in \extinputs$: this allows to determine
    $\feasibleinputs{\beta}{S}$ and $\lambda(\beta,i)$
    for $\beta \in U$ and $i \in \feasibleinputs{\beta}{S}$.
 \item
+ \todobj{I now got as far as this}
+  Membership queries are performed
   for all untimed input words of form $\untimedinputword(\beta) \cdot v$ and
   $\untimedinputword(\beta) \cdot i \cdot v$, where
   $\beta \in U$, $v \in \instancesof{V}$, and
