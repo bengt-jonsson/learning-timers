@@ -14,7 +14,7 @@ the technical development of this paper.
 %
 Formally, an \emph{untimed behavior} over inputs $I$ and outputs $O$ is a sequence 
 \begin{eqnarray*}
-\beta & = & X_0 \xrightarrow{i_1/o_1, \rho_1} X_1  \cdots \xrightarrow{i_k/o_k, \rho_k} X_{k},
+\beta & = & X_0 \xrightarrow{i_1/o_1/\rho_1} X_1  \cdots \xrightarrow{i_k/o_k/\rho_k} X_{k},
 \end{eqnarray*}
 where $X_0 \subseteq X$ and, for each $j>0$,  $i_j \in \extinputs$, $o_j \in O$, $\rho_j \in X \hookrightarrow \natplus$, and
  $X_j \setminus X_{j-1}  \subseteq \domof{\rho_j} \subseteq X_j \subseteq X$.
@@ -22,13 +22,13 @@ Moreover, if $i_j = \toevent{x}$, for some $j>0$, then $x \in X_{j-1}$ and $x \n
 %
 An \emph{untimed run} of an MMT $\M$ is a sequence
 \begin{eqnarray*}
-\gamma & = & q_0 \xrightarrow{i_1/o_1, \rho_1} q_1   \cdots \xrightarrow{i_k/o_k, \rho_k} q_k
+\gamma & = & q_0 \xrightarrow{i_1/o_1/\rho_1} q_1   \cdots \xrightarrow{i_k/o_k/\rho_k} q_k
 \end{eqnarray*}
 of transitions of $\M$ that starts with the initial state $q_0$. 
 To each untimed run $\gamma$ we associate an untimed behavior by replacing all
 states by their sets of timers:
 \begin{eqnarray*}
-\beh(\gamma) & = & \vars(q_0) \xrightarrow{i_1/o_1, \rho_1} \vars(q_1)  \cdots \xrightarrow{i_k/o_k, \rho_k} \vars(q_k).
+\beh(\gamma) & = & \vars(q_0) \xrightarrow{i_1/o_1/\rho_1} \vars(q_1)  \cdots \xrightarrow{i_k/o_k/\rho_k} \vars(q_k).
 \end{eqnarray*}
 We say that $\beta$ is an untimed behavior of $\M$ if $\M$ has an untimed run $\gamma$ with $\beh(\gamma) = \beta$.
 Note that the initial timer set of an untimed behavior of $\M$ is empty.
@@ -36,8 +36,8 @@ Note that the initial timer set of an untimed behavior of $\M$ is empty.
 A \emph{timed behavior} over inputs $I$ and outputs $O$ is an alternating sequence
 \begin{eqnarray}
 \label{timedbehavior}
-\sigma & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \cdots
-\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}
+\sigma & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1/\rho_1} \tvals_1 \cdots
+\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k/\rho_k} \tvals_{k}
 \end{eqnarray}
 of delay transitions and discrete transitions with, for each $j$,
 $\tvals_j, \tvals'_j$ valuations and,
@@ -45,7 +45,7 @@ for each $j>0$,  $d_j \in \delays$, $i_j \in \extinputs$, $o_j \in O$, and $\rho
 To each timed behavior $\sigma$ we associate an untimed behavior by forgetting the
 delay transitions and by replacing valuations by their domain:
 \begin{eqnarray*}
-\untime(\sigma) & = & \domof{\tvals_0} \xrightarrow{i_1/o_1, \rho_1}  \cdots \xrightarrow{i_k/o_k, \rho_k} \domof{\tvals_k}.
+\untime(\sigma) & = & \domof{\tvals_0} \xrightarrow{i_1/o_1/\rho_1}  \cdots \xrightarrow{i_k/o_k/\rho_k} \domof{\tvals_k}.
 \end{eqnarray*}
 We say that untimed behavior $\beta$ is \emph{feasible} if there exists a timed behavior $\sigma$ such that $\untime(\sigma) = \beta$.
 The following technical lemma follows directly from the definitions:
@@ -53,8 +53,8 @@ The following technical lemma follows directly from the definitions:
 \begin{lemma}
 \label{feasible plus input is feasible}
 Suppose $\beta$ is a feasible untimed behavior that ends with timer set $Y$, and 
-$Y \xrightarrow{i/o, \rho} Y'$ is an untimed behavior with $i \in I$.
-Then $\beta \xrightarrow{i/o, \rho} Y'$ is a feasible untimed behavior.
+$Y \xrightarrow{i/o/\rho} Y'$ is an untimed behavior with $i \in I$.
+Then $\beta \xrightarrow{i/o/\rho} Y'$ is a feasible untimed behavior.
 \end{lemma}
 
 We also associate a timed word to timed behavior $\sigma$ by forgetting valuations, timers, and update functions:
@@ -75,12 +75,12 @@ Let $\alpha$ be a timed run of an MMT $\M$:
 \end{eqnarray*}
 Then $\alpha$ can be projected both to an untimed run of $\M$
 \begin{eqnarray*}
-\untime (\alpha) & = & q_0 \xrightarrow{i_1/o_1, \rho_1} q_1  \cdots \xrightarrow{i_k/o_k, \rho_k} q_k
+\untime (\alpha) & = & q_0 \xrightarrow{i_1/o_1/\rho_1} q_1  \cdots \xrightarrow{i_k/o_k/\rho_k} q_k
 \end{eqnarray*}
 (the $\rho_j$'s are determined since $\M$ is deterministic) and to a timed behavior
 \begin{eqnarray*}
-\beh(\alpha) & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1  \cdots
-\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}.
+\beh(\alpha) & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1/\rho_1} \tvals_1  \cdots
+\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k/\rho_k} \tvals_{k}.
 \end{eqnarray*}
 \iflong
 We say that $\sigma$ is an timed behavior of $\M$ if $\M$ has an timed run $\alpha$ with $\beh(\alpha) = \sigma$.
@@ -127,8 +127,8 @@ the one into the other.
 
 Let $\beta$ and $\beta'$ be two untimed behaviors with the same length and outputs:
 \begin{eqnarray*}
-\beta & = & X_0 \xrightarrow{i_1/o_1, \rho_1} X_1  \xrightarrow{i_2/o_2, \rho_2} X_2 \cdots \xrightarrow{i_k/o_k, \rho_k} X_{k},\\
-\beta' & = & Y_0 \xrightarrow{i'_1/o_1, \rho'_1} Y_1  \xrightarrow{i'_2/o_2, \rho'_2} Y_2 \cdots \xrightarrow{i'_k/o_k, \rho'_k} Y_{k}.
+\beta & = & X_0 \xrightarrow{i_1/o_1/\rho_1} X_1  \xrightarrow{i_2/o_2/\rho_2} X_2 \cdots \xrightarrow{i_k/o_k/\rho_k} X_{k},\\
+\beta' & = & Y_0 \xrightarrow{i'_1/o_1/\rho'_1} Y_1  \xrightarrow{i'_2/o_2/\rho'_2} Y_2 \cdots \xrightarrow{i'_k/o_k/\rho'_k} Y_{k}.
 \end{eqnarray*}
 An \emph{isomorphism} from $\beta$ to $\beta'$ is a list $f = f_0 ,\ldots, f_k$ of bijections $f_j : X_j \rightarrow Y_j$ such that
 for all $j>0$: (1) for all $x \in X_j \setminus \domof{\rho_j})$, $f_j(x)=f_{j-1}(x)$,
@@ -142,10 +142,10 @@ and vice versa.
 Isomorphisms can be lifted to timed behaviors in the obvious way. 
 Let $\sigma$ and $\sigma'$ be two timed behaviors with the same length and outputs:
 \begin{eqnarray*}
-\sigma & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1  \cdots
-\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k},\\
-\sigma' & = & \lambda_0 \xrightarrow{d_1} \lambda'_0 \xrightarrow{i'_1/o_1, \rho'_1} \lambda_1  \cdots
-\xrightarrow{d_k} \lambda'_{k-1} \xrightarrow{i'_k/o_k, \rho'_k} \lambda_{k}.
+\sigma & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1/\rho_1} \tvals_1  \cdots
+\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k/\rho_k} \tvals_{k},\\
+\sigma' & = & \lambda_0 \xrightarrow{d_1} \lambda'_0 \xrightarrow{i'_1/o_1/\rho'_1} \lambda_1  \cdots
+\xrightarrow{d_k} \lambda'_{k-1} \xrightarrow{i'_k/o_k/\rho'_k} \lambda_{k}.
 \end{eqnarray*}
 An \emph{isomorphism} from $\sigma$ to $\sigma'$ is a list $f = f_0 ,\ldots, f_k$ of bijections such that
 (1) $f$ is an isomorphism from $\untime(\sigma)$ to $\untime(\sigma')$, and
@@ -307,7 +307,7 @@ omitting the update $y :=60$ on the transition from $q_1$ to $q_2$.
 We say that an MMT $\M$ is \emph{timer live} if, for each feasible untimed behavior $\beta$ and for each timer $y$ that is running after $\beta$, there exists an untimed behavior $\beta_y$ consisting of transitions that leave $y$ unaffected, except for the last one in which $y$ expires, and such that $\beta \cdot \beta_y$ is feasible.
 \iflong
 Clearly, the MMT of Figure~\ref{fig:ghosttimers} is not timer live, as there is no way to extend the feasible untimed
-behavior $\emptyset \xrightarrow{i/o,~ x:=1 } \{ x\} \xrightarrow{i/o,~ y:=60 } \{ x, y\}$ to an untimed behavior in which
+behavior $\emptyset \xrightarrow{i/o/x:=1 } \{ x\} \xrightarrow{i/o/y:=60 } \{ x, y\}$ to an untimed behavior in which
 timer $y$ expires.
 \fi
 
@@ -319,17 +319,17 @@ while preserving the associated untimed behavior.
 \iflong
 Consider, for instance, a timed behavior 
 \[
-\tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \cdots
-\xrightarrow{d_j} \tvals'_{j-1} \xrightarrow{i_j/o_j, \rho_j} \tvals_j  \xrightarrow{d_{j+1}} \cdots
-%\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}
+\tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1/\rho_1} \tvals_1 \cdots
+\xrightarrow{d_j} \tvals'_{j-1} \xrightarrow{i_j/o_j/\rho_j} \tvals_j  \xrightarrow{d_{j+1}} \cdots
+%\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k/\rho_k} \tvals_{k}
 \]
 that contains an $i_j$-transition that is not a timeout and does not (re)start any timer.
 We can then schedule this transition slightly earlier.
 More precisely, if $0 < e < d_j$ and $e' = d_j + d_{j+1}- e $ then we can find $\tvals, \tvals'$ such that
 \[
-\tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \cdots
-\xrightarrow{e} \tvals' \xrightarrow{i_j/o_j, \rho_j} \tvals  \xrightarrow{e'} \cdots
-%\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}
+\tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1/\rho_1} \tvals_1 \cdots
+\xrightarrow{e} \tvals' \xrightarrow{i_j/o_j/\rho_j} \tvals  \xrightarrow{e'} \cdots
+%\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k/\rho_k} \tvals_{k}
 \]
 is a timed behavior with the same underlying untimed behavior.
 
@@ -361,8 +361,8 @@ Suppose $B = \{ p_1 ,\ldots, p_u \}$ is a block of $\sigma$, and suppose
 that $\epsilon$ is a real number whose absolute is smaller than any nonzero number that occurs in $\sigma$, that is
 $\mid \epsilon \mid  < \min (\bigcup_{1 \leq j \leq k} \{ d_j \} \cup \ranof{\kappa'_j} \setminus \{ 0 \} )$.
 Then there exists a timed behavior
-$\sigma'  =  \lambda_0 \xrightarrow{e_1} \lambda'_0 \xrightarrow{i_1/o_1, \rho_1} \lambda_1 \xrightarrow{e_2} \lambda'_1 \xrightarrow{i_2/o_2, \rho_2} \lambda_2 \cdots
-\xrightarrow{e_k} \lambda'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \lambda_{k}$
+$\sigma'  =  \lambda_0 \xrightarrow{e_1} \lambda'_0 \xrightarrow{i_1/o_1/\rho_1} \lambda_1 \xrightarrow{e_2} \lambda'_1 \xrightarrow{i_2/o_2/ \rho_2} \lambda_2 \cdots
+\xrightarrow{e_k} \lambda'_{k-1} \xrightarrow{i_k/o_k/\rho_k} \lambda_{k}$
 without races such that
 $\untime(\sigma)=\untime(\sigma')$,
 $\kappa_0 = \lambda_0$, and
@@ -378,14 +378,14 @@ and $\{ 4, 5 \}$, visualized in Figure~\ref{fig:races}:
 and $\{ 4, 5 \}$:
 \fi
 \[
-\emptyset \xrightarrow{7} \emptyset \xrightarrow{i1/o1, x \mapsto 2} (x=2) \xrightarrow{1} (x=1)
-\xrightarrow{i2/o2, y \mapsto 1} (x=y=1)  
+\emptyset \xrightarrow{7} \emptyset \xrightarrow{i1/o1/x \mapsto 2} (x=2) \xrightarrow{1} (x=1)
+\xrightarrow{i2/o2/y \mapsto 1} (x=y=1)  
 \]
 \[
 \xrightarrow{1} (x=y=0)
-\xrightarrow{\toevent{x}/o3, u \mapsto 2} (u=2)
+\xrightarrow{\toevent{x}/o3/u \mapsto 2} (u=2)
 \xrightarrow{1} (u=1)
-\xrightarrow{i4/o4, z \mapsto 1} 
+\xrightarrow{i4/o4/z \mapsto 1} 
 \]
 \[
 (u=z=1)
@@ -425,8 +425,8 @@ Then there exists a timed behavior $\sigma'$ without races such that $\untime(\s
 \begin{proof}
 (Sketch) Let
 \begin{eqnarray*}
-\sigma & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1, \rho_1} \tvals_1 \cdots
-\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k, \rho_k} \tvals_{k}
+\sigma & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1/\rho_1} \tvals_1 \cdots
+\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k/\rho_k} \tvals_{k}
 \end{eqnarray*}
 be a timed behavior.
 %
@@ -478,7 +478,7 @@ By repeated application of Lemma~\ref{wiggle lemma}, we can wiggle the timing of
 \paragraph{Causality maps.} 
 Consider an untimed behavior
 \begin{eqnarray*}
-\beta & = & X_0 \xrightarrow{i_1/o_1, \rho_1} X_1  \xrightarrow{i_2/o_2, \rho_2} X_2 \cdots \xrightarrow{i_k/o_k, \rho_k} X_{k}.
+\beta & = & X_0 \xrightarrow{i_1/o_1/\rho_1} X_1  \xrightarrow{i_2/o_2/\rho_2} X_2 \cdots \xrightarrow{i_k/o_k/\rho_k} X_{k}.
 \end{eqnarray*}
 A causality map for $\beta$ is a function that specifies, for each timer that expires, the index of the event that
 triggered this timeout.
@@ -586,10 +586,10 @@ and thus trivially isomorphic.
 
 For the induction step, suppose $\beta$ and $\beta'$ contain $k+1$ events:
 \begin{eqnarray*}
-\beta & = & X_0 \xrightarrow{i_1/o_1, \rho_1} X_1 \cdots \xrightarrow{i_k/o_k, \rho_k} X_{k}
- \xrightarrow{i_{k+1}/o_{k+1}, \rho_{k+1}} X_{k+1},\\
-\beta' & = & Y_0 \xrightarrow{i'_1/o_1, \tau_1} Y_1  \cdots \xrightarrow{i'_k/o_k, \tau_k} Y_{k} 
- \xrightarrow{i'_{k+1}/o_{k+1}, \tau_{k+1}} Y_{k+1}.
+\beta & = & X_0 \xrightarrow{i_1/o_1/\rho_1} X_1 \cdots \xrightarrow{i_k/o_k/\rho_k} X_{k}
+ \xrightarrow{i_{k+1}/o_{k+1}/\rho_{k+1}} X_{k+1},\\
+\beta' & = & Y_0 \xrightarrow{i'_1/o_1/\tau_1} Y_1  \cdots \xrightarrow{i'_k/o_k/\tau_k} Y_{k} 
+ \xrightarrow{i'_{k+1}/o_{k+1}/\tau_{k+1}} Y_{k+1}.
 \end{eqnarray*}
 Let $\delta$ and $\delta'$ be the prefixes of $\beta$ and $\beta'$, respectively,
 containing $k$ events. Then $\delta$ is also a feasible untimed behavior and, by
