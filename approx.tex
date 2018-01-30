@@ -27,8 +27,8 @@ values $d_1, \ldots , d_{k+1}$. In order to use DBM techniques, we first
 change representation by letting
 $t_j = d_1 + \cdots + d_j$ for $j = 1 , \ldots, k+1$. Intuitively, $t_j$ is
 the time of occurrence of the $j$th transition in $\beta$.
-We now associate with $\beta$ a conjunction of difference constraints, denoted
-$\Constraints{\beta}$, consisting of
+We now associate with $\beta$ a conjunction of difference constraints over
+$t_1, \ldots, t_{k+1}$, denoted $\Constraints{\beta}$, consisting of
 \todobj{We assume that delays are always non-zero. Check how this is said in
   the paper}
 \begin{itemize}
@@ -47,11 +47,11 @@ where $j$ is the largest index such that $x_l \in X_j$,
 %% for each pair of distinct indices $j$ and $l$ with $i_j, i_l \in I$: $\Frac{t_j} \neq \Frac{t_l}$ 
 %% (to express that the fractional parts of $t_j$ and $t_l$ are different).
 \end{itemize}
-Using standard DBM techniques, we can check whether $\Constraints{\beta}$ is satisfiable by saturating it (i.e., closing it under implied constraints, which
+By standard DBM techniques, we can check whether $\Constraints{\beta}$ is satisfiable by saturating it (i.e., closing it under implied constraints, which
 will always be of form
-$n < t_j - t_l < m$ and $t_j - t_l = m$ for integers $n,m$), and checking that
+$n < t_j - t_l < m$ or $t_j - t_l = m$ for integers $n,m$), and checking that
 all such differences allow $t_{j+1} - t_j$ be positive for each $j$.
-We infer that $\beta$ is feasible iff the set of constraints $\Constraints{\beta}$ is satisfiable.
+We infer that $\beta$ is feasible iff $\Constraints{\beta}$ is satisfiable.
 Moreover, if $\beta$ is feasible, it is easy to see that there is a solution
 such that $\Frac{t_j} \neq \Frac{t_l}$ for each pair of distinct indices $j$ and $l$ with $i_j, i_l \in I$.
 
@@ -190,7 +190,7 @@ each timeout event occurs at most once,
 and all assigned timers in $Y$ expire sometime after their assignment.
 
 For integer $k \geq 0$, let $\suffmap{k}$ be the injective mapping on
-$Y$ which maps each $y_j$ to $y_{j+k}$.  We apply mappings of form
+$Y$ which maps each $y_j$ to $x_{j+k}$.  We apply mappings of form
 $\suffmap{k}$ to lean suffix behaviors in the natural way.
 
 Let $\beta$ be a lean behavior. We say that 
@@ -198,6 +198,8 @@ a lean suffix behavior $\gamma$ is a {\em $\beta$-suffix} if
 there is a canonical behavior $\beta'$ with $\beta \sqsubseteq \beta'$ such that
 $\beta'\cdot\suffmap{|\beta|}(\gamma)$ is a lean behavior. In this case we
 use $\beta;\gamma$ to denote $\beta'\cdot\suffmap{|\beta|}(\gamma)$.
+Note that the inputs from $\toevents$ in a $\beta$-suffix may concern only
+the timers $\set{x_1, \ldots, x_{|\beta|}}$.
 
 Let an {\em input suffix} be a sequence of elements in $\extextinputs$.
 A set $V$ of input suffixes is {\em adequate} if it is closed under permutations

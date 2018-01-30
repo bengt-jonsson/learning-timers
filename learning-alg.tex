@@ -1,6 +1,9 @@
 \section{Algorithm for Learning of MMTs}
 \label{sec:learning}
 
+\todobj{The notation for concatenation between prefix and suffix may need
+  checking in this section}
+
 In this section, we present an algorithm for learning MMTs in then untimed
 MAT of~\ref{sec:untimed-mat}, using the approximated Nerode equivalence
 presented in Section~\ref{sec:approx}.
@@ -91,64 +94,76 @@ $\apprgetassignment{S}{(\extend{\beta}{i}{\lambda(\beta,i)})}{V}(x_{(|\beta|+1)}
 \end{definition}
 The last case in the construction constructs a transition that is not feasible,
 but which must anyway be present since its input is a timeout event for
- a timer which can expire in some other continuation of $\beta$.
+ a timer which can expire after performing additional transitions from $\beta$.
 
- During {\bf hypothesis construction}, membership queries are performed in order
+ During {\bf hypothesis construction}, membership queries are performed order
  to construct the sets of form $\apprsuffixbehs{S}{\beta}{V}$ and
  $\apprsuffixbehs{S}{\extend{\beta}{i}{\lambda(\beta,i)}}{V}$ for $\beta \in U$.
  Moreoever, the sets $U$ and $V$ are expanded if needed to construct
  a hypothesis automaton.
-\begin{itemize}
-\item Membership queries are performed
+
+ More precisely,
+membership queries are first performed
   for all untimed input words of form $\untimedinputword(\beta) \cdot i$
    for $\beta \in U$ and $i \in \extinputs$: this allows to determine
    $\feasibleinputs{\beta}{S}$ and $\lambda(\beta,i)$
    for $\beta \in U$ and $i \in \feasibleinputs{\beta}{S}$.
-\item
- \todobj{I now got as far as this}
-  Membership queries are performed
+   Thereafter, membership queries are performed
   for all untimed input words of form $\untimedinputword(\beta) \cdot v$ and
   $\untimedinputword(\beta) \cdot i \cdot v$, where
-  $\beta \in U$, $v \in \instancesof{V}$, and
-  $i \in \feasibleinputs{\beta}{S}$.
-    This allows to compute the approximated Nerode equivalence $\equiv_{S,V}$ on
-    the set of untimed words of form $\beta$ and
-    $\extend{\beta}{i}{\lambda(\beta,i)}$ with
-    $\beta \in U$ and $i \in \feasibleinputs{\beta}{S}$.
-    Whenever the set $U$ is not closed wrt.\ $V$, then it is extended:
+  $\beta \in U$, $v \in V$, and
+  $i \in \feasibleinputs{\beta}{S}$. Note that one need only consider
+  $v$ in which inputs from $\toevents$ concern timers in
+  $\set{x_1, \ldots, x_{|\beta|}}$ (or in  $\set{x_1, \ldots, x_{(|\beta|+1)}}$).
+  This allows to construct the sets of form $\apprsuffixbehs{S}{\beta}{V}$ and
+  $\apprsuffixbehs{S}{(\extend{\beta}{i}{\lambda(\beta,i)})}{V}$
+  for $\beta \in U$.
+  It then allows to compute the approximated Nerode equivalence $\equiv_{S,V}$ on
+  the set of lean behaviors of form $\beta$ and
+  $\extend{\beta}{i}{\lambda(\beta,i)}$ with
+  $\beta \in U$ and $i \in \feasibleinputs{\beta}{S}$.
+  We then check whether $U$ and $V$ meet the convergence criteria.
+  \begin{itemize}
+    \item
+  Whenever the set $U$ is not closed wrt.\ $V$, then it is extended:
 if there is some $\beta \in U$ and $i$ in $\feasibleinputs{\beta}{S}$
-for which there is no $o$ and $\beta' \in U$ such that
+for which there is no $\beta' \in U$ such that
 $\extend{\beta}{i}{\lambda(\beta,i)} \equiv_{S,V} \beta'$, 
 then $\extend{\beta}{i}{\lambda(\beta,i)}$ is added to $U$,
 triggering new membership queries.
-Whenever the set $U$ is not timer-consistent wrt.\ $V$, then $V$ is extended:
+\item
+  Whenever the set $U$ is not timer-consistent wrt.\ $V$, then $V$ is extended:
 for timer $x_j$ in
-$\apprgetmemorable{S}{\extend{\beta}{i}{\lambda(\beta,i)}}{V} \setminus (\apprgetmemorable{S}{\beta}{V} \cup \set{x_{(|\beta|+1)}})$, find an 
-untimed behavior of form $\extend{\gamma}{\toevent{x_i}}{o'}$ in
-$\apprsuffixbehs{S}{\extend{\beta}{i}{\lambda(\beta,i)}}{V}$.
-Then add $i\cdot\untimedinputword(\gamma)\cdot\toevent{p}$ to $V$.
+$\apprgetmemorable{S}{\extend{\beta}{i}{\lambda(\beta,i)}}{V} \setminus (\apprgetmemorable{S}{\beta}{V} \cup \set{x_{(|\beta|+1)}})$, find a lean
+suffix behavior of form $\extend{\gamma}{\toevent{x_j}}{o'}$ in
+$\apprsuffixbehs{S}{(\extend{\beta}{i}{\lambda(\beta,i)})}{V}$, i.e.,
+a suffix such that $x_j$ expires in the last transition. This expiration is
+obviously missing from $\apprsuffixbehs{S}{\beta}{V}$. But, by
+adding $i\cdot\untimedinputword(\gamma)\cdot\toevent{x_j}$ to $V$, the
+timer will also appear in $\apprgetmemorable{S}{\beta}{V}$.
+This extension of $V$ will trigger new membership queries.
 \end{itemize}
-
+\todobj{The rest still to be polished}
 When $U$ is closed and timer-consistent wrt.\ $V$, then
 a hypothesis MMT $\hypoof UV$ is constructed and
 validated by submitting it in an equivalence query.
 If the query returns ``yes'', then
 the learning is completed, and $\hypoof UV$ accepts $S$.
-If the query returns a counterexample word $\alpha$, this is used to extend
-$V$ as follows. We assume w.l.o.g.\ that no proper prefix of $\alpha$ is
-a counterexample. 
-By the fact that $\alpha$ is a counterexample, there is a suffix
-$i/o,\rho \cdot \gamma$ of $\alpha$
-such that $\beta\cdot i/o,\rho \equiv_{S,V} \beta'$ but
-$\beta \cdot i/o,\rho \cdot \gamma \in S \notiff \beta' \cdot \gamma \in S$
+If the query returns a counterexample in the form of a lean behavior
+$\alpha$, this is used to extend $V$ as follows.
+We assume w.l.o.g.\ that no proper prefix of $\alpha$ is a counterexample. 
+By the fact that $\alpha$ is a counterexample, we can write $\alpha$ as
+$(\alpha';\utlabel{i}{o}); \gamma$, where $\gamma$ is a 
+such that $\beta\cdot \simpleutlabel{i}{o} \equiv_{S,V} \beta'$ but
+$\beta ; (\utlabel{i}{o}{\rho} \cdot \gamma) \in S \notiff \beta' \cdot \gamma \in S$
 for some $\beta,\beta' \in U$.
-(To se this, let $\alpha = i_1/o_1,\rho_1 \cdots i_n/o_n,\rho_n$, and
+(To se this, let $\alpha = \utlabel{i_1}{o_1}{\rho_1} \cdots \utlabel{i_n}{o_n}{\rho_n}$, and
 define the sequence $\beta_0, \beta_1, \ldots ,\beta_{n}$ of short prefixes
 in $U$ by $\beta_0 = \emptyword$ and
-$\beta_{j-1}i_j/o_j,\rho_j \equiv_{S,V} \beta_{i}$ for
+$\beta_{j-1}\utlabel{i_j}{o_j}{\rho_j} \equiv_{S,V} \beta_{i}$ for
 $j = 1, \ldots n$, i.e., $\beta_0 \ldots \beta_n$ is the sequence of states
-visited when $\hypoof UV$ processes $\alpha$.
-Let $\gamma_j$ be the suffix $i_{j+1}/o_{j+1}\rho_{j+1} \cdots i_n/o_n,\rho_n$
+visited when $\hypoof UV$ processes $\alpha$. Let $\gamma_j$ be the suffix
+$\utlabel{i_{j+1}}{o_{j+1}}{\rho_{j+1}} \cdots \utlabel{i_n}{o_n}{\rho_n}$
 of $\alpha$ of length $n-j$. 
 By the fact that $\alpha$ is a counterexample, we have
 $\beta_0\cdot\gamma_0 \in S \notiff  \beta_{n} \in S$, which implies that
