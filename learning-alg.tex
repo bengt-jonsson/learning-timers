@@ -80,21 +80,23 @@ $\hypoof UV = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$, where
     \item $\delta(\beta,i)$ is is
         the unique $\beta' \in U$ such that there is an $f$ with
   $\extend{\beta}{i}{\lambda(\beta,i)} \equiv_{S,V}^f \beta'$.
-      \item $\remap(\beta,i):\apprgetmemorable{S}{\beta'}{V} \mapsto (\apprgetmemorable{S}{\beta}{V} \cup \natplus)$ is defined as $\circ f^{-1}$ on
-        $\apprgetmemorable{S}{\beta'}{V}$ except for 
-$f(x_{(|\beta|+1)})$, which is mapped to
-$\apprgetassignment{S}{\beta'}{V}(f(x_{(|\beta|+1)}))$.
+      \item $\remap(\beta,i):\apprgetmemorable{S}{\beta'}{V} \mapsto (\apprgetmemorable{S}{\beta}{V} \cup \natplus)$ is defined as $f^{-1}$ on
+        $\apprgetmemorable{S}{\beta'}{V}$, except that it maps
+        $f(x_{(|\beta|+1)})$ to
+      $\apprgetassignment{S}{\beta'}{V}(f(x_{(|\beta|+1)}))$.
   \end{itemize}
-\item When $\beta \in U$ and $i$ is of form $\toevent{x_j}$ in
-  $\apprgetmemorable{S}{\beta}{V} \setminus \feasibleinputs{\beta}{S}$, we let
+\item When $\beta \in U$ and $i$ is of form $\toevent{x_j}$ with
+  $x_i \apprgetmemorable{S}{\beta}{V}$ but
+  $\toevent{x_j} \not\in\feasibleinputs{\beta}{S}$, we let
   $\lambda(\beta,i) = \bot$, 
   $\delta(\beta,i) = \beta$, and let
   $\remap(\beta,i)$ be the identity mapping on $\apprgetmemorable{S}{\beta}{V}$.
 \end{itemize}
 \end{definition}
-The last case in the construction constructs a transition that is not feasible,
-but which must anyway be present since its input is a timeout event for
- a timer which can expire after performing additional transitions from $\beta$.
+The last case (where  $\toevent{x_j} \not\in\feasibleinputs{\beta}{S}$)
+constructs a transition that is not feasible,
+but which must anyway be syntactically present, since $x_j$
+may expire after some continuation if $\beta$ and is hence live.
 
  During {\bf hypothesis construction}, membership queries are performed order
  to construct the sets of form $\apprsuffixbehs{S}{\beta}{V}$ and
@@ -113,8 +115,9 @@ membership queries are first performed
   $\untimedinputword(\beta) \cdot i \cdot v$, where
   $\beta \in U$, $v \in V$, and
   $i \in \feasibleinputs{\beta}{S}$. Note that one need only consider
-  $v$ in which inputs from $\toevents$ concern timers in
-  $\set{x_1, \ldots, x_{|\beta|}}$ (or in  $\set{x_1, \ldots, x_{(|\beta|+1)}}$).
+  $v$ in which timeouts from $\toevents$ concern timers in
+  $\set{x_1, \ldots, x_{|\beta|}}$ (or in  $\set{x_1, \ldots, x_{(|\beta|+1)}}$
+  for $\untimedinputword(\beta) \cdot i$).
   This allows to construct the sets of form $\apprsuffixbehs{S}{\beta}{V}$ and
   $\apprsuffixbehs{S}{(\extend{\beta}{i}{\lambda(\beta,i)})}{V}$
   for $\beta \in U$.
@@ -135,13 +138,14 @@ triggering new membership queries.
   Whenever the set $U$ is not timer-consistent wrt.\ $V$, then $V$ is extended:
 for timer $x_j$ in
 $\apprgetmemorable{S}{\extend{\beta}{i}{\lambda(\beta,i)}}{V} \setminus (\apprgetmemorable{S}{\beta}{V} \cup \set{x_{(|\beta|+1)}})$, find a lean
-suffix behavior of form $\extend{\gamma}{\toevent{x_j}}{o'}$ in
-$\apprsuffixbehs{S}{(\extend{\beta}{i}{\lambda(\beta,i)})}{V}$, i.e.,
-a suffix such that $x_j$ expires in the last transition. This expiration is
-obviously missing from $\apprsuffixbehs{S}{\beta}{V}$. But, by
-adding $i\cdot\untimedinputword(\gamma)\cdot\toevent{x_j}$ to $V$, the
-timer will also appear in $\apprgetmemorable{S}{\beta}{V}$.
-This extension of $V$ will trigger new membership queries.
+suffix $\gamma$ in
+$\apprsuffixbehs{S}{(\extend{\beta}{i}{\lambda(\beta,i)})}{V}$, whose last input
+is $\toevent{x_j}$. This input is
+obviously missing from $\apprsuffixbehs{S}{\beta}{V}$. But, by adding
+the concatenation of $i$ with $\untimedinputword(\gamma)$ (where
+timers are  appropriately renamed), the input $\toevent{x_j}$
+will also appear in $\apprgetmemorable{S}{\beta}{V}$.
+This extension of $V$ will subsequently trigger new membership queries.
 \end{itemize}
 When $U$ is closed and timer-consistent wrt.\ $V$, then
 a hypothesis MMT $\hypoof UV$ is constructed and
@@ -149,24 +153,27 @@ validated by submitting it in an equivalence query.
 If the query returns ``yes'', then
 the learning is completed, and $\hypoof UV$ accepts $S$.
 If the query returns a counterexample in the form of a lean behavior
-$\alpha$, this is used to extend $V$ as follows.
+$\alpha$ on which $\hypoof UV$ and $S$ disagree,
+this is used to extend $V$ as follows.
 We assume w.l.o.g.\ that no proper prefix of $\alpha$ is a counterexample. 
-By the fact that $\alpha$ is a counterexample, we can write $\alpha$ as
-$(\alpha'\compose{S}\simpleutlabel{i}{o})\compose{S} \gamma$, where $\gamma$ is a lean suffix
-behavior such that
+By the fact that $\alpha$ is a counterexample, we can find a lean
+suffix $\gamma$ of $\alpha$, such that
 $\beta\cdot \simpleutlabel{i}{o} \equiv_{S,V}^f \beta'$ but
-$(\beta \compose{S} \simpleutlabel{i}{o}) \compose{S} \gamma) \in S \notiff \beta' \compose{S} f(\gamma) \in S$ for some $\beta,\beta' \in U$ such that 
+$\gamma \in \suffixbehs{S}{(\extend{\beta}{i}{\lambda(\beta,i)})}
+\smallnotiff \gamma \in \suffixbehs{S}{\beta'}$
+for some $\beta,\beta' \in U$ such that 
 $\beta\compose{S}\simpleutlabel{i}{o} \equiv_{S,V}^f \beta'$ is used to construct
 the transition triggered by $i$ from $\beta$ in $\hypoof UV$.
 To se this, let $\alpha = \utlabel{i_1}{o_1}{\rho_1} \cdots \utlabel{i_n}{o_n}{\rho_n}$, and for $j = 0 , \ldots, n$, define
-a lean behavior $\beta_j$ and a $\beta_j$-suffix by
+a lean behavior $\beta_j$ and a $\beta_j$-suffix as follows.
 \begin{itemize}
 \item $\beta_0 = \emptyword$, and
 %%   , $f_0$ is arbitrary, and 
-  $\gamma_0$ is obtained from $\alpha$ by renaming each timer $x_l$ to $y_l$
+  $\gamma_0$ is obtained by making $\alpha$ a lean suffix (i.e.,
+  renaming each timer $x_l$ to $y_l$).
 \item
   Let $\gamma_{j-1}$ be of form
-  $\simpleutlabel{\hat{i_j}}{\hat{o_j}} \gamma_{j-1}'$,
+  $\utlabel{\hat{i_j}}{\hat{o_j}}{\hat{\rho_j}} \cdot \gamma_{j-1}'$,
   let $\beta_j$ be $\lambda(\beta_{j-1},\hat{i_j})$,
   let $f_j$ be the mapping used to establish
   $\beta_{j-1}\compose{S}\simpleutlabel{\hat{i_j}}{\hat{o_j}} \equiv_{S,V}^{f_j} \beta_{j}$
@@ -176,16 +183,19 @@ a lean behavior $\beta_j$ and a $\beta_j$-suffix by
   (ii) replacing $y_1$ by $f_j(x_{\beta_{j-1}+1})$, and
   (ii) replacing each $y_l$ by $y_{l-1}$.
 \end{itemize}
-Intuitively, the resuls is that
+The result is that
 $\beta_0 \ldots \beta_n$ is the sequence of states 
 visited when $\hypoof UV$ processes $\alpha$, and
-$\gamma_j$ is the $\beta_j$-suffix which corresponds to a suffix of $\alpha$.
+$\gamma_j$ is lean suffix that can be composed with $\beta_j$,
+which corresponds to a suffix of $\alpha$.
 %% Let $\gamma_j$ be the suffix
 %% $\utlabel{i_{j+1}}{o_{j+1}}{\rho_{j+1}} \cdots \utlabel{i_n}{o_n}{\rho_n}$
 %% of $\alpha$ of length $n-j$. 
 By the fact that $\alpha$ is a counterexample, we have
-$\beta_0\compose{S}\gamma_0 \in S \notiff  \beta_{n} \in S$, which implies that
-$\beta_{j-1}\compose{S}\gamma_{j-1} \in S \notiff \beta_j\compose{S}\gamma_j \in S$
+$\gamma_0 \in\suffixbehs{S}{\beta_0} \smallnotiff \gamma_n \in\suffixbehs{S}{\beta_n}$ (since $\gamma_n$ is the empty sequence), which implies that
+$\gamma_{j-1} \in\suffixbehs{S}{\beta_{j-1}}
+\smallnotiff
+\gamma_{j} \in\suffixbehs{S}{\beta_{j}}$
 for some $j$;
 we can then take $\beta_{j-1}$ as $\beta$ and $\beta_j$ as $\beta'$, and
 $\gamma$ as $\gamma_j$.
