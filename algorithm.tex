@@ -115,8 +115,7 @@ $t_j = d_1 + \cdots + d_j$ for $j = 1 , \ldots, k+1$. Intuitively, $t_j$ is
 the time of occurrence of the $j$th transition in $\beta$.
 We now associate with $\beta$ a conjunction of difference constraints over
 $t_1, \ldots, t_{k+1}$, denoted $\Constraints{\beta}$, consisting of
-\todobj{We assume that delays are always non-zero. Check how this is said in
-  the paper}
+%\todobj{We assume that delays are always non-zero. Check how this is said in the paper}
 \begin{itemize}
 %% \item
 %% $0 < t_1 \leq d_{\max}$,
@@ -182,15 +181,6 @@ if there exists a valuation in $\Zone{\beta}$ in which $x$ is minimal.
 \label{expirable}
 Suppose $\beta$ is a feasible untimed behavior with $\Last{\beta} = Y$ and $Y \uttrans{\toevent{x}}{o}{\rho} Y'$ is an untimed behavior.
 Then $x$ is expirable after $\beta$ iff $\beta \uttrans{\toevent{x}}{o}{\rho} Y'$ is feasible.
-\end{lemma}
-
-
-\todofv{Move next lemma to earlier section}
-
-\begin{lemma}
-\label{not timed}
-Suppose $\M, \N$ are MMTs with $\M \not\approx_{\mathit{timed}} \N$.
-Then there exists a transparent timed word $w$ of $\M$ that is not a timed word of $\N$.
 \end{lemma}
 
 

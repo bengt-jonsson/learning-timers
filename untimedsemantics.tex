@@ -48,14 +48,6 @@ delay transitions and by replacing valuations by their domain:
 \untime(\sigma) & = & \domof{\tvals_0} \xrightarrow{i_1/o_1/\rho_1}  \cdots \xrightarrow{i_k/o_k/\rho_k} \domof{\tvals_k}.
 \end{eqnarray*}
 We say that untimed behavior $\beta$ is \emph{feasible} if there exists a timed behavior $\sigma$ such that $\untime(\sigma) = \beta$.
-The following technical lemma follows directly from the definitions:
-
-\begin{lemma}
-\label{feasible plus input is feasible}
-Suppose $\beta$ is a feasible untimed behavior that ends with timer set $Y$, and 
-$Y \xrightarrow{i/o/\rho} Y'$ is an untimed behavior with $i \in I$.
-Then $\beta \xrightarrow{i/o/\rho} Y'$ is a feasible untimed behavior.
-\end{lemma}
 
 We also associate a timed word to timed behavior $\sigma$ by forgetting valuations, timers, and update functions:
 \begin{eqnarray*}
@@ -474,6 +466,21 @@ By repeated application of Lemma~\ref{wiggle lemma}, we can wiggle the timing of
 \end{proof}
 \fi
 
+The following fundamental lemma now follows:
+
+\begin{lemma}
+\label{feasible plus input is feasible}
+Suppose $\beta$ is a feasible untimed behavior that ends with timer set $Y$, and 
+$Y \xrightarrow{i/o/\rho} Y'$ is an untimed behavior with $i \in I$.
+Then $\beta \xrightarrow{i/o/\rho} Y'$ is a feasible untimed behavior.
+\end{lemma}
+\begin{proof}
+By Lemma~\ref{lemma: transparent timed behavior}, there exists a transparent timed behavior
+$\sigma$ such that $\beta = \untime(\sigma)$. Since $\sigma$ is transparent, the last valuation of $\sigma$ assigns a positive value to
+all timers in $Y$. Thus we may extend $\sigma$ by a small delay transition, followed by a discrete transition corresponding to
+$Y \xrightarrow{i/o/\rho} Y'$. This implies that untimed behavior $\beta \xrightarrow{i/o/\rho} Y'$ is feasible.
+\end{proof}
+
 \iflong
 \paragraph{Causality maps.} 
 Consider an untimed behavior
@@ -510,13 +517,11 @@ for all $j$, $\sum_{l=j+1}^{c(j)} d_l$ is an integer (timers expire after an int
 \iflong
 \begin{lemma}
 \label{causality map run is causility map of its timed word}
-Suppose $\alpha$ is a timed run of an MMT in which at most one timer is set
-per transition and $c$ is the causality map of $\alpha$. 
+Suppose $\alpha$ is a timed run of an MMT and $c$ is the causality map of $\alpha$. 
 Then $c$ is a causality map of $\timedword(\alpha)$.
 \end{lemma}
 \else
-It is easy to see that a timed word has a causality map iff it is a timed word of an MMT that starts at most one timer
-on each transition. 
+It is easy to see that a timed word has a causality map iff it is a timed word of an MMT.
 \fi
 In general, a timed word may have multiple causality maps.
 \iflong
@@ -525,8 +530,7 @@ Call a timed word \emph{transparent} if the fractional part of the absolute time
 
 \begin{lemma}
 \label{lemma unique causality map}
-Suppose $\alpha$ is a timed run of an MMT in which at most one timer is set
-per transition, $w =  \timedword(\alpha)$ and $w$ is transparent. 
+Suppose $\alpha$ is a timed run of an MMT, and $w =  \timedword(\alpha)$ is transparent. 
 Then $w$ has a unique causality map.
 \end{lemma}
 \else
@@ -551,7 +555,7 @@ We are now prepared to prove our first main result:
 
 \begin{theorem}
 \label{timedimpliesuntimed}
-Suppose that $\M$ and $\N$ are timer live MMTs in which at most one timer is started on each transition. Then
+Suppose that $\M$ and $\N$ are timer live MMTs. Then
 $\M \approx_{\mathit{timed}} \N$
 implies
 $\M \approx_{\mathit{untimed}} \N$.
@@ -622,5 +626,12 @@ Using again the same construction as in the beginning of this proof, we may esta
 \end{proof}
 \fi
 
-In the remainder of this article, we only consider timer live MMTs in which at most one timer is started on each transition,
+\todofv{Still need to prove this one!}
+\begin{lemma}
+\label{not timed}
+Suppose $\M, \N$ are timer live MMTs with $\M \not\approx_{\mathit{timed}} \N$.
+Then there exists a transparent timed word $w$ of $\M$ that is not a timed word of $\N$.
+\end{lemma}
+
+In the remainder of this article, we only consider timer live MMTs,
 which means we may assume equivalence of the timed and the untimed semantics.
