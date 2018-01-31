@@ -143,7 +143,9 @@ to suffixes $\gamma$ and $f(\gamma)$ with
 $\untimedinputword(\gamma)$ and $\untimedinputword(f(\gamma))$ in $V$.
 Already here, we see that it is convenient to 
 let $V$ be closed under permutations
-on timers in $X$. Let us call such a set {\em adequate}.
+on timers in $X$, so that $\untimedinputword(\gamma) \in V$ iff
+$\untimedinputword(f(\gamma)) \in V$.
+Let us call such a set {\em adequate}.
 %% and includes all input suffixes of length one.
 For an adequate set $V$ of input suffixes, and a lean behavior $\beta$,
 let $\apprsuffixbehs{S}{\beta}{V}$ be the set of suffixes $\gamma$
@@ -197,7 +199,7 @@ is assigned in the $i$th transition of $\beta$.
 
 \todobj{We really need a few examples here}
 
-We can now defined the approximated Nerode equivalence, which is parameterized
+We can now define the approximated Nerode equivalence, which is parameterized
 on an adequate set of lean input suffixes.
 
 \begin{definition}
