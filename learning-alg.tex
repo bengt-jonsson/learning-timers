@@ -158,21 +158,20 @@ $\beta\cdot \simpleutlabel{i}{o} \equiv_{S,V}^f \beta'$ but
 $(\beta ; \simpleutlabel{i}{o}) ; \gamma) \in S \notiff \beta' ; f(\gamma) \in S$ for some $\beta,\beta' \in U$ such that 
 $\beta;\simpleutlabel{i}{o} \equiv_{S,V}^f \beta'$ is used to construct
 the transition triggered by $i$ from $\beta$ in $\hypoof UV$.
-\todobj{The rest still to be polished}
-(To se this, let $\alpha = \utlabel{i_1}{o_1}{\rho_1} \cdots \utlabel{i_n}{o_n}{\rho_n}$, and
-define the sequence $\beta_0, \beta_1, \ldots ,\beta_{n}$ of short prefixes
-in $U$,
-sequence $\gamma_0, \gamma_1, \ldots, \gamma_n$ of lean suffix behaviors,
-and mappings $f_1, \ldots , f_n$ by
-\begin{itemize}
-\item $\beta_0 = \emptyword$,
-  $\gamma_0$ is obtained from $\alpha$ by renaming timer $x_j$ to $y_j$,
+To se this, let $\alpha = \utlabel{i_1}{o_1}{\rho_1} \cdots \utlabel{i_n}{o_n}{\rho_n}$, and for $j = 0 , \ldots, n$, define
+a lean behavior $\beta_j$ and a $\beta_j$-suffix by
+\item $\beta_0 = \emptyword$, and
+%%   , $f_0$ is arbitrary, and 
+  $\gamma_0$ is obtained from $\alpha$ by renaming each timer $x_l$ to $y_l$
 \item
-  Let $\simpleutlabel{\hat{i_j}}{\hat{o_j}}$ be the first transition of
-  $\gamma_{j-1}$, then let $f_j$ be the mapping used to establish
+  Let $\gamma_{j-1}$ be of form
+  $\simpleutlabel{\hat{i_j}}{\hat{o_j}} \gamma_{j-1}'$,
+  let $f_j$ be the mapping used to establish
   $\beta_{j-1};\simpleutlabel{\hat{i_j}}{\hat{o_j}} \equiv_{S,V}^{f_j} \beta_{j}$
   in the construction of $\hypoof UV$, and let
-  $\gamma_j$ be obtained by removing $\simpleutlabel{\hat{i_j}}{\hat{o_j}}$
+  $\gamma_j$ be obtained from $\gamma_{j_1}'$ by
+  (i) applying $f_j$ to timers in $\set{x_1, \ldots , x_{\beta_{j-1}}}$,
+  (ii) applying $f_j$ to timers in $\set{x_1, \ldots , x_{\beta_{j-1}}}$, and
   from the beginning of $\gamma_{j-1}$ and applying $f_j$ to the remainder.
 Intuitively, $\beta_0 \ldots \beta_n$ is the sequence of states
 visited when $\hypoof UV$ processes $\alpha$.
