@@ -1,34 +1,96 @@
-\subsection{Approximating the Nerode Equivalence}
-\label{sec:approx}
+\section{A Nerode Equivalence for MMTs}
+\label{sec:bj-nerode}
 
-In this section, we present an approximation of the Nerode equivalence on
-untimed behaviors
-defined in Definition~\ref{def:nerode}. This
-approximated equivalence can be inferred using a finite set of membership
-queries, and therefore be used as a basis for a learning algorithm,
-analogously to the use of an approximated Nerode equivalence in
-$L^*$~\cite{Ang87}.
-Intuitively, it seems natural to parameterize such an equivalence by
-a finite set $V$ of untimed input words (hereafter often
-called {\em input suffixes}), by letting
-untimed behaviors $\beta$ and $\beta'$ be equivalent
-iff there exists a bijection $f_0 : X \to X'$ between the timers that are'active after $\beta$ and $\beta'$, respectively, such that whenever
-$\untimedinputword(\gamma) \in V$, then
-$\beta\cdot\gamma \in S$ iff 
-$\beta'\cdot f_0(\gamma') \in S$, where $\gamma'$ is obtained by
-renaming timers that are assigned in $\gamma$ in an appropriate way.
-%% such that for any untimed behavior
-%% $\gamma$ with $\untimedinputword(\gamma)\in V$:
-%% if $\beta \cdot \gamma \in S$ then there exists an isomorphism $f$ that extends $f_0$ such that $\beta' \cdot f(\gamma) \in S$, and vice versa.
-%% (b) if $\beta' \cdot \gamma \in S$ then there exists an isomorphism $f$ that extends $f_0^{-1}$ such that $\beta \cdot f(\gamma) \in S$.
-In order to make this approach work, we must let the sets $V$ of suffixes that
-parameterize the equivalence be
-closed under permutation of timers that are active after a prefix $\beta$.
-To illustrate why, consider a simple MMT, which can perform the untimed runs
+In this section, we present a Nerode equivalence on timer languages.
+We thereafter, in Section~\ref{sec:approx} present an approximation of this
+Nerode equivalence, tobe used as a basis for the learning algorithm in
+Section~\ref{sec:learning}.
+
+\todobj{The following paragraph could be omitted}
+Recall that an untimed behavior is \emph{canonical} when, for each $j$,
+the timer that is updated in the $j$-th event (if any) is equal to $x_j$.
+It is {\em lean} if it is canonical and
+includes only timers that expire during the behavior. 
+Since the sequence of timer sets in a lean behavior is
+uniquely determined by the labels on its transition, we can
+denote a lean behavior simply by the sequence
+$\utlabel{i_1}{o_1}{\rho_1} \cdots \utlabel{i_n}{o_n}{\rho_n}$ of its labels.
+If some $\rho_j$ is empty, can omit it. In particular, the last assignment of
+any lean behavior is always empty.
+
+The basis for a Nerode equivalence is to define residual languages.
+Intuitively, we would like to say that $\beta$ and $\beta'$ are equivalent if
+$\beta \cdot \gamma \in S \iff \beta' \cdot \gamma \in S$. However, we must
+be careful with the names of timers that expire and/or are assigned in $\gamma$.
+We will therefore introduce conventions for naming timers in suffixes, in
+analogy with the naming in canonical behaviors.
+
+So, extend the set of timers by the set $Y = \set{y_1,y_2,\ldots}$ of
+{\em suffix timers}, which is disjoint from $X$.
+Let $\toeventsof{Y}$ be the set of timeout events of form
+$\toevent{y_i}$ for $y_i \in Y$, and let
+$\extextinputs$ be $I \cup \toevents \cup \toeventsof{Y}$.
+Define a {\em lean suffix behavior} ({\em lean suffix} for short)
+to be a sequence
+$\utlabel{i_1}{o_1}{\rho_1} \cdots \utlabel{i_m}{o_m}{\rho_m}$ of input/output/assignment triples,
+in which each $i_j$ is in $\extextinputs$, 
+each $\rho_j$ may assign only to the timer $y_j$,
+each timeout event occurs at most once,
+and all timers that are assigned in $Y$ expire in some transition
+after their assignment.
+
+For integer $k \geq 0$, let $\suffmap{k}$ be the injective mapping on
+$Y$ which maps each $y_j$ to $x_{j+k}$.  We apply mappings of form
+$\suffmap{k}$ to lean suffix behaviors in the natural way.
+
+We can now define residual langues. For a timer language $S$ and lean
+behavior $\beta \in S$, let
+$\suffixbehs{S}{\beta}$ be the set of lean suffixes $\gamma$ such that
+there is a canonical behavior $\beta'$ with $\beta \sqsubseteq \beta'$ such that
+$\beta'\cdot\suffmap{|\beta|}(\gamma) \in S$.
+Let $\getmemorable{S}{\beta}$ be the set of timers $x_i$ in
+$x_1 , \ldots x_{|\beta|}$ whose corresponding timeout event
+(of form $\toevent{x_i}$) occurs (as an input) in some suffix $\hat{\gamma}$ in
+$\suffixbehs{S}{\beta}$.
+Let $\getassignment{S}{\beta}$ map each timer $x_i$ in
+$\getmemorable{S}{\beta}$ to the unique positive integer to which it
+is assigned in the corresponding
+lean behavior $\beta'\cdot\suffmap{|\beta|}(\hat{\gamma})$
+in $S$.
+
+We can now defined the Nerode equivalence.
+
+\begin{definition}
+  \label{def:bj-nerode}
+Let $S$ be a timer language with $\beta,\beta'\in S$,
+and let $f : \getmemorable{S}{\beta} \to \getmemorable{S}{\beta'}$
+be a bijection
+from $\getmemorable{S}{\beta}$ to $\getmemorable{S}{\beta'}$.
+Then $\beta$ and $\beta'$ are \emph{equivalent} under $f$, written
+$\beta \equiv_{S}^f \beta'$ iff
+\[
+\gamma \in \suffixbehs{S}{\beta}
+\qquad \mbox{iff} \qquad
+f(\gamma) \in \suffixbehs{S}{\beta'}
+\]
+\end{definition}
+Intuitively, $\beta \equiv_{S}^f \beta'$ means that $\beta$ and $\beta'$
+allow the same suffixes, after renaming
+timers assigned in $\beta$ by $f$.
+We write $\beta \equiv_{S} \beta'$ to denote that
+$\beta \equiv_{S}^f \beta'$ for some
+$f : \getmemorable{S}{\beta} \to \getmemorable{S}{\beta'}$.
+
+\todobj{Insert here an illustration of the bijection between timers}
+\todobj{Ignore the following paragraph}
+As an example, let
 \(
-q_0 \uttrans{i_1}{o_1}{x_1:= 5} q_2
-\)
-or
+\beta_1 =  \simpleuttrans{i_1}{o_1}
+\), where $i_1 \in I$.
+Then
+$\simpleuttrans{\toevent{x_1}}{o_1}$ and
+$\uttrans{\toevent{x_1}}{o_1}{y_1:= 3}\simpleuttrans{\toevent{y_1}}{o_2}$
+
 \(
 q_0 \simpleuttrans{i_1}{o_1} q_0 \uttrans{i_2}{o_2}{x_1:= 5} q_2
 \),
@@ -52,58 +114,47 @@ have the same rules, the set $V$ of suffixes must
 include the effects of the timeout events of form $\toevent{x_i}$ for any
 timer $x_i$ that is assigned in a prefix, otherwise we
 may fail to overapproximate the Nerode equivalence of Definition~\ref{def:nerode}.
+\todobj{Disregard the above example}
 
-Let us introduce notation to make the subsequent development more convenient. 
-Recall that an untimed behavior is \emph{canonical} when, for each $j$,
-the timer that is updated in the $j$-th event (if any) is equal to $x_j$.
-It is {\em lean} if it is canonical and
-includes only timers that expire during the behavior. 
-Since the sequence of timer sets in a lean behavior is
-uniquely determined by the labels on its transition, we can
-denote a lean behavior simply by the sequence
-$\utlabel{i_1}{o_1}{\rho_1} \cdots \utlabel{i_n}{o_n}{\rho_n}$ of its labels.
-If some $\rho_j$ is empty, can omit it. In particular, the last assignment of
-any lean behavior is always empty.
-For behaviors that are to be appended as suffixes, we need to distinguish
-timers that are assigned in the suffix from timers that are assigned in a prefix.
-Therefore, extend the set of timers by the set $Y = \set{y_1,y_2,\ldots}$ of
-{\em suffix timers}, which is disjoint from $X$.
-Let $\toeventsof{Y}$ be the set of timeout events of form
-$\toevent{y_i}$ for $y_i \in Y$, and let
-$\extextinputs$ be $I \cup \toevents \cup \toeventsof{Y}$.
-Define a {\em lean suffix behavior} to be a sequence
-$\utlabel{i_1}{o_1}{\rho_1} \cdots \utlabel{i_m}{o_m}{\rho_m}$ of input/output/assignment triples,
-in which each $i_j$ is in $\extextinputs$, 
-each $\rho_j$ may assign only to the timer $y_j$,
-each timeout event occurs at most once,
-and all assigned timers in $Y$ expire sometime after their assignment.
+\begin{theorem}
+  \label{thm:bj-nerode}
+Let $S$ be a timer language.
+Then there exists an MMT with timer language $S$ iff 
+$\equiv_S$ has finitely many equivalence classes (finite index).
+\end{theorem}
 
-For integer $k \geq 0$, let $\suffmap{k}$ be the injective mapping on
-$Y$ which maps each $y_j$ to $x_{j+k}$.  We apply mappings of form
-$\suffmap{k}$ to lean suffix behaviors in the natural way.
+\todobj{Proof is standard}
 
-Let $\beta$ be a lean behavior. We say that 
-a lean suffix behavior $\gamma$ is a {\em $\beta$-suffix} if
-there is a canonical behavior $\beta'$ with $\beta \sqsubseteq \beta'$ such that
-$\beta'\cdot\suffmap{|\beta|}(\gamma)$ is a lean behavior. In this case we
-use $\beta;\gamma$ to denote $\beta'\cdot\suffmap{|\beta|}(\gamma)$.
-Note that the inputs from $\toevents$ in a $\beta$-suffix may concern only
-the timers $\set{x_1, \ldots, x_{|\beta|}}$.
+\subsection{Approximating the Nerode Equivalence}
+\label{sec:approx}
 
-Let an {\em input suffix} be a sequence of elements in $\extextinputs$.
-A set $V$ of input suffixes is {\em adequate} if it is closed under permutations
-on $X$ and includes all input suffixes of length one.
+For the learning algorithm, we must define an overapproximation
+of the Nerode equivalence on untimed behaviors
+defined in Definition~\ref{def:bj-nerode}. This
+approximated equivalence can be inferred using a finite set of membership
+queries, and therefore be used as a basis for a learning algorithm,
+analogously to the use of an approximated Nerode equivalence in
+$L^*$~\cite{Ang87}.
+
+It seems natural to parameterize such an equivalence by
+a finite set $V$ of untimed input words (hereafter often
+called {\em input suffixes}), restricting Definition~\ref{def:bj-nerode}
+to suffixes $\gamma$ and $f(\gamma)$ with
+$\untimedinputword(\gamma)$ and $\untimedinputword(f(\gamma))$ in $V$.
+Already here, we see that it is convenient to 
+let $V$ be closed under permutations
+on timers in $X$. Let us call such a set {\em adequate}.
+%% and includes all input suffixes of length one.
 For an adequate set $V$ of input suffixes, and a lean behavior $\beta$,
-let $\apprsuffixbehs{S}{\beta}{V}$ be the set of $\beta$-suffixes $\gamma$
+let $\apprsuffixbehs{S}{\beta}{V}$ be the set of suffixes $\gamma$
 with $\untimedinputword(\gamma) \in V$.
 Let $\apprgetmemorable{S}{\beta}{V}$ be the set of timers $x_i$ in
 $x_1 , \ldots x_{|\beta|}$ whose corresponding timeout event
-(of form $\toevent{x_i}$) occurs (as an input) in some untimed behavior in
+(of form $\toevent{x_i}$) occurs (as an input) in some suffix in
 $\apprsuffixbehs{S}{\beta}{V}$.
 Let $\apprgetassignment{S}{\beta}{V}$ map each timer $x_i$ in
 $\apprgetmemorable{S}{\beta}{V}$ to the unique positive integer to which it
 is assigned in the $i$th transition of $\beta$.
-
 
 %% \todobj{Maybe we should point out that two prefixes $\beta$ and $\beta'$
 %%   can be equivalent even if they assign corresponding timers to different
@@ -173,8 +224,7 @@ $\beta \equiv_{S,V}^f \beta'$ for some
 $f : \apprgetmemorable{S}{\beta}{V} \to \apprgetmemorable{S}{\beta'}{V}$.
 
 
-\todobj{What theorems should we prove about this approximating equivalence?
-  We should make the definition of Nerode use the same notation, whenever
-  reasonable, to make this easier}
+\todobj{Let us add theorems. It should be obvious that the approximated one
+  approximates the full one, and that it converges.}
 
 

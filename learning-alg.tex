@@ -167,16 +167,19 @@ a lean behavior $\beta_j$ and a $\beta_j$-suffix by
 \item
   Let $\gamma_{j-1}$ be of form
   $\simpleutlabel{\hat{i_j}}{\hat{o_j}} \gamma_{j-1}'$,
+  let $\beta_j$ be $\lambda(\beta_{j-1},\hat{i_j})$,
   let $f_j$ be the mapping used to establish
   $\beta_{j-1};\simpleutlabel{\hat{i_j}}{\hat{o_j}} \equiv_{S,V}^{f_j} \beta_{j}$
-  in the construction of $\hypoof UV$, and let
-  $\gamma_j$ be obtained from $\gamma_{j_1}'$ by
+  in the construction of $\hypoof UV$,
+  and let $\gamma_j$ be obtained from $\gamma_{j-1}'$ by
   (i) applying $f_j$ to timers in $\set{x_1, \ldots , x_{\beta_{j-1}}}$,
-  (ii) replacing $y_1$ by $f_j(x_{\beta_{j-1}+1})$ applying $f_j$ to timers in $\set{x_1, \ldots , x_{\beta_{j-1}}}$, and
-  from the beginning of $\gamma_{j-1}$ and applying $f_j$ to the remainder.
-Intuitively, $\beta_0 \ldots \beta_n$ is the sequence of states
-visited when $\hypoof UV$ processes $\alpha$.
+  (ii) replacing $y_1$ by $f_j(x_{\beta_{j-1}+1})$, and
+  (ii) replacing each $y_l$ by $y_{l-1}$.
 \end{itemize}
+Intuitively, the resuls is that
+$\beta_0 \ldots \beta_n$ is the sequence of states 
+visited when $\hypoof UV$ processes $\alpha$, and
+$\gamma_j$ is the $\beta_j$-suffix which corresponds to a suffix of $\alpha$.
 %% Let $\gamma_j$ be the suffix
 %% $\utlabel{i_{j+1}}{o_{j+1}}{\rho_{j+1}} \cdots \utlabel{i_n}{o_n}{\rho_n}$
 %% of $\alpha$ of length $n-j$. 
@@ -192,24 +195,45 @@ $\untimedinputword(\gamma) \in \instancesof{\set{v}}$
 should be added to
 $V$. After adding $v$ to $V$, $U$ is no longer closed
 wrt.\ $V$, so the algorithm can resume a next round of
-hypothesis construction, which will eventually generate a new hypothesis,
-etc.
+hypothesis construction, which will eventually generate a new hypothesis, etc.
 
-\todobj{Should we insert a pseudocode description of the algorithm?}
-
-The algorithm enjoys the following properties, which are similar to those
+Let us analyze the number of queries that may be required in the worst case
+to learn an MMT whose canonical form has $n$ states and at most $r$ active
+timers in any state.
+\begin{itemize}
+\item
+  Each round of hypothesis construction may need $n\cdot(|I|+r+1)-\cdot |V|^r$
+  membership queries. The factor $|V|^r$ arises from the possible
+  need to consider all   permutations of prefix-timers in each suffix.
+\item
+  The processing of each counterexample can be done using $\log(m)$ queries,
+  using binary search, where $m$ is the length of the counterexample.
+\item
+  Each equivalence query will result in refuting an equivalence of form
+  $\beta\cdot \simpleutlabel{i}{o} \equiv_{S,V}^f \beta'$, and
+  adding an additional suffix to $V$. There are at most
+  $r !$ possible permutations $f$ for each $\beta\cdot \simpleutlabel{i}{o}$,
+  implying that there can be at most $n \cdot r!$ equivalence queries.
+\end{itemize}
+In summary,
+the algorithm enjoys the following properties, which are analogous
+to properties
 enjoyed by active automata learning algorithms for regular languages,
-e.g.,~\cite{Ang87}.
+e.g.,~\cite{Ang87}. The additional complexity caused by timers is analogous
+to the additional complexity caused by registers in learning of register
+automata~\cite{HowarSJC12,CasselHJS16}.
 
 \begin{theorem}
   \label{thm:alg:termination}
-Given an MMT $\M$ whose normal form has $n$ states, 
-algorithm XXX terminates and produces an equivalence MMT in normal form
-using at most $n$ equivalence queries, and
-$Y$ untimer membership queries.
+  Given an MMT $\M$ whose normal form has $n$ states, the active learning
+  procedure of this section terminates and produces an equivalen MMT in
+  canonical form, using at most $n\cdot r!$ equivalence queries, and
+  \todobj{Should we put the exact bound here?} membership queries.
 \end{theorem}
-   
-\begin{proof}
+
+
+\todobj{This is to be fixed, or remove the rest of this}
+
 Starting from some initial approximations (e.g., the singleton
 set consisting of the empty word), the sets $U$ and $V$ are
 successively extended, until $U$ contains one element of each equivalence
@@ -220,9 +244,8 @@ During the construction, $U$ will never contain two elements that are
 equivalent wrp. $\M$.
 Since each round of hypothesis construction and validation adds at least one
 word to $U$, there can be at most $n$ equivalence queries.
-\end{proof}
 
-\todobj{This is to be fixed}
+
 Since each equivalence query adds only one
 word to $V$, this means that $|V| \leq n$ when the algorithm finishes,
 implying that in total, at most $n^2|I|$ membership queries
