@@ -4,31 +4,61 @@
 \section{Conclusions and Future Work}
 \label{conclusions}
 
-Our work consitutes a major step towards a practical approach for active learning of timed systems.
-Such an approach would greatly enhance the applicability of active learning for reverse engineering of models of
-software and hardware systems. Nevertheless, there are still major challenges that need to be addressed.
-%
-A first challenge is to implement equivalence queries for MMTs.
+We have presented a new automaton-based model for timed systems, MMTs,
+which aims to
+be sufficiently simple to allow tractable learning algorithms, and sufficiently
+expressive to model common network protocols. For the MMT model we have
+developed a Nerode congruence, allowing to define canonical forms, and used it
+as the basis for an active learning algorithm, which generalizes $L^*$.
+A key technical result is to show the equivalence between the timed semantics,
+which is suitable to represent practical learning scenarios, and the
+untimed semantics, which is suitable for formulating automata learning
+algorithms. This equivalence is embodied by an adaptor, which transforms
+queries in one model to queries in the other.
+
+The query complexity of our learning algorithm is polynomial in the number of
+states of the learned MMT, but doubly exponential in the number of simultaneously
+active timers. Since practical network protocols have at most a couple of
+simultaneously active timers, this leads us to believe that our work will
+be a suitable theoretical basis for practical learning algorithms for such
+protocols, and similar classes of timed systems.
+
+%% Our work consitutes a major step towards a practical approach for active learning of timed systems.
+%% Such an approach would greatly enhance the applicability of active learning for reverse engineering of models of
+%% software and hardware systems.
+Future work includes to implement equivalence queries for MMTs.
 In the untimed case, equivalence queries for Mealy machines are approximated using conformance testing algorithms,
 for which a rich theory exists \cite{LeeY96}.
-We hope that our equivalence result for the timed and untimed semantics will help to lift existing conformance
-testing algorithms to the setting of MMTs. For MMTs with a single timer this is easy, but we do not yet have good
-conformance testing algorithms for MMTs with multiple timers.
-%
-A second challenge is to deal with the timing uncertainties that occur in real applications due to nondeterminism of
-implementations and imprecise measurements. In the idealized setting of this paper we are able to
-identify the triggering event for each timeout by providing inputs at different fractional times. In a realistic
+Our equivalence result between timed and untimed semantics may help to
+lift such algorithms to the setting of MMTs.
+A challenge is also to deal with the timing uncertainties that occur in real applications due to nondeterminism of
+implementations and imprecise measurements. In a realistic
 setting we may need more than one experiment to figure out which event causes a timeout. We may observe, for instance,
 that slight changes in the timing of certain inputs lead to corresponding changes in the timing of certain timeouts.
-%
-A third important challenge is to implement our algorithm and to apply it to practical case studies. In particular,
-it is interesting to see how we can implement lookahead queries. For MMTs with a single timer this is trivial 
-if we assume an upper bound $t$ on the value of timers (just  wait for $t+1$ time units).
-But we still do not know whether we can always come up with efficient implementations of the lookahead oracle for applications with multiple timers.
 
-\iflong
-Just like the theory of timed automata \cite{AD94} paved the way to extend untimed model checking tools to a timed
-setting, we hope that our work on MMTs will make it possible to lift untimed model learning tools to a timed setting.
-MMTs can be viewed as a restricted subclass of timed automata in which clocks run backward instead of forward.
-Many theoretical questions about MMTs, such as the complexity of equivalence checking and model checking, are still open.
-\fi
+%% Nevertheless, there are still major challenges that need to be addressed.
+%% %
+%% A first challenge is to implement equivalence queries for MMTs.
+%% In the untimed case, equivalence queries for Mealy machines are approximated using conformance testing algorithms,
+%% for which a rich theory exists \cite{LeeY96}.
+%% We hope that our equivalence result for the timed and untimed semantics will help to lift existing conformance
+%% testing algorithms to the setting of MMTs. For MMTs with a single timer this is easy, but we do not yet have good
+%% conformance testing algorithms for MMTs with multiple timers.
+%% %
+%% A second challenge is to deal with the timing uncertainties that occur in real applications due to nondeterminism of
+%% implementations and imprecise measurements. In the idealized setting of this paper we are able to
+%% identify the triggering event for each timeout by providing inputs at different fractional times. In a realistic
+%% setting we may need more than one experiment to figure out which event causes a timeout. We may observe, for instance,
+%% that slight changes in the timing of certain inputs lead to corresponding changes in the timing of certain timeouts.
+%
+%% A third important challenge is to implement our algorithm and to apply it to practical case studies. In particular,
+%% it is interesting to see how we can implement lookahead queries. For MMTs with a single timer this is trivial 
+%% if we assume an upper bound $t$ on the value of timers (just  wait for $t+1$ time units).
+%% But we still do not know whether we can always come up with efficient implementations of the lookahead oracle for applications with multiple timers.
+
+%% \iflong
+%% Just like the theory of timed automata \cite{AD94} paved the way to extend untimed model checking tools to a timed
+%% setting, we hope that our work on MMTs will make it possible to lift untimed model learning tools to a timed setting.
+%% MMTs can be viewed as a restricted subclass of timed automata in which clocks run backward instead of forward.
+%% Many theoretical questions about MMTs, such as the complexity of equivalence checking and model checking, are still open.
+%% \fi
