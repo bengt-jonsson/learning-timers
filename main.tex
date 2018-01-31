@@ -75,7 +75,18 @@
 \affiliation{Department of Software Science, ICIS, Radboud University, Nijmegen}
 
 \begin{abstract}
-We introduce a new model of Mealy machines with timers (MMTs) that is able to describe the timing behavior of a broad class of practical systems. We present two semantics for MMTs which, surprisingly, turn out to be equivalent: a timed trace semantics that records the times at which inputs and outputs occur, and an untimed trace semantics that records when and how timers are set and when they expire. We establish a Myhill-Nerode theorem for the untimed semantics and use this result to develop an active learning algorithm for MMTs following Angluin's approach of a minimally adequate teacher. 
+  We introduce a new model of Mealy machines with timers (MMTs), which is able to describe the timing behavior of a broad class of practical systems, and sufficiently restricted for active learning algorithms. We present a natural
+  extension of Angluin's active learning algorithm, which employs sequences of
+  inputs with precise timing. Our algorithm is based on three key results:
+  (i) an untimed semantics for MMTs, which is equivalent to the natural timed
+  one
+  (ii) a Nerode congruence based on the untimed semantics, and
+  (iii) an active automata learning algorithm which is based on approximating
+  this Nerode congruence.
+This algorithm allows to learn MMTs using a number
+of membership and equivalence queries, which is polynomial in the number of
+states of the resulting MMT, and doubly exponential in the maximal number of
+simultaneously active timers.
 \end{abstract}
 
 \maketitle
