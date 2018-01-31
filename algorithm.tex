@@ -196,60 +196,64 @@ The adapter maintains an integer variable $d_{\max}$ to store an estimate of the
 adapter sets $d_{\max}$ to an arbitrary value, which may be increased based on the (transparent) timed words that it receives from
 the timed teacher.
 
-Suppose the untimed teacher receives a membership query, consisting of an untimed input word
-$u = i_1 \cdots i_k$.
-By induction on the length of $u$, 
-we construct a response for $u$, that is, a feasible partial untimed behavior $\beta_k$ of $\M$ (in canonical form)
-with $\untimedinputword(\beta_k)$ a maximal prefix of $u$.
-If $k=0$, then response $\beta_0$ is the trivial partial untimed behavior $\emptyset$.
-For the induction step, suppose that $k>0$.
-Let $\beta_{k-1}$ be the response for $i_1 \cdots i_{k-1}$.
-If $\beta_{k-1}$ contains less than $k-1$ inputs, then response $\beta_k$ is equal to $\beta_{k-1}$.
-Now assume that $\beta_{k-1}$ contains $k-1$ inputs. We consider two cases:
+Suppose the untimed teacher receives a membership query, consisting of an untimed input word $u = i_1 \cdots i_k$.
+We present an algorithm that constructs a response for $u$, that is, a feasible partial untimed behavior 
+$\beta$ of $\M$ in canonical form with $\untimedinputword(\beta)$ a maximal prefix of $u$.
+The algorithm maintains a variable $B$ that stores the fragment of $\beta$ computed thus far, and a counter $j$ that ranges from $0$ to $k$.
+Initially $B$ is set to the trivial untimed behavior $\emptyset$ and $j$ to $1$.
+The algorithm then enters its main loop in which the following case statement is performed while $j \leq k$.  
+We will maintain as a loop invariant that $B$ is a feasible untimed behavior with $j-1$ inputs.
 \begin{enumerate}
 \item
-$i_k \in I$. Set $\beta := \beta_{k-1} ~ i_k ~ \omega ~ \emptyset$, where $\omega \in O$ is an arbitrary output that acts as placeholder.
-Since $\beta_{k-1}$ is feasible (by induction hypothesis), it follows by Lemma~\ref{feasible plus input is feasible} that
-$\beta$ is also feasible.
-Thus the constraints in $\Constraints{\beta}$ are satisfiable and we may compute a solution $t_1 ,\ldots, t_k$.
-Let $o_1 ,\ldots, o_{k-1}$ be the outputs occurring in $\beta_{k-1}$. Then
-$w = t_1 ~ i_1 ~ o_1 ~ t_2 - t_1 ~ i_2 ~ o_2 ~ t_3- t_2 \cdots t_k - t_{k-1} ~ i_k ~ \omega$ is a transparent timed word.
-Let $u' = \timedinputword(w)$ be the transparent timed input word associated to $w$.
-We forward membership query $u'$ to the timed teacher.
-Let $w'$ be the response from the timed teacher.
-If $w'$ and $w$ are equal, except possibly for the last output symbol, which is $o_k$ in $w'$,
-the response $\beta_k$ is equal to $\beta_{k-1} ~ i_k ~ o_k ~ \emptyset$.
+Case $i_j \in I$. Let $N := B ~ i_j/\omega/\rho_0 ~ \emptyset$, where $\omega \in O$ is an arbitrary output that acts as placeholder
+and $\rho_0$ is the empty update.
+Since $B$ is feasible (by the loop invariant), it follows by Lemma~\ref{feasible plus input is feasible} that
+extension $N$ is also feasible.
+Thus the constraints in $\Constraints{N}$ are satisfiable and we may compute a solution $t_1 ,\ldots, t_j$.
+Let $t_0 = 0$, $d_j = t_j - t_{j-1}$, for $j = 1,\ldots, j$, and let
+$o_1 ,\ldots, o_{j-1}$ be the output events occurring in $B$. 
+Then $w = d_1 ~ i_1 ~ o_1 ~ d_2 ~ i_2 ~ o_2 \cdots d_j ~ i_j ~ \omega$ is a transparent timed word.
+Let $u' = \timedinputword(w)$ be the corresponding transparent timed input word.
+Forward membership query $u'$ to the timed teacher, and
+let $w'$ be the response.
+If $w'$ and $w$ are equal, except possibly for the last output symbol, which is $o_j$ in $w'$,
+then we set  $B := B ~ i_j/o_j/\rho_0 ~ \emptyset$, increment counter $j$, and finish the body of the loop.
 Otherwise, $w'$ contains some timeout event that was not supposed to happen according to untimed input word $u$.
-Since $u'$ is transparent, $w'$ is transparent as well. Thus we may extract from $w'$ which event $l$ started the timer, to which value
-$d$ the timer was set, and the index $j$ of the timeout event.
-We set $\beta_{k-1} := \Addtimer{l}{d}{j-1}{\beta_{k-1}}$ and perform step (1) again. 
-Note that the number of iterations is linear in the size of $u$.
+Since $u'$ is transparent, $w'$ is transparent as well. 
+Thus we may extract from $w'$ which event $l$ started the timer, to which value
+$e$ the timer was set, and the index $m$ of the timeout event.
+We set $B := \Addtimer{l}{e}{m-1}{B}$ and finish the body of the loop. 
 \item
-$i_k = \toevent{x_l}$, for $l < k$.
-If $\beta_{k-1}$ assigns value $e$ to timer $x_l$ then
-we set $\beta := \Addtimer{l}{e}{k-1}{\beta_{k-1}} ~ \toevent{x_l} ~ \omega ~ \emptyset$ and check whether $\Constraints{\beta}$ is
-satisfiable. If not then response $\beta_k$ is equal to $\beta_{k-1}$.
-If $\beta_{k-1}$ does not assign a value to $x_l$ then define, for $1 \leq e \leq d_{\max}$,
-$\beta^e = \Addtimer{l}{e}{k-1}{\beta_{k-1}} ~ \toevent{x_l} ~ \omega ~ \emptyset$.
-Search for an $e$ for which $\Constraints{\beta^e}$ is satisfiable and set $\beta := \beta^e$.
-If there is no such $e$ then response $\beta_k$ is equal to $\beta_{k-1}$.
-Otherwise, we compute a solution $t_1 ,\ldots, t_k$ for $\Constraints{\beta}$.
-Let $o_1 ,\ldots, o_{k-1}$ be the outputs occurring in $\beta_{k-1}$. Then
-$w = t_1 ~ i_1 ~ o_1 ~ t_2 - t_1 ~ i_2 ~ o_2 ~ t_3- t_2 \cdots t_k - t_{k-1} ~ \toevent{x_l} ~ \omega$ is a transparent timed word.
-Let $u' = \timedinputword(w)$ be the transparent timed input word associated to $w$.
-We forward membership query $u'$ to the timed teacher.
-Let $w'$ be the response from the timed teacher. Since $u'$ is transparent, $w'$ is transparent as well.
-If $w'$ and $w$ are equal, except possibly for the last output symbol, which is $o_k$ in $w'$,
-the response $\beta_k$ is equal to $\beta$ with the last output set to $o_k$.
+Case $i_j = \toevent{x_l}$, for $l < j$.
+If timer $x_l$ is started in $B$ and initialized with the value $e$ then
+let $N := \Addtimer{l}{e}{j-1}{B} ~ \toevent{x_l}/\omega/\rho_0 ~ \emptyset$.
+Check whether $\Constraints{N}$ is satisfiable. If so proceed to (*), otherwise exit the while loop.
+If timer $x_l$ is not started in $B$, let
+$N^e = \Addtimer{l}{e}{j-1}{B} ~ \toevent{x_l}/\omega/\rho_0 ~ \emptyset$, for $e = 1 ,\ldots, d_{\max}$.
+If there exists an $e$ for which $\Constraints{N^e}$ is satisfiable, set $N := N^e$ and proceed to (*),
+otherwise exit the while loop.
+
+\vspace{0.3em}
+(*) Compute a solution $t_1 ,\ldots, t_j$ for $\Constraints{N}$.
+Let $t_0 = 0$, $d_j = t_j - t_{j-1}$, for $j = 1,\ldots, j$, and let
+$o_1 ,\ldots, o_{j-1}$ be the outputs occurring in $B$. 
+Then $w = d_1 ~ i_1 ~ o_1 ~ d_2 ~ i_2 ~ o_2 \cdots d_j ~ \toevent{x_l} ~ \omega$ is a transparent timed word.
+Let $u' = \timedinputword(w)$ be the corresponding transparent timed input word.
+Forward membership query $u'$ to the timed teacher, and let $w'$ be the response.
+Since $u'$ is transparent, $w'$ is transparent as well.
+If $w'$ and $w$ are equal, except possibly for the last output symbol, which is $o_j$ in $w'$,
+set $B$ equal to $N$ with the last output changed to $o_j$, increment counter $j$, and finish the body of the while loop.
 It may also occur that, even though the last event of $w'$ is a timeout triggered by event $i_l$, the value $e'$ to which this timer is
-set is different from $e$. In this case response $\beta_k$ is set to
-$\beta_k = \Addtimer{l}{e'}{k-1}{\beta_{k-1}} ~ \toevent{x_l} ~ o_k ~ \emptyset$, where $o_k$ is the last output in $w'$.
+set is different from $e$. In this case  set
+$B := \Addtimer{l}{e'}{j-1}{B} ~ \toevent{x_l}/o_j/\rho_0 ~ \emptyset$, where $o_j$ is the last output in $w'$,
+increment counter $j$ and finish the body of the while loop.
 Finally, it may occur that $w'$ contains some timeout event that was not supposed to happen according to untimed input word $u$.
 In this case, we extract from $w'$ which event $l$ started the timer, to which value
-$d$ the timer was set, and the index $j$ of the timeout event.
-We set $\beta_{k-1} := \Addtimer{l}{d}{j-1}{\beta_{k-1}}$ and perform step (2) again. 
-Again the number of iterations is linear in the size of $u$.
+$d$ the timer was set, and the index $m$ of the timeout event.
+Set $B := \Addtimer{l}{d}{m-1}{B}$ and finish the body of the while loop. 
 \end{enumerate}
+After termination of the while loop, the algorithm returns the feasible untimed behavior $B$.
+Note that the number of iterations of the main loop is linear in the size of $u$.
 \todofv{Add example!}
 %\paragraph{Example}
 %Consider a scenario where the timed teacher knows the MMT of Figure~\ref{fig:nondeterminism} (bottom).
@@ -281,7 +285,7 @@ $\CH \not\approx_{\mathit{untimed}} \M$, and thus the untimed teacher should als
 Since $w$ is a transparent timed word of $\M$, it 
 follows by Lemma~\ref{lemma unique causality map} that $w$ 
 has a unique causality map $c$.
-This allows us to transform $w$ into a feasible untimed behavior $\beta$ (in canonical form) that is a partial untimed
+This allows us to transform $w$ into a feasible untimed behavior $\beta$ in canonical form that is a partial untimed
 behavior of $\M$ but not of $\CH$: the causality map tells us exactly which timers are set and timeout. 
 Thus the untimed teacher may return $\beta$ as counterexample.
 If our estimate $d_{\max}$ of the maximal timeout value of $\M$ is too low, then it may occur that in $w$ the timeout value of some
