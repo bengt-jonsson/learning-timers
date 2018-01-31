@@ -45,11 +45,13 @@ Then $\beta \cdot \gamma$ is feasible iff $\beta' \cdot \gamma$ is feasible.
 \label{lemma finitely many zones}
 $\{ \Zone{\beta} \mid \beta \mbox{ feasible untimed behavior of } \M \}$ is finite.
 \end{lemma}
+\iflong
 \begin{proof}
 All the sets $\Zone{\beta}$ can be represented using DBMs. An MMT only has a finite number of timers that can only be set to a finite number of integer values. Since in an MMT the values of timers can only decrease, only finitely many numbers may
 appear in the DBM's that represent the sets $\Zone{\beta}$. Thus all the sets $\Zone{\beta}$ can be represented by a finite
 collection of DBMs.
 \end{proof}
+\fi
 
 Let $\beta$ be a feasible untimed behavior and let $x \in X$ be a timer. Then we say that $x$ is \emph{expirable} after $\beta$
 if there exists a valuation in $\Zone{\beta}$ in which $x$ is minimal.

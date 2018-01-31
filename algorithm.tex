@@ -55,6 +55,7 @@ Let $\beta$ be an untimed behavior in canonical form.
 We can associate a unique input word $\untimedinputword(\beta)$ to $\beta$ by removing all the output events,
 updates, and timer sets from $\beta$.
 \todofv{Add example}
+\iflong
 \begin{figure}
 \begin{center}
  \begin{tikzpicture}[>=stealth]
@@ -72,8 +73,13 @@ updates, and timer sets from $\beta$.
 \caption{Untimed MAT framework}
 \label{fig:untimed MAT}
 \end{figure}
+\fi
 
-Our untimed learning setup, illustrated in Figure~\ref{fig:untimed MAT}, is similar to the timed setup:
+Our untimed learning setup
+\iflong
+, illustrated in Figure~\ref{fig:untimed MAT}, 
+\fi
+is similar to the timed setup:
 again the teacher knows an MMT $\M$ and the learner initially only knows the set of inputs $I$ of $\M$.
 Again, the learer may pose membership and equivalence queries.
 But now a \emph{membership query} consists of an untimed input word $u$ over $I$.
@@ -157,6 +163,7 @@ $\tvals_k(x_j) = \rho_j(x_j) - (t_k - t_j)$
 and
 $\tvals_k(x_i) = \rho_i(x_i) - (t_k - t_i)$).
 
+\iflong
 We can derive the following lemmas.
 
 \begin{lemma}
@@ -173,6 +180,7 @@ $\{ \Zone{\beta} \mid \beta \mbox{ feasible untimed behavior of } \M \}$ is fini
 \begin{proof}
   An MMT only has a finite number of timers that can only be set to a finite number of integer values. Since in an MMT the values of timers can only decrease, their values are bounded, so that only finitely many integers may appear in the conjuncts of $\Zone{\beta}$. This the set of possible $\Zone{\beta}$ is finite.
 \end{proof}
+\fi
 
 Let $\beta$ be a feasible untimed behavior and let $x \in X$ be a timer. Then we say that $x$ is \emph{expirable} after $\beta$
 if there exists a valuation in $\Zone{\beta}$ in which $x$ is minimal.
@@ -190,7 +198,7 @@ Then $x$ is expirable after $\beta$ iff $\beta \uttrans{\toevent{x}}{o}{\rho} Y'
 %This allows us to compute whether an untimed behavior $\beta$ is feasible ($\zone{\beta}$ is empty), and
 %whether a timer $x$ may expire after $\beta$ ($\zone{\beta}$ contains a valuation in which $x$ is minimal).
 
-\subsection{Building an untimed teacher from a timed teacher}
+\subsection{Building an untimed from a timed teacher}
 We will now show how to construct an adapter that transforms a teacher for the timed setting into a teacher for the untimed setting.
 The adapter maintains an integer variable $d_{\max}$ to store an estimate of the maximal timeout value that occurs in $\M$. Initially, the
 adapter sets $d_{\max}$ to an arbitrary value, which may be increased based on the (transparent) timed words that it receives from
@@ -283,7 +291,11 @@ then $w$ is a transparent timed word of $\M$ but not of $\CH$.
 In this case, by Theorem~\ref{untimedimpliestimed}, we may conclude that
 $\CH \not\approx_{\mathit{untimed}} \M$, and thus the untimed teacher should also return a result \emph{no}.
 Since $w$ is a transparent timed word of $\M$, it 
-follows by Lemma~\ref{lemma unique causality map} that $w$ 
+follows 
+\iflong
+by Lemma~\ref{lemma unique causality map} 
+\fi
+that $w$ 
 has a unique causality map $c$.
 This allows us to transform $w$ into a feasible untimed behavior $\beta$ in canonical form that is a partial untimed
 behavior of $\M$ but not of $\CH$: the causality map tells us exactly which timers are set and timeout. 

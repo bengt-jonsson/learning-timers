@@ -54,12 +54,17 @@ We also associate a timed word to timed behavior $\sigma$ by forgetting valuatio
 \timedword(\sigma) & = & d_ 1 ~ i'_1 ~ o_1 ~ i'_2 ~ o_2 \cdots d_k ~ i'_k ~ o_k, 
 \end{eqnarray*} 
 where for all  $j$,
+\iflong
 \begin{eqnarray*}
 i'_j  & = &  \left\{ \begin{array}{ll}
 i_j & \mbox{if } i_j \in I,\\
 \mathit{to} & \mbox{if } i_j \in \toevents.
 \end{array} \right.
 \end{eqnarray*}
+\else
+$i'_j   =   i_j$ if $i_j \in I$, and
+$i'_j   = \mathit{to}$ if $i_j \in \toevents$.
+\fi
 Let $\alpha$ be a timed run of an MMT $\M$: 
 \begin{eqnarray*}
 \alpha & = & (q_0, \tvals_0) \xrightarrow{d_1} (q_0, \tvals'_0) \xrightarrow{i_1/o_1} (q_1, \tvals_1)  \cdots
@@ -74,9 +79,7 @@ Then $\alpha$ can be projected both to an untimed run of $\M$
 \beh(\alpha) & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1/\rho_1} \tvals_1  \cdots
 \xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k/\rho_k} \tvals_{k}.
 \end{eqnarray*}
-\iflong
 We say that $\sigma$ is an timed behavior of $\M$ if $\M$ has an timed run $\alpha$ with $\beh(\alpha) = \sigma$.
-\fi
 Note that $\beh(\untime(\alpha))=\untime(\beh(\alpha))$ and $\timedword(\alpha) = \timedword(\beh(\alpha))$.
 \ifshort
 Conversely,
@@ -133,8 +136,8 @@ In this case, since $\beta'$ is fully determined by $\beta$ and $f$, we write $\
 We say that $\beta$ and $\beta'$ are \emph{isomorphic} if there exists an isomorphism $f$ from $\beta$ to $\beta'$.
 Two sets of untimed behaviors $A$ and $B$ are \emph{isomorphic} if for each untimed behavior of $A$ there is an isomorphic untimed behavior in $B$,
 and vice versa.
-
 Isomorphisms can be lifted to timed behaviors in the obvious way. 
+\iflong
 Let $\sigma$ and $\sigma'$ be two timed behaviors with the same length and outputs:
 \begin{eqnarray*}
 \sigma & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1/\rho_1} \tvals_1  \cdots
@@ -150,12 +153,15 @@ Two timed behaviors $\sigma$ and $\sigma'$ are \emph{isomorphic} if there exists
 Since an isomorphism only renames timers, which do not appear in timed words, 
 isomorphic timed behaviors induce identical timed words: $\sigma' = f(\sigma) \Rightarrow \timedword(\sigma') = \timedword(\sigma)$.
 
-The following lemmas follow directly from the definitions:
+\fi
+\iflong
+The following lemmas then follow:
 \begin{lemma}
 \label{lemma isomorphism}
 Let $\sigma$ be a timed behavior and let $f$ be an isomorphism for $\sigma$.
 Then $\untime(f(\sigma)) = f(\untime(\sigma))$.
 \end{lemma}
+\fi
 \begin{lemma}
 If untimed behaviors $\beta$ and $\beta'$ are isomorphic, then $\beta$ is feasible iff $\beta'$ is feasible.
 \end{lemma}
@@ -176,7 +182,11 @@ $\M \approx_{\mathit{untimed}} \N$
 implies
 $\M \approx_{\mathit{timed}} \N$.
 \end{theorem}
-\iflong
+\ifshort
+\begin{proof}
+See appendix.
+\end{proof}
+\else
 \begin{proof}
 Assume $\M \approx_{\mathit{untimed}} \N$ and $w$ is a timed word of $\M$.
 Since $\approx_{\mathit{timed}}$ is symmetric, it suffices to prove that $w$ is a timed word of $\N$.
@@ -293,12 +303,12 @@ omitting the update $y :=60$ on the transition from $q_1$ to $q_2$.
 \label{fig:ghosttimers}
 \end{center}
 \end{figure}
-\fi
 %Let $\M$ be an MMT. Then we say that $\M$ is \emph{timer live} if, for each time run $\alpha$ and for each timer $x$
 %\marginpar{How can we decide timer liveness?}
 %of the final configuration of $\alpha$, there exists an extension $\alpha'$ of $\alpha$ in which timer $x$ 
 %remains unaffected until it expires.
 %
+\fi
 We say that an MMT $\M$ is \emph{timer live} if, for each feasible untimed behavior $\beta$ and for each timer $y$ that is running after $\beta$, there exists an untimed behavior $\beta_y$ consisting of transitions that leave $y$ unaffected, except for the last one in which $y$ expires, and such that $\beta \cdot \beta_y$ is feasible.
 \iflong
 Clearly, the MMT of Figure~\ref{fig:ghosttimers} is not timer live, as there is no way to extend the feasible untimed
@@ -311,7 +321,6 @@ We will show that the timed semantics and the untimed semantics coincide for tim
 \subsection{Wiggling}
 Often it is possible to slightly change the timing of events in a timed behavior, 
 while preserving the associated untimed behavior.
-\iflong
 Consider, for instance, a timed behavior 
 \[
 \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1/\rho_1} \tvals_1 \cdots
@@ -330,7 +339,6 @@ is a timed behavior with the same underlying untimed behavior.
 
 We may also be able to wiggle the timing of timeouts and transitions that (re)start a timer,
 but here we have to be more careful.
-\fi
 If we shift the timing of an input event by a small amount then we must also shift the timing of a subsequent timeout
 that is triggered by this input.
 In addition, if the timeout starts another timer then we also need to shift the timeout event that this timer induces, etc.
@@ -366,11 +374,16 @@ $e_j = d_j  \mbox{ if } j-1 \in T \Leftrightarrow j \in T$, and
 $e_j = d_j - \epsilon  \mbox{ if } j-1 \in T \wedge j \not\in T$.
 \end{lemma}
 In the presence of races, Lemma~\ref{wiggle lemma} does not hold. 
-Consider the following timed behavior with blocks $\{ 1, 3 \}$, $\{ 2 \}$,
-\iflong 
-and $\{ 4, 5 \}$, visualized in Figure~\ref{fig:races}:
+Consider the 
+\iflong
+following 
 \else
-and $\{ 4, 5 \}$:
+timed behavior with blocks $\{ 1, 3 \}$, $\{ 2 \}$,
+and 
+\iflong
+$\{ 4, 5 \}$, visualized in Figure~\ref{fig:races}:
+\else
+$\{ 4, 5 \}$:
 \fi
 \[
 \emptyset \xrightarrow{7} \emptyset \xrightarrow{i1/o1/x \mapsto 2} (x=2) \xrightarrow{1} (x=1)
@@ -397,11 +410,14 @@ in which one has to slide blocking vehicles out of the way to find a path for on
 The next lemma asserts that we can always solve the puzzle for MMTs: for any timed behavior that contains races,
 an equivalent timed behavior exists without races.
 We may for instance slightly modify the timed behavior
+\iflong
 of Figure~\ref{fig:races} 
+\fi
 by scheduling block $\{ 2  \}$
 a bit later and block $\{ 4, 5 \}$ a bit earlier.
 Then all races have been eliminated and we can wiggle block $\{ 1, 3 \}$.
 
+\iflong
 \begin{figure}[h]
 \vspace{-1em}
 \begin{center}
@@ -410,13 +426,18 @@ Then all races have been eliminated and we can wiggle block $\{ 1, 3 \}$.
 \caption{A timed behavior with two races}
 \label{fig:races}
 \end{figure}
+\fi
 
 \begin{lemma}
 \label{race elimination}
-Let $\sigma$ be any timed behavior.
-Then there exists a timed behavior $\sigma'$ without races such that $\untime(\sigma)=\untime(\sigma')$.
+Let $\sigma$ be a timed behavior.
+Then there is a timed behavior $\sigma'$ without races s.t.\  $\untime(\sigma)=\untime(\sigma')$.
 \end{lemma}
-\iflong
+\ifshort
+\begin{proof}
+See appendix.
+\end{proof}
+\else
 \begin{proof}
 (Sketch) Let
 \begin{eqnarray*}
@@ -456,7 +477,11 @@ We call a timed behavior \emph{transparent} if the fractional part of the absolu
 For each feasible untimed behavior $\beta$ there exists
 a transparent timed behavior $\sigma$ such that $\beta = \untime(\sigma)$.
 \end{lemma}
-\iflong
+\ifshort
+\begin{proof}
+See appendix.
+\end{proof}
+\else
 \begin{proof}
 Let $\beta$ be a feasible untimed behavior.
 Then there exists a timed behavior $\sigma$ such that $\beta = \untime(\sigma)$.
@@ -473,12 +498,18 @@ Suppose $\beta$ is a feasible untimed behavior that ends with timer set $Y$, and
 $Y \xrightarrow{i/o/\rho} Y'$ is an untimed behavior with $i \in I$.
 Then $\beta \xrightarrow{i/o/\rho} Y'$ is a feasible untimed behavior.
 \end{lemma}
+\ifshort
+\begin{proof}
+See appendix.
+\end{proof}
+\else
 \begin{proof}
 By Lemma~\ref{lemma: transparent timed behavior}, there exists a transparent timed behavior
 $\sigma$ such that $\beta = \untime(\sigma)$. Since $\sigma$ is transparent, the last valuation of $\sigma$ assigns a positive value to
 all timers in $Y$. Thus we may extend $\sigma$ by a small delay transition, followed by a discrete transition corresponding to
 $Y \xrightarrow{i/o/\rho} Y'$. This implies that untimed behavior $\beta \xrightarrow{i/o/\rho} Y'$ is feasible.
 \end{proof}
+\fi
 
 \iflong
 \paragraph{Causality maps.} 
@@ -535,10 +566,10 @@ Then $w$ has a unique causality map.
 \else
 However, a transparent timed word has a unique causality map.
 \fi
-
 Each timed word of MMT $\M$ with a unique causality map has a unique timed run that corresponds to it.
 The causality map tells us which timers time out during the trace, so we have complete information
 about the sequence of events that occurs. 
+
 \iflong
 A timed run of $\M$ is fully determined
 by the sequence of time delays and events that occurs.
@@ -548,9 +579,9 @@ by the sequence of time delays and events that occurs.
 Suppose $w$ is a timed word of MMT $\M$ with a unique causality map.
 Then there is a unique timed run $\alpha$ of $\M$ such that $w = \timedword(\alpha)$.
 \end{lemma}
-
 \fi
-We are now prepared to prove our first main result:
+
+We are now prepared to state our first main result:
 
 \begin{theorem}
 \label{timedimpliesuntimed}
@@ -559,7 +590,11 @@ $\M \approx_{\mathit{timed}} \N$
 implies
 $\M \approx_{\mathit{untimed}} \N$.
 \end{theorem}
-\iflong
+\ifshort
+\begin{proof}
+See appendix.
+\end{proof}
+\else
 \begin{proof}
 Suppose that $\M \approx_{\mathit{timed}} \N$.
 Let $\beta$ be a feasible untimed behavior of $\M$.

@@ -1,12 +1,329 @@
-\section*{Appendix}
+\section{Appendix}
 %\patodo{Make the notation for denotation uniform: Add the RA subscript.}
 The appendix contains proofs of technical results in the paper.
 The proofs are the following:
 \begin{itemize}
 \item
-Proof of Theorem XXX, in Section YYY
+Proof of Theorem \ref{untimedimpliestimed}
+\item 
+Proof of Lemma \ref{race elimination}
+\item 
+Proof of Lemma \ref{lemma: transparent timed behavior}
+\item 
+Proof of Lemma \ref{feasible plus input is feasible}
+\item 
+Some technical definitions and lemma's about causality maps used in the proof of
+Theorem \ref{timedimpliesuntimed}
+\item 
+Proof of Theorem \ref{timedimpliesuntimed}
+\item 
+Two technical lemmas about zones used in the proof of Theorem \ref{Myhill Nerode}
+\item 
+Proof of Theorem \ref{Myhill Nerode}
 \item
 A detailed example of a run of the algorithm, in Section YYY
 \end{itemize}
 
 %% Here is the actual material, it can be structured into several files.
+
+
+\paragraph{Theorem \ref{untimedimpliestimed}.}
+\emph{$\M \approx_{\mathit{untimed}} \N$
+implies
+$\M \approx_{\mathit{timed}} \N$.}
+
+\begin{proof}
+Assume $\M \approx_{\mathit{untimed}} \N$ and $w$ is a timed word of $\M$.
+Since $\approx_{\mathit{timed}}$ is symmetric, it suffices to prove that $w$ is a timed word of $\N$.
+Since $w$ is a timed word of $\M$,
+there exists a timed run $\alpha$ of $\M$ with $\timedword(\alpha) = w$. 
+Let $\sigma = \beh(\alpha)$ and $\beta = \untime(\sigma)$. 
+Then $\beta$ is a feasible untimed behavior of $\M$ and $\timedword(\sigma) = w$.
+Since  $\M \approx_{\mathit{untimed}} \N$, there exists an isomorphism $f$ such that 
+$\beta' = f(\beta)$ is a feasible untimed behavior of $\N$.
+Hence $\N$ has an untimed run $\gamma'$ such that $\untime(\gamma') = \beta'$.
+Let $\sigma' = f(\sigma)$.
+By Lemma~\ref{lemma isomorphism}, $\sigma'$ is a timed behavior with 
+$\untime(\sigma') = \untime(f(\sigma)) = f(\untime(\sigma)) = f(\beta) = \beta'$.
+Since $\beh(\gamma') = \untime(\sigma') = \beta'$, $\N$ has a timed run $\alpha' = \run(\gamma',\sigma')$ with
+$\beh(\alpha') = \sigma'$.
+Note that $\timedword(\alpha') = \timedword(\sigma') = \timedword(f(\sigma)) = \timedword(\sigma) = w$.
+Hence $w$ is a timed word of $\N$, as required.
+\end{proof}
+
+\paragraph{Lemma \ref{race elimination}.}
+\emph{Let $\sigma$ be any timed behavior.
+Then there exists a timed behavior $\sigma'$ without races such that $\untime(\sigma)=\untime(\sigma')$.}
+
+\begin{proof}
+(Sketch) Let
+\begin{eqnarray*}
+\sigma & = & \tvals_0 \xrightarrow{d_1} \tvals'_0 \xrightarrow{i_1/o_1/\rho_1} \tvals_1 \cdots
+\xrightarrow{d_k} \tvals'_{k-1} \xrightarrow{i_k/o_k/\rho_k} \tvals_{k}
+\end{eqnarray*}
+be a timed behavior.
+%
+For each index $j$, each timer in the domain of $\kappa_j$ has been started by some preceding event.
+Let $\startedby_j : \domof{\kappa_j} \rightarrow \Pi_\sigma$ be the function that maps each timer in
+the domain of $\kappa_j$ to the block that contains the event that started this timer.
+Suppose that $\sigma$ contains a race, that is, there is an index $j>0$ and a timer $x$  
+such that $\kappa'_{j-1}(x) = 0$ and $i_j \neq \toevent{x}$.
+Let $B \in \Pi_\sigma$ be the block containing $j$. Then we say that block $B$ is the \emph{winner} of the race and block
+$\startedby_{j-1}(x)$ is a \emph{loser}.
+Note that whenever there is a race at $j$, this race has a single winner but it may have several losers.
+Moreover, each block can be loser in at most one race.
+A block that does not win any race can be wiggled forward by a small amount (if you don't win you might as well start later).
+If block $B$ wins a race from block $B'$, then $\max(B)>\max(B')$, that is, $B$ contains an event that occurs later
+in $\sigma$ than any event of $B'$.
+This implies that the winning relation induces a partial order on the blocks of $\Pi_\sigma$.
+Now consider the bottom elements in this partial order. These blocks do not win any race so we may wiggle them forward.
+Once we have eliminated the bottom elements we can work our way upwards in the partial order and wiggle all blocks
+forward one by one until no more races remain.
+\end{proof}
+
+\paragraph{Lemma \ref{lemma: transparent timed behavior}.}
+\emph{For each feasible untimed behavior $\beta$ there exists
+a transparent timed behavior $\sigma$ such that $\beta = \untime(\sigma)$.}
+
+\begin{proof}
+Let $\beta$ be a feasible untimed behavior.
+Then there exists a timed behavior $\sigma$ such that $\beta = \untime(\sigma)$.
+By Lemma~\ref{race elimination}, we may assume that $\sigma$ contains no races.
+By repeated application of Lemma~\ref{wiggle lemma}, we can wiggle the timing of all the blocks to make $\sigma$ transparent.
+\end{proof}
+
+\paragraph{Lemma \ref{feasible plus input is feasible}.}
+\emph{Suppose $\beta$ is a feasible untimed behavior that ends with timer set $Y$, and 
+$Y \xrightarrow{i/o/\rho} Y'$ is an untimed behavior with $i \in I$.
+Then $\beta \xrightarrow{i/o/\rho} Y'$ is a feasible untimed behavior.}
+
+\begin{proof}
+By Lemma~\ref{lemma: transparent timed behavior}, there exists a transparent timed behavior
+$\sigma$ such that $\beta = \untime(\sigma)$. Since $\sigma$ is transparent, the last valuation of $\sigma$ assigns a positive value to
+all timers in $Y$. Thus we may extend $\sigma$ by a small delay transition, followed by a discrete transition corresponding to
+$Y \xrightarrow{i/o/\rho} Y'$. This implies that untimed behavior $\beta \xrightarrow{i/o/\rho} Y'$ is feasible.
+\end{proof}
+
+\paragraph{Causality maps.} 
+Consider an untimed behavior
+\begin{eqnarray*}
+\beta & = & X_0 \xrightarrow{i_1/o_1/\rho_1} X_1  \xrightarrow{i_2/o_2/\rho_2} X_2 \cdots \xrightarrow{i_k/o_k/\rho_k} X_{k}.
+\end{eqnarray*}
+A causality map for $\beta$ is a function that specifies, for each timer that expires, the index of the event that
+triggered this timeout.
+Formally, let $T = \{ j \mid i_j \in \toevents \}$ be the set of indices of $\beta$ corresponding to a timeout.
+A \emph{causality map} for $\beta$ is a function $c: T \rightarrow \{ 1 ,\ldots, k \}$ that assigns
+to each index $j$ with $i_j = \toevent{x}$ an index $l < j$ such that $\rho_l$ starts $x$, and all events in between $i_l$ and $i_j$
+do not affect $x$.
+
+\begin{lemma}
+\label{causality map untimed behavior}
+Each untimed behavior $\beta$ that starts with the empty set of timers has a unique causality map $c$.
+\end{lemma}
+We say that $c$ is a causality map of a timed behavior $\sigma$ if it is a causality map of $\untime(\sigma)$,
+and we say that it is a causality map of a timed run $\alpha$ if it is a causality map of $\beh(\alpha)$.
+Lemma~\ref{causality map untimed behavior} implies that each timed run of an MMT has a unique causality map $c$.
+
+
+Consider a timed word
+$w  =   d_1 ~ i_1 ~ o_1 ~ d_2 ~ i_2 ~ o_2 \cdots d_k ~ i_k ~ o_k$.
+We want to know, for each timeout event in $w$, by which event this timeout is triggered.
+Let $T = \{ j \mid i_j = \mathit{to} \}$ be the set of indices corresponding to a timeout.
+A \emph{causality map} for $w$ is a function $c: T \rightarrow \{ 1 ,\ldots, k \}$ that satisfies three conditions:
+(1)
+$c$ is injective (at most one timer is started on each transition),
+(2)
+for all $j$, $c(j) < j$ (a timeout is triggered by an earlier event), and
+(3)
+for all $j$, $\sum_{l=j+1}^{c(j)} d_l$ is an integer (timers expire after an integer delay).
+
+\begin{lemma}
+\label{causality map run is causility map of its timed word}
+Suppose $\alpha$ is a timed run of an MMT and $c$ is the causality map of $\alpha$. 
+Then $c$ is a causality map of $\timedword(\alpha)$.
+\end{lemma}
+
+In general, a timed word may have multiple causality maps.
+However, we have the following lemma.
+Call a timed word \emph{transparent} if the fractional part of the absolute times of all input events in $I$ is different.
+
+\begin{lemma}
+\label{lemma unique causality map}
+Suppose $\alpha$ is a timed run of an MMT, and $w =  \timedword(\alpha)$ is transparent. 
+Then $w$ has a unique causality map.
+\end{lemma}
+
+Each timed word of MMT $\M$ with a unique causality map has a unique timed run that corresponds to it.
+The causality map tells us which timers time out during the trace, so we have complete information
+about the sequence of events that occurs. 
+
+A timed run of $\M$ is fully determined
+by the sequence of time delays and events that occurs.
+
+\begin{lemma}
+\label{lemma unique timed run}
+Suppose $w$ is a timed word of MMT $\M$ with a unique causality map.
+Then there is a unique timed run $\alpha$ of $\M$ such that $w = \timedword(\alpha)$.
+\end{lemma}
+
+
+\paragraph{Theorem \ref{timedimpliesuntimed}.}
+\emph{Suppose that $\M$ and $\N$ are timer live MMTs. Then
+$\M \approx_{\mathit{timed}} \N$
+implies
+$\M \approx_{\mathit{untimed}} \N$.}
+
+\begin{proof}
+Suppose that $\M \approx_{\mathit{timed}} \N$.
+Let $\beta$ be a feasible untimed behavior of $\M$.
+For reasons of symmetry, it suffices to prove that $\N$ has a feasible untimed behavior $\beta'$ that is isomorphic to $\beta$.
+
+Since $\beta$ be a feasible untimed behavior of $\M$, $\M$ has an untimed run $\gamma$ with $\beh(\gamma) = \beta$.
+By Lemma~\ref{lemma: transparent timed behavior}, there exists a 
+transparent timed behavior $\sigma$ such that $\beta = \untime(\sigma)$.
+There exists a unique timed run $\alpha = \run(\gamma,\sigma)$ of $\M$ with $\untime(\alpha) = \gamma$ and $\beh(\alpha) = \sigma$.
+Thus $\sigma$ is a timed behavior of $\M$.
+Let  $w = \timedword(\alpha)$.
+Then $w$ is a timed word of $\M$.
+By Lemma~\ref{lemma unique causality map}, $w$ has a unique causality map $c$.
+Since $\M \approx_{\mathit{timed}} \N$, $w$ is also a timed word of $\N$.
+By Lemma~\ref{lemma unique timed run}, $\N$ has a unique time run $\alpha'$ such that $w = \timedword(\alpha')$.
+Let $\beta' = \untime(\beh(\alpha'))$.
+Then $\beta'$ is a feasible untimed behavior of $\N$.
+Note that the mappings $\timedword$, $\untime$ and $\beh$ all preserve the number of events, the sequence of inputs that occur (except for the names of the timers in timeouts), and the sequence of outputs. Thus $\beta$ and $\beta'$ have the same length, the same inputs (except for the timer names), and the same outputs.
+Moreover, by Lemmas~\ref{causality map untimed behavior} and \ref{causality map run is causility map of its timed word},
+$\beta'$ and $\beta$ have the same causality map $c$.
+
+By induction on the number of events in $\beta$ and $\beta'$, we prove that they are isomorphic.
+Since $\approx_{\mathit{untimed}}$ is symmetric, this suffices to prove the theorem.
+
+Induction base. If $\beta$ and $\beta'$ contain $0$ events then they are both equal to the empty set of variables $\emptyset$,
+and thus trivially isomorphic.
+
+For the induction step, suppose $\beta$ and $\beta'$ contain $k+1$ events:
+\begin{eqnarray*}
+\beta & = & X_0 \xrightarrow{i_1/o_1/\rho_1} X_1 \cdots \xrightarrow{i_k/o_k/\rho_k} X_{k}
+ \xrightarrow{i_{k+1}/o_{k+1}/\rho_{k+1}} X_{k+1},\\
+\beta' & = & Y_0 \xrightarrow{i'_1/o_1/\tau_1} Y_1  \cdots \xrightarrow{i'_k/o_k/\tau_k} Y_{k} 
+ \xrightarrow{i'_{k+1}/o_{k+1}/\tau_{k+1}} Y_{k+1}.
+\end{eqnarray*}
+Let $\delta$ and $\delta'$ be the prefixes of $\beta$ and $\beta'$, respectively,
+containing $k$ events. Then $\delta$ is also a feasible untimed behavior and, by
+induction hypothesis, there exists an isomorphism $f = f_0 ,\ldots, f_k$ such that $\delta' = f(\delta)$.
+Our task is to extend this isomorphism to $\beta$ and $\beta'$.
+
+Since $\timedword$, $\untime$ and $\beh$ preserve inputs except for the timers in timeouts,
+either $i_{k+1} = i'_{k+1} \in I$ or $i_{k+1}, i'_{k+1} \in\toevents$.
+If $i_{k+1} = \toevent{x}$, for some $x \in X_k$, then $i_{k+1}$ is triggered by a previous event $i_j$ with $j=c(k+1)$ that started
+timer $x$, and this timer was left unaffected by all events from $\beta$ in between $i_j$ and $i_{k+1}$. In this case,
+$i'_{k+1} = \toevent{x'}$, for some $x' \in X_k$, and $i'_{k+1}$ is triggered by a previous event $i'_j$ with $j=c(k+1)$ that started
+timer $x'$, and this timer was left unaffected by all events from $\beta'$ in between $i_j$ and $i_{k+1}$.
+Using the definition of an isomorphism, we may infer that $i'_{k+1} = \toevent{f_k(x)}$.
+
+Now suppose that $x \in X_{k+1}$ is a timer that is active after $\beta$.
+Then, since $\M$ is timer live, there exists an untimed behavior $\beta_x$ consisting of transitions that leave $x$ unaffected, except for the last one in which $x$ expires, and such that $\beta \cdot \beta_x$ is a feasible untimed behavior of $\M$.
+Using the same construction as in the beginning of this proof, we may construct an untimed behavior $\beta'_x$ such
+that $\beta' \cdot \beta'_x$ is a feasible untimed behavior of $\N$ such that $\beta \cdot \beta_x$ and $\beta' \cdot \beta'_x$
+have the same length, the same inputs (except for the timer names) and the same causality map $c_x$.
+Let $m$ be the index of the final event in $\beta' \cdot \beta'_x$. Then $m$ is in the domain of $c_x$ and $c_x(m) \leq k+1$.
+If $c_x(m) \leq k$ then we define $f_{k+1}(x) = f_k (x)$.
+Otherwise, if $c_x(m) = k+1$ then we know that timer $x$ is started in the last transition of $\beta$.
+Since $c_m$ is also a causality map for $\beta'$, there is also a unique timer $x' \in Y_{k+1}$ that is started in the last transition of $\beta'$.
+In this case, we define $f_{k+1}(x) = x'$.
+Repeating this construction for all timers $x \in X_{k+1}$, we define a function $f_{k+1} : X_{k+1} \rightarrow Y_{k+1}$ and thus
+extend isomorphism $f$ to $\beta$ and $\beta'$.
+Note that $f_{k+1}$ is surjective because for each $y \in Y_{k+1}$, since $\N$ is timer live,
+there exists an untimed behavior $\beta_y$ consisting of transitions that leave $y$ unaffected, except for the last one in which $y$ expires, and such that $\beta' \cdot \beta_y$ is a feasible untimed behavior of $\N$.
+Using again the same construction as in the beginning of this proof, we may establish that $X_{k+1}$ contains a corresponding timer. 
+\end{proof}
+
+\begin{lemma}
+\label{lemma: feasibility concatenation}
+Suppose $\beta, \beta'$ are untimed behaviors such that
+$\Zone{\beta} = \Zone{\beta'}$. Let $\gamma$ be any untimed behavior.
+Then $\beta \cdot \gamma$ is feasible iff $\beta' \cdot \gamma$ is feasible.
+\end{lemma}
+
+\begin{lemma}
+\label{lemma finitely many zones}
+$\{ \Zone{\beta} \mid \beta \mbox{ feasible untimed behavior of } \M \}$ is finite.
+\end{lemma}
+\begin{proof}
+  An MMT only has a finite number of timers that can only be set to a finite number of integer values. Since in an MMT the values of timers can only decrease, their values are bounded, so that only finitely many integers may appear in the conjuncts of $\Zone{\beta}$. This the set of possible $\Zone{\beta}$ is finite.
+\end{proof}
+
+\paragraph{Theorem \ref{Myhill Nerode}.}
+\emph{Let $S$ be a timer language.
+Then there exists an MMT with feasible untimed behaviors $T$ and $\can{T} = S$ iff 
+$\equiv_S$ has finitely many equivalence classes (finite index).}
+
+\begin{proof} 
+
+``$\Rightarrow$'' Let $\M$ be an MMT, let $T$ be its set of feasible untimed behaviors, and let $S = \can{T}$.
+Then it follows from the definitions, Lemma~\ref{feasible plus input is feasible} and Lemma~\ref{expirable} that $S$ is a timer language.
+Suppose that $\beta, \beta' \in S$.
+Then there exist (unique) $\delta, \delta \in T$ with
+$\can{\delta}=\beta$ and $\can{\delta'}=\beta'$.
+Suppose $\delta$ and $\delta'$ lead to the same state $q$ of $\M$ and moreover $\Zone{\delta} = \Zone{\delta'}$.
+We claim that $\beta \equiv_S \beta'$.
+Since $\beta$ and $\delta$ are isomorphic, there exists an isomorphism $g = g_0 ,\ldots, g_k$ from $\beta$ to $\delta$.
+Similarly, since $\beta'$ and $\delta'$ are isomorphic, there exists an isomorphism $g' = g'_0 ,\ldots, g'_l$ from $\beta'$ to $\delta'$.
+Let $f_0 = (g'_l)^{-1} \circ g_k$.
+Suppose that, for some untimed behavior $\gamma$, $\beta \cdot \gamma \in S$.
+Then there exists an untimed behavior $\zeta$ such that $\delta \cdot \zeta \in T$ and $\can{\delta \cdot \zeta} = \beta \cdot \gamma$.
+Moreover, there exists an isomorphism $h = g_k ,\ldots, g_m$ from $\gamma$ to $\zeta$.
+Since $\delta \cdot \zeta$ is a feasible behavior in $T$, it follows by Lemma~\ref{lemma: feasibility concatenation} that
+$\delta' \cdot \zeta$ is a feasible behavior in $T$.
+Thus there exists an untimed behavior $\gamma'$ such that $\can{\delta' \cdot \zeta} = \beta' \cdot \gamma' \in S$.
+Moreover, we may construct an isomorphism $h' = g'_l ,\ldots, g'_n$ from $\gamma'$ to $\zeta$.
+Then $f = (g'_l)^{-1} \circ g_k \cdots (g'_n)^{-1} \circ g_m$ is an isomorphism from $\gamma$ to $\gamma'$ that extends $f_0$.
+We then have $\beta' \cdot f(\gamma) \in S$, as required.
+Clause (b) of Definition~\ref{def:nerode} follows by a symmetric argument.
+Since $\M$ only has finitely many states and by Lemma~\ref{lemma finitely many zones} the number of zones of feasible
+untimed behaviors of $M$ is finite, it follows that $\equiv_S$ has finite index.
+
+``$\Leftarrow$'' 
+Suppose $S$ is a timer language such that $\equiv_S$ has a finite index.
+A subset $Q \subseteq S$ is a \emph{basis} for $S$ if it contains a unique representative from
+each equivalence class of $\equiv_S$.
+%We construct a basis for $S$ using a simple greedy algorithm. Start by setting $Q := \{ \emptyset \}$, where $\emptyset$ is the trivial untimed behavior. Then, as long as an untimed behavior $\beta$ exists that extends a behavior in $Q$ with a single transition and
+%is not equivalent to any behavior in $Q$, add it to $Q$.  Since $\equiv_S$ has finite index this algorithm will terminate.
+%By construction, the resulting set $Q$ is nonempty, finite and prefix closed.
+%By contradiction, we prove that $Q$ contains a representative from each equivalence class.
+%Suppose $\beta \in S$ is an untimed behavior that is not equivalent to any behavior in $Q$.
+%W.l.o.g.\ we may assume that all proper prefixes of $\beta$ are equivalent to a behavior in $Q$.
+%Thus $\beta$ is of the form $\delta \xrightarrow{i/o, \rho} Y$, for some behavior $\delta$ not in $Q$ (otherwise our algorithm would
+%have added $\beta$ to $Q$) but equivalent to some $\delta'$ in $Q$.
+%Because $S$ is input complete, it contains a behavior $\beta' = \delta' \xrightarrow{i/o', \rho'} Y'$.
+%Since $\equiv_S$ is a right-congruence, it follows that $\beta \equiv_S \beta'$.
+%Since $\beta$ is not equivalent to any behavior in $Q$, the same holds for $\beta'$.
+%This is a contradiction, because we have found a behavior $\beta'$ that extends a behavior in $Q$ with a single transition,
+%is not equivalent to any behavior in $Q$, but nevertheless has not been added to $Q$.
+%
+Since $\equiv_S$ has finite index, $S$ has a finite basis $Q$.
+Now MMT $\M = (I, O \cup \{ \perp \}, Q, \beta_0, \vars, \delta, \lambda, \remap)$ is defined as follows:
+\begin{itemize}
+\item
+$\beta_0$ is the unique element of $Q$ such that $\beta_0 \equiv_S \emptyset$.
+\item
+$\varsof{\beta} = \Last{\beta}$.
+\item
+Let $\beta \in Q$ and $i \in I$. Then, since $S$ is input complete and behavior deterministic, there are unique
+$o$, $\rho$ and $Y$ such that $\zeta = \beta \xrightarrow{i/o/\rho} Y \in S$.
+Let $\zeta'$ be the unique element of $Q$ with $\zeta' \equiv_S \zeta$, and
+let $f_0$ be a matching for $\zeta' \equiv_S \zeta$.
+Then $\delta(\beta,i) = \zeta'$, $\lambda(\beta,i) = o$, and $\remap(\beta,i) = \rho  \circ f_0$.
+\item
+Assume $\beta \in Q$ and $x\in \Last{\beta}$ expirable after $\beta$. 
+Then, since $S$ is  timeout complete and behavior deterministic, there exist unique
+$o$, $\rho$ and $Y$ such that $\zeta = \beta \xrightarrow{\toevent{x}/o/\rho} Y \in S$.
+Let $\zeta'$ be the unique element of $Q$ with $\zeta' \equiv_S \zeta$, and
+let $f_0$ be a matching for $\zeta' \equiv_S \zeta$.
+Then $\delta(\beta,\toevent{x}) = \zeta'$, $\lambda(\beta,\toevent{x}) = o$, and $\remap(\beta,\toevent{x}) = \rho \circ f_0$.
+\item
+Assume $\beta \in Q$ and $x \in \Last{\beta}$ not expirable after $\beta$.
+We define $\delta(\beta,\toevent{x}) = \beta$, $\lambda(\beta,\toevent{x}) = \perp$, and $\remap(\beta,\toevent{x}) = \rho_0$, 
+where $\perp$ is a special, fresh output event and $\domof{\rho_0} = \emptyset$.
+\end{itemize}
+It is routine to verify that $\M$ is a well-defined MMT whose set of feasible untimed behaviors is isomorphic to $S$.
+\end{proof}

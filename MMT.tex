@@ -45,12 +45,14 @@ $\delta(q,i)$, $\lambda(q,i)$ and $\pi(q,i)$ are defined iff either
 $i \in I$ or $i=\toevent{x}$, for some $x \in\varsof{q}$.
 We write $q \xrightarrow{i/o/\rho} q'$ if $\delta(q,i) = q'$, $\lambda(q,i)= o$ and $\remap(q,i) = \rho$.
 \end{definition}
+\iflong
 Update function $\remap$ determines how timers are affected when an event occurs. Suppose $q \xrightarrow{i/o/\rho} q'$.
 %\marginpar{Add Venn diagram to illustrate situation?}
 %Let $q \in Q$, $i \in \extinputs$, $\delta(q,i)=q'$ and $\remap(q,i)=\rho$.
 If $x \in \varsof{q} \setminus \ranof{\rho}$ then we say that input $i$ \emph{stops} timer $x$.
 If $x \in \varsof{q'}$ and $\rho(x) \in \natplus$ then $i$ \emph{starts} timer $x$ with value $\rho(x)$.
 Finally, if $x \in \varsof{q'}$ and $\rho(x) \in \varsof{q}$ then we say that input $i$ \emph{renames} timer $\rho(x)$ to $x$.
+\fi
 
 \paragraph{Semantics.}
 We define the semantics of an MMT $\M = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$ 
@@ -80,7 +82,7 @@ we define a discrete transition relation by: $\tvals \xrightarrow{i/o/\rho}  \tv
 && \forall x \in X : i=\toevent{x} \Rightarrow (\tvals(x) = 0 \wedge x \not\in \ranof{\rho}).
 \end{eqnarray*}
 Transition relations $\xrightarrow{d}$ and $\xrightarrow{i/o/\rho}$ can be lifted to configurations.
-For all configurations $(q, \tvals)$, $(q', \tvals')$ of an MMT $\M$,
+For all configurations $(q, \tvals)$, $(q', \tvals')$ of MMT $\M$,
 \[
 \frac{q = q' \quad \tvals \xrightarrow{d} \tvals'}{(q,\tvals) \xrightarrow{d} (q',\tvals')}
 \quad\quad
@@ -108,12 +110,17 @@ in timeout events:
 \timedword(\alpha) & = & d_1 ~ i'_1 ~ o_1 ~ d_2 ~ i'_2 ~ o_2 \cdots d_k ~ i'_k ~ o_k,
 \end{eqnarray*}
 where for all  $j$,
+\iflong
 \begin{eqnarray*}
 i'_j  & = &   \left\{ \begin{array}{ll}
 i_j & \mbox{if } i_j \in I,\\
 \mathit{to} & \mbox{if } i_j \in \toevents.
 \end{array} \right.
 \end{eqnarray*}
+\else
+$i'_j   =   i_j$ if $i_j \in I$, and
+$i'_j   = \mathit{to}$ if $i_j \in \toevents$.
+\fi
 The idea is that timeouts cannot be observed directly. 
 However, when we observe an output that is not triggered by an input, we may
 conclude that a timeout occurred. But in general we do not know which timer expired.
@@ -122,9 +129,8 @@ We say $w$ is a timed word of $\M$ if $\M$ has a timed run $\alpha$ with $w = \t
 %
 Two MMTs $\M$ and $\N$ with the same sets of inputs are \emph{timed equivalent}, denoted $\M \approx_{\mathit{timed}} \N$, iff 
 they have the same sets of timed words.
-\ifshort
 
-\else
+\iflong
 \paragraph{Remark.}
 In our semantics we assume that discrete transitions occur instantaneously and take no time. In applications, however, i/o interactions
 often take a significant amount of time, see e.g.\  \cite{SHV16}. If it is important to model such delays
@@ -136,7 +142,6 @@ If inputs arrive in the newly introduced intermediate state, these may either be
 Note that $\Lambda$ corresponds to the \emph{absence} of an observable output. For inputs $i \in I$ this is fine: if such
 an input does not trigger an observable output then we just assume that the output event is $\Lambda$. We do not allow
 $\Lambda$ as output event in timeout transitions $\toevent{x}$: since timeout events themselves are not observable, we can ony observe their occurrence indirectly through the observable output that they trigger.
-\fi
 
 \paragraph{Remark.}
 Note that we assume that in a timed run each discrete transition is preceded by a nonzero delay.
@@ -165,6 +170,7 @@ may reach a timelock following the timed word $1 ~ i ~ o ~ 1 ~ i ~ o$: at this p
 \end{figure}
 Our learning algorithm will only explore runs in which no ``races'' occur. This eliminates the above timelock,
 which is cause by a race between an $i$ event and a timeout.
+\fi
 
 \paragraph{Experiments.}
 We may perform experiments on an MMT in which we
@@ -186,11 +192,11 @@ $\timedinputword (3 ~ i_1 ~ o_1 ~ 1.1 ~ i_2 ~ o_2 ~ 2 ~ \mathit{to} ~ o_3 ~ 2.1 
 If $u$ and $u'$ are timed input words, then we write $u \propto u'$ if $u$ and $u'$ are equal, except that the final delay of $u$ is less or equal than the final delay of $u'$.
 For any timed input word $u$ over $I$,  there exists a maximal timed word $w$ of $\M$ such that $\timedinputword(w) \propto u$.
 We call $w$ an \emph{outcome of running experiment} $u$ on $\M$.
-For instance, if we perform the experiment $1 ~ i ~ 0.5 ~ i ~ 1$ on the MMT of Figure~\ref{fig:timelock},
-then the unique outcome is $1 ~ i ~ o ~ 0.5 ~ i ~ o ~ 0.5 ~ \mathit{to} ~ o'$.
+For instance, if we perform the experiment $1 ~ \mathit{in} ~ 7$ on the MMT of Figure~\ref{fig:abp},
+then the unique outcome is $1 ~ \mathit{in} ~ \mathit{send0} ~ 3 ~ \mathit{to} ~ ~ \mathit{send0} ~ 3 ~ \mathit{to} ~ ~ \mathit{send0}$.
 
 \paragraph{Nondeterminism.}
-Due to our assumption that we cannot observe the identity of a timer in a timeout event, 
+Since we cannot observe the identity of a timer in a timeout event, 
 experiments do not always have a unique outcome and MMTs may exhibit nondeterministic behavior.
 For the MMT of Figure~\ref{fig:nondeterminism} (top), for instance, experiment $1 ~ i ~ 1$ has outcomes
 $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o'$ and $1 ~ i ~ o ~ 1 ~ \mathit{to} ~ o''$.
