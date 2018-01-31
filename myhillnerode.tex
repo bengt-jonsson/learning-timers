@@ -27,11 +27,11 @@ $\beta \in S \wedge x \mbox{ expirable after } \beta \Rightarrow
 \begin{definition}[Nerode congruence]
 \label{def:nerode}
 Let $S$ be a timer language.
-Suppose $\beta$ and $\beta'$ are behaviors in $S$ with $\Last{\beta} = X$ and $\Last{\beta'} = X'$.
-Then $\beta$ and $\beta'$ are \emph{equivalent}, written $\beta \equiv_S \beta'$, iff there exists a \emph{matching}, a bijection
-$f_0 : X \to X'$ such that for any untimed behavior $\gamma$:
-(a) if $\beta \cdot \gamma \in S$ then there exists an isomorphism $f$ that extends $f_0$ such that $\beta' \cdot f(\gamma) \in S$, and conversely,
-(b) if $\beta' \cdot \gamma \in S$ then there exists an isomorphism $f$ that extends $f_0^{-1}$ such that $\beta \cdot f(\gamma) \in S$.
+Suppose $\beta, \beta' \in S$ and $f : \Last{\beta}  \to \Last{\beta'}$ is a bijection.
+Then $\beta$ and $\beta'$ are \emph{equivalent under} $f$, written $\beta \equiv^f_S \beta'$, iff  for any untimed behavior $\gamma$:
+(a) if $\beta \cdot \gamma \in S$ then there exists an isomorphism $F$ that extends $f$ such that $\beta' \cdot F(\gamma) \in S$, and conversely,
+(b) if $\beta' \cdot \gamma \in S$ then there exists an isomorphism $F$ that extends $f^{-1}$ such that $\beta \cdot F(\gamma) \in S$.
+We say that $\beta$ and $\beta'$ are \emph{equivalent}, notation $\beta \equiv_S \beta'$ iff they are equivalent under some $f$.
 \end{definition}
 
 One easily sees that $\equiv_S$ is an equivalence relation.
@@ -41,6 +41,25 @@ One easily sees that $\equiv_S$ is an equivalence relation.
 %\beta \equiv_S \beta' & \Rightarrow & o = o' \wedge \delta \equiv_S \delta'.
 %\end{eqnarray*}
 We write $[\beta]$ to denote the equivalence class of $\beta$ w.r.t.\  $\equiv_S$.
+
+If $g : X \to X$ is an injective function and $\beta$ is an untimed behavior, then $\beta [g]$ denotes the untimed behavior obtained
+by consistently renaming each occurrence of each variable $x$ by $g(x)$. Using renamings we can give the following characterization
+of the Nerode congruence.
+Suppose $\beta, \beta' \in S$, $\beta$ contains $m$ inputs, $\beta'$ contains $n$ inputs,
+and $f : \Last{\beta}  \to \Last{\beta'}$ is a bijection. 
+Then injective function $g_{\beta, \beta', f}: X \to X$ is defined as follows:
+\begin{eqnarray*}
+g_{\beta, \beta', f} (x_j) & = & \left\{ 
+\begin{array}{ll}
+f(x_j) & \mbox{if } x_j \in \domof{f}\\
+x_{j-m+n} & \mbox{if } j > m
+x_j    & \mbox{otherwise }
+\end{array}
+\right.
+\end{eqnarray*}
+Then $\beta \equiv^f_S \beta'$ iff for all $\gamma$:
+(a) if $\beta \cdot \gamma \in S$ then $\beta' \cdot (\gamma[g_{\beta, \beta', f}]) \in S$, and
+(b) if $\beta' \cdot \gamma \in S$ then $\beta \cdot (\gamma[g_{\beta', \beta, f^{-1}}]) \in S$.
 
 \begin{theorem}
 \label{Myhill Nerode}
