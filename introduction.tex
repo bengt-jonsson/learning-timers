@@ -12,7 +12,7 @@ an unknown state diagram by asking queries to a teacher.
 Following pioneering work by \cite{Ang87,PeVaYa02,Hagerer2002,RaMeSM2009,IsHoSt2015},
 active automata learning is emerging as an effective bug finding technique.
 Using active automata learning, for instance, standard violations have been found in many implementations of
-major network and security protocols such as TLS \cite{dRP15}, TCP \cite{FJV14,FJV16,FH17} and SSH \cite{FiterauEtAl17}.
+major network and security protocols such as TLS \cite{dRP15}, TCP \cite{FJV16,FH17} and SSH \cite{FiterauEtAl17}.
 
 Timing often plays a crucial role in these applications.
 A TCP implementation, for instance, may retransmit packets if they are not acknowledged within
@@ -36,9 +36,7 @@ setting and expiration of timers.
 
 In this paper, we address this challenge by presenting a framework for learning
 timed extensions of automata models that appear to
-be sufficiently expressive to describe the real-time behavior of network protocols such as TLS, TCP and SSH, and other
-applications of automata learning like those described in \cite{Vaa17}.
-\todobj{The text after ``SSH'' appears redundant?}
+be sufficiently expressive to describe the real-time behavior of network protocols such as TLS, TCP and SSH.
 %
 Our work is inspired by the results of \cite{CCF16} on time delay Mealy machines,
 but we focus on a significantly richer class of automata models.
@@ -55,9 +53,6 @@ Figure~\ref{fig:abp} presents an MMT model of the sender from
 the alternating-bit protocol, adapted from \cite[Figure 3.15]{KR13}.
 \begin{figure}[h]
 \centering
-\ifshort
-\vspace{-2 em}
-\fi
 \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.3cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
   \node[initial, state] (1) {$q_0$};
   \node[state] (2) [right of=1] {$q_1$};
@@ -82,16 +77,16 @@ The approaches of \cite{VWW:rti,CCF16} cannot model this protocol.
 \iflong
 $\Lambda$ denotes the absence of an observable output. 
 
-\todobj{I think we do not have space for this explanation}
-In the model, input $\mathit{in}$ corresponds to a request from the upper layer to transmit data.
-Initially, upon receipt of such a request, the sender builds a packet from the data and a sequence number $0$,
-sends the packet over the network (output $\mathit{send0}$), and starts the timer with timeout value $3$.
-If the sender receives an acknowledgment with the right sequence number $0$ (input $\mathit{ack0}$) 
-then it stops the timer and jumps to state $q_2$.
-Acknowledgment with the incorrect sequence number (input $\mathit{ack1}$) are ignored.
-If no $\mathit{ack0}$ input arrives within $3$ time units, a timeout occurs and the same packet is sent again.
-The behavior in states $q_2$ and state $q_3$ is analogous to that in states $q_0$ and $q_1$, respectively,
-with the roles of $0$ and $1$ swapped.
+%\todobj{I think we do not have space for this explanation}
+%In the model, input $\mathit{in}$ corresponds to a request from the upper layer to transmit data.
+%Initially, upon receipt of such a request, the sender builds a packet from the data and a sequence number $0$,
+%sends the packet over the network (output $\mathit{send0}$), and starts the timer with timeout value $3$.
+%If the sender receives an acknowledgment with the right sequence number $0$ (input $\mathit{ack0}$) 
+%then it stops the timer and jumps to state $q_2$.
+%Acknowledgment with the incorrect sequence number (input $\mathit{ack1}$) are ignored.
+%If no $\mathit{ack0}$ input arrives within $3$ time units, a timeout occurs and the same packet is sent again.
+%The behavior in states $q_2$ and state $q_3$ is analogous to that in states $q_0$ and $q_1$, respectively,
+%with the roles of $0$ and $1$ swapped.
 \fi
 
 We present a natural timed adaptation of the MAT framework for learning MMTs.
@@ -120,20 +115,23 @@ under certain mild restrictions (the most important being that each transition
 sets at most one timer) this untimed semantics is equivalent to the above
 timed semantics. The result shows that the set of timed words can be inferred
 from the set of untimed words and vice versa.
-\todobj{Should the following sentence really be included?}
-Intuitively, causality of timeouts can be inferred in the timed semantics since a slight change in the timing of an input event leads to a corresponding change in the timing of any timeout that it induces.
+%\todobj{Should the following sentence really be included?}
+%Intuitively, causality of timeouts can be inferred in the timed semantics since a slight change in the timing of an input event leads to a corresponding change in the timing of any timeout that it induces.
 
-\todobj{Frits: could you revise this paragraph and the picture?}
-The result of Section 3 suggests an architecture for our learning algorithm that is shown in Figure~\ref{architecture}.
+The result of Section 3 suggests an architecture for our active learning algorithm that is shown in Figure~\ref{architecture}.
 The idea is to define an alternative (and simpler) MAT framework in which the learner uses membership queries (MQ) and equivalence queries (EQ)
 to obtain information about the untimed behaviors of an MMT.
 An adapter then implements each untimed membership query via a series of timed membership queries for the timed teacher,
 and each untimed equivalence query via a timed equivalence query.
+From the perspective of an untimed learner, the combination of the adapter and a timed teacher acts like an untimed teacher.
+Conversely, the combination of an untimed learner and the adapter behaves like a timed learner.
 \begin{figure}[h]
 \begin{center}
  \begin{tikzpicture}[>=stealth]
- \draw [dashed] (-0.1,-0.1) rectangle (4.6,3.6);
- \node [above,right] at (-0.1,3.8) {Untimed teacher};
+ \draw [dashed,red] (-3.3,-0.3) rectangle (1.8,3.8);
+ \node [above,right,red] at (-3.5,4) {Timed learner};
+ \draw [dashed,blue] (-0.1,-0.1) rectangle (4.6,3.6);
+ \node [above,right,blue] at (2.2,3.8) {Untimed teacher};
             \draw [thick] (0,0) rectangle (1.5,3.5) node[midway] {\small Adapter};
             \draw [thick] (3,0) rectangle (4.5,3.5) node[midway,above] {\small Timed};
             \draw [thick] (3,0) rectangle (4.5,3.5) node[midway,below] {\small teacher};
@@ -153,11 +151,10 @@ and each untimed equivalence query via a timed equivalence query.
 \label{architecture}
 \end{figure}
 
-In order to develop an active learning algorithm for MMTs, we must first develop
+In order to develop a learning algorithm for the untimed MAT framework, we first develop
 a Nerode equivalence, which generalizes the standard Nerode equivalence for
-regular languages, and induces the canonical MMTs that will be constructed
-by the learning algorithm. 
-We must also develop an approximation of this Nerode equivalence,
+regular languages, and induces the canonical MMTs that will be constructed by the learning algorithm. 
+We also develop an approximation of this Nerode equivalence,
 parameterized by sets of suffixes, which is the basis for constructing
 hypothesis automata in the learning algorithm. The approximated Nerode
 equivalence allows us finally to present an active automata learning
