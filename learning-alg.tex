@@ -83,7 +83,8 @@ $\hypoof UV = (I, O, Q, q_0, \vars, \delta, \lambda, \remap)$, where
       \item $\remap(\beta,i):\apprgetmemorable{S}{\beta'}{V} \mapsto (\apprgetmemorable{S}{\beta}{V} \cup \natplus)$ is defined as $f^{-1}$ on
         $\apprgetmemorable{S}{\beta'}{V}$, except that it maps
         $f(x_{(|\beta|+1)})$ to
-      $\apprgetassignment{S}{\beta'}{V}(f(x_{(|\beta|+1)}))$.
+        $\apprgetassignment{S}{\beta'}{V}(f(x_{(|\beta|+1)}))$
+        if $f(x_{(|\beta|+1)}) \in \apprgetmemorable{S}{\beta'}{V}$.
   \end{itemize}
 \item When $\beta \in U$ and $i$ is of form $\toevent{x_j}$ with
   $x_i \apprgetmemorable{S}{\beta}{V}$ but

@@ -81,40 +81,50 @@ We write $\beta \equiv_{S} \beta'$ to denote that
 $\beta \equiv_{S}^f \beta'$ for some
 $f : \getmemorable{S}{\beta} \to \getmemorable{S}{\beta'}$.
 
-\todobj{Insert here an illustration of the bijection between timers}
-\todobj{Ignore the following paragraph}
-As an example, let
+As an example, assume that $S$ contains the lean behaviors
 \(
-\beta_1 =  \simpleuttrans{i_1}{o_1}
-\), where $i_1 \in I$.
-Then
-$\simpleuttrans{\toevent{x_1}}{o_1}$ and
-$\uttrans{\toevent{x_1}}{o_1}{y_1:= 3}\simpleuttrans{\toevent{y_1}}{o_2}$
+\utlabel{i_1}{o_1}{x_1:=5} \cdot \simpleutlabel{\toevent{x_1}}{o_3}
+\) and
+\(
+\simpleutlabel{i_1}{o_1} \cdot \utlabel{i_2}{o_2}{x_2:=4} \cdot \simpleutlabel{\toevent{x_2}}{o_3}
+\).
+Let $\beta_1 = \simpleutlabel{i_1}{o_1}$ and
+$\beta_2 = \simpleutlabel{i_1}{o_1} \cdot \simpleutlabel{i_2}{o_2}$.
+Then $\suffixbehs{S}{\beta_1}$ contains the suffix
+$\gamma_1 = \simpleutlabel{\toevent{x_1}}{o_3}$ and
+$\suffixbehs{S}{\beta_2}$ contains the suffix
+$\gamma_2 = \simpleutlabel{\toevent{x_2}}{o_3}$.
+%% Then $\simpleutlabel{\toevent{x_1}}{o_1}$ and
+%% $\utlabel{\toevent{x_1}}{o_1}{y_1:= 3} \cdot \simpleutlabel{\toevent{y_1}}{o_2}$.
+It is then possible that
+$\beta_1 \equiv_S^f \beta_2$, where $f$ maps $x_1$ to $x_2$ (whether
+$\beta_1 \equiv_S^f \beta_2$ actually holds depends, of course on which other
+behaviors are in $S$.
 
-\(
-q_0 \simpleuttrans{i_1}{o_1} q_0 \uttrans{i_2}{o_2}{x_1:= 5} q_2
-\),
-and that from $q_2$ it can perform
-\(
-q_2 \simpleuttrans{\toevent{x_1}}{o_3} q_3
-\).
-The canonical untimed behaviors corresponding to the first two
-untimed runs are
-\(
-\emptyset \uttrans{i_1}{o_1}{x_1:= 5} \set{x_1}
-\)
-and
-\(
-\emptyset \uttrans{i_1}{o_1}{} \emptyset \uttrans{i_2}{o_2}{x_2:= 5} \set{x_2}
-\).
-In order to let these two behaviors be equivalent we must discover that
-timer $x_1$ can expire after the first one, and that
-timer $x_2$ can expire after the second one. Since these two timers
-have the same rules, the set $V$ of suffixes must
-include the effects of the timeout events of form $\toevent{x_i}$ for any
-timer $x_i$ that is assigned in a prefix, otherwise we
-may fail to overapproximate the Nerode equivalence of Definition~\ref{def:nerode}.
-\todobj{Disregard the above example}
+%% \(
+%% q_0 \simpleuttrans{i_1}{o_1} q_0 \uttrans{i_2}{o_2}{x_1:= 5} q_2
+%% \),
+%% and that from $q_2$ it can perform
+%% \(
+%% q_2 \simpleuttrans{\toevent{x_1}}{o_3} q_3
+%% \).
+%% The canonical untimed behaviors corresponding to the first two
+%% untimed runs are
+%% \(
+%% \emptyset \uttrans{i_1}{o_1}{x_1:= 5} \set{x_1}
+%% \)
+%% and
+%% \(
+%% \emptyset \uttrans{i_1}{o_1}{} \emptyset \uttrans{i_2}{o_2}{x_2:= 5} \set{x_2}
+%% \).
+%% In order to let these two behaviors be equivalent we must discover that
+%% timer $x_1$ can expire after the first one, and that
+%% timer $x_2$ can expire after the second one. Since these two timers
+%% have the same rules, the set $V$ of suffixes must
+%% include the effects of the timeout events of form $\toevent{x_i}$ for any
+%% timer $x_i$ that is assigned in a prefix, otherwise we
+%% may fail to overapproximate the Nerode equivalence of Definition~\ref{def:nerode}.
+
 
 \begin{theorem}
   \label{thm:bj-nerode}
