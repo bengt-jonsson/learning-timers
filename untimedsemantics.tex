@@ -78,7 +78,9 @@ Then $\alpha$ can be projected both to an untimed run of $\M$
 We say that $\sigma$ is an timed behavior of $\M$ if $\M$ has an timed run $\alpha$ with $\beh(\alpha) = \sigma$.
 \fi
 Note that $\beh(\untime(\alpha))=\untime(\beh(\alpha))$ and $\timedword(\alpha) = \timedword(\beh(\alpha))$.
-\iflong
+\ifshort
+Conversely,
+\else
 Thus the diagram of Figure~\ref{fig:diagram}, which summarizes the various types of runs and behaviors that we consider
 in this article, commutes.
 \begin{figure}[h]
@@ -101,8 +103,9 @@ in this article, commutes.
 \caption{Relating different types of runs and behaviors}
 \label{fig:diagram}
 \end{figure}
+Conversely,
 \fi
-Conversely, if $\gamma$ is an untimed run  of $\M$ and $\sigma$ is a timed behavior such that $\beh(\gamma) = \untime(\sigma)$,
+if $\gamma$ is an untimed run  of $\M$ and $\sigma$ is a timed behavior such that $\beh(\gamma) = \untime(\sigma)$,
 then there exists a unique timed run $\alpha$ of $\M$ with $\untime(\alpha) = \gamma$ and $\beh(\alpha) = \sigma$.
 We refer to $\alpha$ as $\run(\gamma,\sigma)$.
 
