@@ -122,8 +122,9 @@ We say $w$ is a timed word of $\M$ if $\M$ has a timed run $\alpha$ with $w = \t
 %
 Two MMTs $\M$ and $\N$ with the same sets of inputs are \emph{timed equivalent}, denoted $\M \approx_{\mathit{timed}} \N$, iff 
 they have the same sets of timed words.
+\ifshort
 
-\iflong
+\else
 \paragraph{Remark.}
 In our semantics we assume that discrete transitions occur instantaneously and take no time. In applications, however, i/o interactions
 often take a significant amount of time, see e.g.\  \cite{SHV16}. If it is important to model such delays
@@ -135,6 +136,7 @@ If inputs arrive in the newly introduced intermediate state, these may either be
 Note that $\Lambda$ corresponds to the \emph{absence} of an observable output. For inputs $i \in I$ this is fine: if such
 an input does not trigger an observable output then we just assume that the output event is $\Lambda$. We do not allow
 $\Lambda$ as output event in timeout transitions $\toevent{x}$: since timeout events themselves are not observable, we can ony observe their occurrence indirectly through the observable output that they trigger.
+\fi
 
 \paragraph{Remark.}
 Note that we assume that in a timed run each discrete transition is preceded by a nonzero delay.
@@ -163,7 +165,6 @@ may reach a timelock following the timed word $1 ~ i ~ o ~ 1 ~ i ~ o$: at this p
 \end{figure}
 Our learning algorithm will only explore runs in which no ``races'' occur. This eliminates the above timelock,
 which is cause by a race between an $i$ event and a timeout.
-\fi
 
 \paragraph{Experiments.}
 We may perform experiments on an MMT in which we
@@ -243,7 +244,7 @@ timers $x$ and $y$.
 
 We call timed input word $u$ \emph{transparent} if the fractional parts of the absolute times of occurrence of
 all the inputs are different.
-% A timed word $w$ is transparent iff $\timedinputword(w)$ is transparent.
+A timed word $w$ is transparent iff $\timedinputword(w)$ is transparent.
 It is easy to check that for each MMT $\M$ that satisfies the above conditions,
 each transparent experiment $u$ has a unique outcome: since each timer is started at a different fractional time,
 and each timer expires after an integer amount of time, it is not possible that two timers expire simultanelously.

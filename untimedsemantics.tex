@@ -447,10 +447,6 @@ In a timed behavior, there is always an integer amount of time between events fr
 This means that, if we consider the absolute time at which events occur, the fractional part of the absolute times
 of occurrence is the same for all events in a block.
 We call a timed behavior \emph{transparent} if the fractional part of the absolute times of any pair of events from different blocks is different. Note that a transparent timed behavior contains no races.
-\ifshort
-We call a timed word $w$ \emph{transparent} if there exists a transparent timed behavior $\sigma$ with 
-$w = \timedword(\sigma)$.
-\fi
 
 \begin{lemma}
 \label{lemma: transparent timed behavior}
