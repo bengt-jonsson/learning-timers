@@ -50,13 +50,16 @@ and $f : \Last{\beta}  \to \Last{\beta'}$ is a bijection.
 Then injective function $g_{\beta, \beta', f}: X \to X$ is defined as follows:
 \begin{eqnarray*}
 g_{\beta, \beta', f} (x_j) & = & \left\{ 
-\begin{array}[ll]
+\begin{array}{ll}
 f(x_j) & \mbox{if } x_j \in \domof{f}\\
 x_{j-m+n} & \mbox{if } j > m
 x_j    & \mbox{otherwise }
 \end{array}
 \right.
 \end{eqnarray*}
+Then $\beta \equiv^f_S \beta'$ iff for all $\gamma$:
+(a) if $\beta \cdot \gamma \in S$ then $\beta' \cdot (\gamma[g_{\beta, \beta', f}]) \in S$, and
+(b) if $\beta' \cdot \gamma \in S$ then $\beta \cdot (\gamma[g_{\beta', \beta, f^{-1}}]) \in S$.
 
 \begin{theorem}
 \label{Myhill Nerode}
