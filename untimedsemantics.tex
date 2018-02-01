@@ -2,6 +2,13 @@
 \label{section untimed semantics}
 In this section, we present an untimed semantics for MMTs and prove that is equivalent with the timed semantics.
 In order to define the untimed semantics, we need to define a number of abstractions of timed runs.
+Technically, we need renamings of timers in transitions of an MMT in order to
+prove the Myhill-Nerode Theorem \ref{thm:bj-nerode}. However, many definitions
+and proofs are easier to understand when timers are not renamed.
+For this reason we only consider update functions $\rho$ that satisfy, 
+for all $x$:  $\rho(x) \in\natplus$ or $\rho(x)=x$. In fact, since an update starts
+at most one timer, updates can be represented as either the empty set or a singleton set $\{ (x,n) \}$.
+Our results generalize to arbitrary, injective renamings.
 
 \subsection{Timed and untimed runs and behaviors}
 Configurations consists of pairs of states and timer valuations. This means that there are two natural abstractions of
