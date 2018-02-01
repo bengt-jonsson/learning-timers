@@ -154,14 +154,12 @@ a hypothesis MMT $\hypoof UV$ is constructed and
 validated by submitting it in an equivalence query.
 If the query returns ``yes'', then
 the learning is completed, and $\hypoof UV$ accepts $S$.
-If the query returns a counterexample in the form of a lean behavior
+If the query returns a counterexample in the form of a behavior
 $\alpha$ on which $\hypoof UV$ and $S$ disagree,
-this is used to extend $V$ by a new input suffix $v$ (and its permutations),
+a procedure for counterexample processing, found in the appendix, is used to extend $V$ by a new input suffix $v$
 such that
 $U$ is no longer closed wrt.\ $V$.
 \ifshort
-The procedure for producing this $v$ from $\alpha$ is found in the
-appendix.
 \else
 as follows.
 We assume w.l.o.g.\ that no proper prefix of $\alpha$ is a counterexample. 
@@ -216,10 +214,10 @@ wrt.\ $V$,
 The algorithm can then resume a next round of
 hypothesis construction, which will eventually generate a new hypothesis, etc.
 
-The algorithm enjoys the following properties, are analogous
-to properties by, e.g., $L^*$~\cite{Ang87}.
-The additional complexity caused by timers is analogous
-to the additional complexity caused by registers in learning of register
+The algorithm enjoys properties analogous
+to those of, e.g., $L^*$~\cite{Ang87}.
+The additional complexity caused by timers is analogous to 
+that  caused by registers in learning of register
 automata~\cite{HowarSJC12,CasselHJS16}.
 
 \begin{theorem}

@@ -10,9 +10,9 @@ developed a Nerode congruence, allowing to define canonical forms, and used it
 as the basis for an active learning algorithm, which generalizes $L^*$.
 A key technical result is the equivalence between the timed semantics,
 which is suitable to represent practical learning scenarios, and the
-untimed semantics, which is suitable for formulating automata learning
-algorithms. This equivalence is embodied by an adapter, which transforms
-queries in one model to queries in the other.
+untimed semantics, which is suitable for learning
+algorithms.
+%% dThis equivalence is embodied by an adapter, which transforms queries in one model to queries in the other.
 
 The query complexity of our learning algorithm is polynomial in the number of
 states of the learned MMT, but doubly exponential in the number of simultaneously
@@ -24,15 +24,15 @@ protocols.
 %% Our work consitutes a major step towards a practical approach for active learning of timed systems.
 %% Such an approach would greatly enhance the applicability of active learning for reverse engineering of models of
 %% software and hardware systems.
-Future work includes to implement equivalence queries for MMTs.
+Future work includes to implement equivalence queries for MMTs,
 In the untimed case, equivalence queries for Mealy machines are approximated using conformance testing algorithms,
 for which a rich theory exists \cite{LeeY96}.
-Our equivalence result between timed and untimed semantics may help to
-lift such algorithms to the setting of MMTs.
-A challenge is also to deal with the timing uncertainties that occur in real applications due to nondeterminism of
-implementations and imprecise measurements. In a realistic
-setting we may need more than one experiment to figure out which event causes a timeout. We may observe, for instance,
-that slight changes in the timing of certain inputs lead to corresponding changes in the timing of certain timeouts.
+%% Our equivalence result between timed and untimed semantics may help to
+%% lift such algorithms to the setting of MMTs.
+A challenge is also to deal with timing uncertainties due to nondeterminism  and imprecise measurements.
+%% In a realistic
+%% setting we may need more than one experiment to figure out which event causes a timeout. We may observe, for instance,
+%% that slight changes in the timing of certain inputs lead to corresponding changes in the timing of certain timeouts.
 
 %% Nevertheless, there are still major challenges that need to be addressed.
 %% %
