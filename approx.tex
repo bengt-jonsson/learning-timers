@@ -4,14 +4,12 @@
 
 We will now exploit the equivalence between timed and untimed semantics
 (Theorems~\ref{untimedimpliestimed} and~\ref{timedimpliesuntimed}).
-In this section, we develop a Nerode congruence for building MMTs
-from their sets of untimed
-We thereafter, in Section~\ref{sec:approx} present an approximation of this
+In this section, we develop a Nerode congruence for  MMTs
+from their sets of untimed behaviors.
+In Section~\ref{sec:approx} present an approximation of this
 Nerode equivalence, tobe used as a basis for the learning algorithm in
 Section~\ref{sec:learning}.
-
-  A Nerode congruence allows to build automata from their languages. For MMTs,
-  these languages are their sets of untimed behaviors, in canonical form.
+  A Nerode congruence allows to build automata from their languages, which for MMTs are their untimed behaviors, in canonical form.
 
 \begin{definition}
 \label{def:timer language}
@@ -47,8 +45,8 @@ Since the sequence of timer sets in a lean behavior is
 uniquely determined by the labels on its transition, we can
 denote a lean behavior simply by the sequence
 $\utlabel{i_1}{o_1}{\rho_1} \cdots \utlabel{i_n}{o_n}{\rho_n}$ of its labels.
-If some $\rho_j$ is empty, we often omit it. In particular,
-the last assignment of any lean behavior is always empty.
+If some $\rho_j$ is empty, we often omit it. Not that
+the last assignment of any lean behavior is empty.
 
 Define a {\em lean timer language} to be the set of lean behaviors derived from
 a timer language. Given a lean timer language $S$, we can obtain a corresponding
@@ -148,7 +146,7 @@ $\gamma_2 = \simpleutlabel{\toevent{x_2}}{o_3}$.
 %% $\utlabel{\toevent{x_1}}{o_1}{\set{y_1:= 3}} \cdot \simpleutlabel{\toevent{y_1}}{o_2}$.
 It is then possible that
 $\beta_1 \equiv_S^f \beta_2$, where $f$ maps $x_1$ to $x_2$ (whether
-$\beta_1 \equiv_S^f \beta_2$ actually holds depends, of course, on which other
+$\beta_1 \equiv_S^f \beta_2$ actually holds depends on which other
 behaviors are in $S$.
 
 %% \(
@@ -288,9 +286,17 @@ timers assigned in $\beta$ by $f$.
 We write $\beta \equiv_{S,V} \beta'$ to denote that
 $\beta \equiv_{S,V}^f \beta'$ for some
 $f : \apprgetmemorable{S}{\beta}{V} \to \apprgetmemorable{S}{\beta'}{V}$.
+The following standard theorem follows rather directly from the definitions.
+
+\begin{theorem}
+  \label{thm:approx-nerode}
+Let $S$ and $V$ be as above.
+$\equiv_{S}$ is included in $\equiv_{S,V}$. Moreover,
+if $\equiv_{S}$ has finite index, then it is equal to
+$\equiv_{S,V}$ for some finite set $V$.
+\end{theorem}
 
 
-\todobj{Let us add theorems. It should be obvious that the approximated one
-  approximates the full one, and that it converges.}
+
 
 
