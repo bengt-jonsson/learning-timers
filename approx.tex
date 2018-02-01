@@ -71,8 +71,8 @@ Intuitively, we would like to say that $\beta$ and $\beta'$ are equivalent if
 roughly
 ``$\beta \cdot \gamma \in S \iff \beta' \cdot \gamma \in S$''. However, we must
 be careful with the names of timers that expire and/or are assigned in $\gamma$.
-We will therefore introduce conventions for naming timers in suffixes, in
-analogy with the naming in canonical behaviors.
+We will therefore introduce conventions for naming timers in suffixes.
+%% in analogy with the naming in canonical behaviors.
 
 So, extend the set of timers by the set $Y = \set{y_1,y_2,\ldots}$ of
 {\em suffix timers}, which is disjoint from $X$.
@@ -107,12 +107,12 @@ is assigned in the corresponding
 lean behavior $\beta'\cdot\suffmap{|\beta|}(\hat{\gamma})$
 in $S$.
 
-We can now define the Nerode equivalence.
+We can then define the Nerode equivalence.
 
 \begin{definition}
   \label{def:bj-nerode}
-Let $S$ be a (lean) timer language with $\beta,\beta'\in S$,
-and let $f : \getmemorable{S}{\beta} \to \getmemorable{S}{\beta'}$
+Let $S$ be a lean timer language with $\beta,\beta'\in S$,
+let $f \!:\! \getmemorable{S}{\beta}\! \to\! \getmemorable{S}{\beta'}$
 be a bijection
 from $\getmemorable{S}{\beta}$ to $\getmemorable{S}{\beta'}$.
 Then $\beta$ and $\beta'$ are \emph{equivalent} under $f$, written
@@ -144,10 +144,10 @@ $\suffixbehs{S}{\beta_2}$ contains the suffix
 $\gamma_2 = \simpleutlabel{\toevent{x_2}}{o_3}$.
 %% Then $\simpleutlabel{\toevent{x_1}}{o_1}$ and
 %% $\utlabel{\toevent{x_1}}{o_1}{\set{y_1:= 3}} \cdot \simpleutlabel{\toevent{y_1}}{o_2}$.
-It is then possible that
+It is now possible that
 $\beta_1 \equiv_S^f \beta_2$, where $f$ maps $x_1$ to $x_2$ (whether
-$\beta_1 \equiv_S^f \beta_2$ actually holds depends on which other
-behaviors are in $S$.
+$\beta_1 \equiv_S^f \beta_2$ actually holds depends also on the other
+behaviors in $S$).
 
 %% \(
 %% q_0 \simpleuttrans{i_1}{o_1} q_0 \uttrans{i_2}{o_2}{x_1:= 5} q_2
@@ -180,12 +180,6 @@ Let $S$ be a lean timer language.
 Then there exists an MMT with lean timer language $S$ iff 
 $\equiv_S$ has finitely many equivalence classes (finite index).
 \end{theorem}
-\ifshort
-\begin{proof}
-See appendix.
-\end{proof}
-\else
-\fi
 
 \section{Approximating the Nerode Equivalence}
 \label{sec:approx}
