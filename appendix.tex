@@ -17,13 +17,15 @@ Theorem \ref{timedimpliesuntimed}
 \item 
 Proof of Theorem \ref{timedimpliesuntimed}
 \item 
-Two technical lemmas about zones used in the proof of Theorem \ref{thm:bj-nerode}
+  Two technical lemmas, Lemma~\ref{lemma: feasibility concatenation} and
+  \ref{lemma finitely many zones},
+about zones used in the proof of Theorem \ref{thm:bj-nerode}
 %% \item 
 %% Proof of Theorem \ref{Myhill Nerode}
 \item 
 Proof of Theorem \ref{thm:bj-nerode}
-\item
-A detailed example of a run of the algorithm, in Section YYY
+%% \item
+%% A detailed example of a run of the algorithm, in Section YYY
 \end{itemize}
 
 %% Here is the actual material, it can be structured into several files.
@@ -163,7 +165,7 @@ A timed run of $\M$ is fully determined
 by the sequence of time delays and events that occurs.
 
 \begin{lemma}
-\label{lemma unique timed run}
+\ref{lemma unique timed run}
 Suppose $w$ is a timed word of MMT $\M$ with a unique causality map.
 Then there is a unique timed run $\alpha$ of $\M$ such that $w = \timedword(\alpha)$.
 \end{lemma}
@@ -238,6 +240,8 @@ Note that $f_{k+1}$ is surjective because for each $y \in Y_{k+1}$, since $\N$ i
 there exists an untimed behavior $\beta_y$ consisting of transitions that leave $y$ unaffected, except for the last one in which $y$ expires, and such that $\beta' \cdot \beta_y$ is a feasible untimed behavior of $\N$.
 Using again the same construction as in the beginning of this proof, we may establish that $X_{k+1}$ contains a corresponding timer. 
 \end{proof}
+
+The following two lemmas will be used  Theorem \ref{thm:bj-nerode}.
 
 \begin{lemma}
 \label{lemma: feasibility concatenation}
