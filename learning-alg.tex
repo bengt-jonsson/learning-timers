@@ -232,11 +232,8 @@ automata~\cite{HowarSJC12,CasselHJS16}.
 \end{theorem}
 
 At termination the hypothesis is correct, by definition of equivalence query.
-During the construction, $U$ will never contain two elements that are
-equivalent wrp. $\M$.
-Since each round of hypothesis construction and validation adds at least one
-word to $U$, there can be at most $n$ equivalence queries.
-
+During the construction, $U$ and $V$ will expand until they represent
+$\equiv_S$, at which time the hypothesis will be the desired one.
 Let us analyze the number of queries that may be required in the worst case
 to learn an MMT whose canonical form has $n$ states and at most $r$ active
 timers in any state.
@@ -255,7 +252,7 @@ timers in any state.
   $r !$ possible permutations $f$ for each $\beta\cdot \simpleutlabel{i}{o}$,
   implying at most $n \cdot r!$ equivalence queries.
 \item Since each equivalence query adds at most $r!$ permutations
- to $V$, this means that $|V| \leq n\cdot(r!)^2$ when the algorithm finishes,
+ to $V$, we have $|V| \leq n\cdot(r!)^2$ when the algorithm finishes,
 \end{itemize}
 
 
