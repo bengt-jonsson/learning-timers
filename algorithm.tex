@@ -164,7 +164,8 @@ $\tvals_k(x_j) = \rho_j(x_j) - (t_k - t_j)$
 and
 $\tvals_k(x_i) = \rho_i(x_i) - (t_k - t_i)$).
 
-We can derive the following lemmas, which are proved in the appendix.
+\iflong
+We can derive the following lemmas.
 
 \begin{lemma}
 \label{lemma: feasibility concatenation}
@@ -177,6 +178,7 @@ Then $\beta \cdot \gamma$ is feasible iff $\beta' \cdot \gamma$ is feasible.
 \label{lemma finitely many zones}
 $\{ \Zone{\beta} \mid \beta \mbox{ feasible untimed behavior of } \M \}$ is finite.
 \end{lemma}
+\fi
 %% \ifshort
 %% \begin{proof}
 %% See appendix.
@@ -219,7 +221,7 @@ We will maintain as a loop invariant that $B$ is a feasible untimed behavior wit
 \begin{enumerate}
 \item
 Case $i_j \in I$. Let $N := B ~ i_j/\omega/\rho_0 ~ \emptyset$, where $\omega \in O$ is an arbitrary output that acts as placeholder
-and $\rho_0$ is the empty update.
+and $\rho_0$ is the empty update. (We omit the arrow for $i_j/\omega/\rho_0$ here.)
 Since $B$ is feasible (by the loop invariant), it follows by Lemma~\ref{feasible plus input is feasible} that
 extension $N$ is also feasible.
 Thus the constraints in $\Constraints{N}$ are satisfiable and we may compute a solution $t_1 ,\ldots, t_j$.

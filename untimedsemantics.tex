@@ -182,11 +182,7 @@ $\M \approx_{\mathit{untimed}} \N$
 implies
 $\M \approx_{\mathit{timed}} \N$.
 \end{theorem}
-\ifshort
-\begin{proof}
-See appendix.
-\end{proof}
-\else
+\iflong
 \begin{proof}
 Assume $\M \approx_{\mathit{untimed}} \N$ and $w$ is a timed word of $\M$.
 Since $\approx_{\mathit{timed}}$ is symmetric, it suffices to prove that $w$ is a timed word of $\N$.
@@ -316,10 +312,12 @@ behavior $\emptyset \xrightarrow{i/o/x:=1 } \{ x\} \xrightarrow{i/o/y:=60 } \{ x
 timer $y$ expires.
 \fi
 
+
+
+\subsection{Equivalence timed/untimed semantics}
+\label{sec:wiggling}
 We will show that the timed semantics and the untimed semantics coincide for timer live MMTs in which at most one timer is (re)started on each transition. However, in order prove this result we need to do some prepatory work.
 
-\subsection{Wiggling}
-\label{sec:wiggling}
 Often it is possible to slightly change the timing of events in a timed behavior, 
 while preserving the associated untimed behavior.
 Consider, for instance, a timed behavior 
@@ -434,11 +432,7 @@ Then all races have been eliminated and we can wiggle block $\{ 1, 3 \}$.
 Let $\sigma$ be a timed behavior.
 Then there is a timed behavior $\sigma'$ without races s.t.\  $\untime(\sigma)=\untime(\sigma')$.
 \end{lemma}
-\ifshort
-\begin{proof}
-See appendix.
-\end{proof}
-\else
+\iflong
 \begin{proof}
 (Sketch) Let
 \begin{eqnarray*}
@@ -478,11 +472,7 @@ We call a timed behavior \emph{transparent} if the fractional part of the absolu
 For each feasible untimed behavior $\beta$ there exists
 a transparent timed behavior $\sigma$ such that $\beta = \untime(\sigma)$.
 \end{lemma}
-\ifshort
-\begin{proof}
-See appendix.
-\end{proof}
-\else
+\iflong
 \begin{proof}
 Let $\beta$ be a feasible untimed behavior.
 Then there exists a timed behavior $\sigma$ such that $\beta = \untime(\sigma)$.
@@ -499,11 +489,7 @@ Suppose $\beta$ is a feasible untimed behavior that ends with timer set $Y$, and
 $Y \xrightarrow{i/o/\rho} Y'$ is an untimed behavior with $i \in I$.
 Then $\beta \xrightarrow{i/o/\rho} Y'$ is a feasible untimed behavior.
 \end{lemma}
-\ifshort
-\begin{proof}
-See appendix.
-\end{proof}
-\else
+\iflong
 \begin{proof}
 By Lemma~\ref{lemma: transparent timed behavior}, there exists a transparent timed behavior
 $\sigma$ such that $\beta = \untime(\sigma)$. Since $\sigma$ is transparent, the last valuation of $\sigma$ assigns a positive value to
@@ -591,11 +577,7 @@ $\M \approx_{\mathit{timed}} \N$
 implies
 $\M \approx_{\mathit{untimed}} \N$.
 \end{theorem}
-\ifshort
-\begin{proof}
-See appendix.
-\end{proof}
-\else
+\iflong
 \begin{proof}
 Suppose that $\M \approx_{\mathit{timed}} \N$.
 Let $\beta$ be a feasible untimed behavior of $\M$.
