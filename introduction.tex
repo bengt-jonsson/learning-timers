@@ -27,7 +27,7 @@ All timing issues had to be artificially suppressed.
 There has been some work on algorithms for learning timed systems, e.g., \cite{GrinchteinJP06,GrinchteinJL10,CCF16,VWW:rti}.
 The modeling frameworks of \cite{VWW:rti,CCF16} are very restrictive however: they essentially allow only a single timer, which is reset on every transition,
 thus allowing to represent only constraints on delays between successive transitions. In contrast, the event recording automata studied by \cite{GrinchteinJP06,GrinchteinJL10} appear to have too many degrees of freedom, leading to
-prohibitively complex the learning algorithms.
+prohibitively complex algorithms.
 %% For learning, we would like to have a class of models where the occurrence of timing-dependent behavior
 %% is determined by previous behavior, that is, fewer degrees of freedom than what is supported by event-recording automata.
 In the literature, there is no tractable algorithm which can learn models that
@@ -51,18 +51,21 @@ Kurose and Ross \cite{KR13} to explain transport layer protocols.
 Figure~\ref{fig:abp} presents an MMT model of the sender from 
 the alternating-bit protocol, adapted from \cite[Figure 3.15]{KR13}.
 \begin{figure}[b]
+\ifshort
+\vspace{-1em}
+\fi
 \centering
-\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.3cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2cm,main node/.style={circle,draw,font=\sffamily\large\bfseries}]
   \node[initial, state] (1) {$q_0$};
   \node[state] (2) [right of=1] {$q_1$};
   \node[state] (3) [below of=2] {$q_2$};
   \node[state] (4) [below of=1] {$q_3$};
 
   \path[every node/.style={font=\sffamily\scriptsize}]
-    (1) edge [text width=1.5cm] node {$\mathit{in}/\mathit{send0}$ \\ $x := 3$} (2)
+    (1) edge [text width=1cm] node {$\mathit{in}/\mathit{send0}$ \\ $x := 3$} (2)
     (2) edge [text width=1.5cm] node {$\mathit{ack0}/\Lambda$ \\ $\mathit{stop}(x)$} (3)
         edge [loop right, text width=1.5cm] node {$\toevent{x}/\mathit{send0}$\\ $x := 3$ } (2)
-    (3) edge [text width=1.5cm] node {$\mathit{in}/\mathit{send1}$ \\ $x := 3$} (4)
+    (3) edge [text width=1cm] node {$\mathit{in}/\mathit{send1}$ \\ $x := 3$} (4)
     (4) edge [text width=1cm] node {$\mathit{ack1}/\Lambda$ \\ $\mathit{stop}(x)$} (1)
         edge [loop left, text width=1.5cm] node {$\toevent{x}/\mathit{send1}$\\ $x := 3$} (4);
 \end{tikzpicture}
@@ -129,7 +132,10 @@ is suitable for formulating automata learning
 algorithms. 
 %% From the perspective of an untimed learner, the combination of the adapter and a timed teacher acts like an untimed teacher.
 %% Conversely, the combination of an untimed learner and the adapter behaves like a timed learner.
-\begin{figure}[h]
+\begin{figure}[b]
+\ifshort
+\vspace{-2em}
+\fi
 \begin{center}
  \begin{tikzpicture}[>=stealth]
  \draw [dashed,red] (-3.3,-0.3) rectangle (1.8,3.8);
@@ -168,7 +174,12 @@ states of the resulting MMT, and doubly exponential in the maximal number of
 simultaneously active timers.
 
 \todobj{Maybe we can omit these bullets. What do you think?}
-To summarize, our paper includes the following contributions:
+Summarizing, our paper 
+\iflong
+includes the following contributions:
+\else
+contributes:
+\fi
 \begin{itemize}
 \item
   a new model of timed systems, MMTs, which is a small extensions of Mealy machines, but still expressive enough for many network protocols,
@@ -176,7 +187,7 @@ To summarize, our paper includes the following contributions:
     an untimed semantics equivalent to the timed semantics for MMTs, which allows
     to define a Nerode equivalence as a basis for learning algorithms
    \item
-     a tractable automata learning algorithm for learning MMTs.
+     a tractable algorithm for learning MMTs.
 \todobj{Should this be made more precise?}
 \end{itemize}
 
