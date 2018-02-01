@@ -8,7 +8,7 @@ be sufficiently simple to allow tractable learning algorithms, and sufficiently
 expressive to model common network protocols. For the MMT model we have
 developed a Nerode congruence, allowing to define canonical forms, and used it
 as the basis for an active learning algorithm, which generalizes $L^*$.
-A key technical result is to show the equivalence between the timed semantics,
+A key technical result is the equivalence between the timed semantics,
 which is suitable to represent practical learning scenarios, and the
 untimed semantics, which is suitable for formulating automata learning
 algorithms. This equivalence is embodied by an adaptor, which transforms
@@ -18,8 +18,8 @@ The query complexity of our learning algorithm is polynomial in the number of
 states of the learned MMT, but doubly exponential in the number of simultaneously
 active timers. Since practical network protocols have at most a couple of
 simultaneously active timers, this leads us to believe that our work will
-be a suitable theoretical basis for practical learning algorithms for such
-protocols, and similar classes of timed systems.
+be a suitable theoretical basis for practical learning algorithms for timed
+protocols.
 
 %% Our work consitutes a major step towards a practical approach for active learning of timed systems.
 %% Such an approach would greatly enhance the applicability of active learning for reverse engineering of models of
