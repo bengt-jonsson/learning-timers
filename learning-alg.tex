@@ -216,61 +216,53 @@ wrt.\ $V$,
 The algorithm can then resume a next round of
 hypothesis construction, which will eventually generate a new hypothesis, etc.
 
-Let us analyze the number of queries that may be required in the worst case
-to learn an MMT whose canonical form has $n$ states and at most $r$ active
-timers in any state.
-\begin{itemize}
-\item
-  Each round of hypothesis construction may need $n\cdot(|I|+r+1)-\cdot |V|^r$
-  membership queries. The factor $|V|^r$ arises from the possible
-  need to consider all   permutations of prefix-timers in each suffix.
-\item
-  The processing of each counterexample can be done using $\log(m)$ queries,
-  using binary search, where $m$ is the length of the counterexample.
-\item
-  Each equivalence query will result in refuting an equivalence of form
-  $\beta\cdot \simpleutlabel{i}{o} \equiv_{S,V}^f \beta'$, and
-  adding an additional suffix to $V$. There are at most
-  $r !$ possible permutations $f$ for each $\beta\cdot \simpleutlabel{i}{o}$,
-  implying that there can be at most $n \cdot r!$ equivalence queries.
-\end{itemize}
-In summary,
-the algorithm enjoys the following properties, which are analogous
-to properties
-enjoyed by active automata learning algorithms for regular languages,
-e.g.,~\cite{Ang87}. The additional complexity caused by timers is analogous
+The algorithm enjoys the following properties, are analogous
+to properties by, e.g., $L^*$~\cite{Ang87}.
+The additional complexity caused by timers is analogous
 to the additional complexity caused by registers in learning of register
 automata~\cite{HowarSJC12,CasselHJS16}.
 
 \begin{theorem}
   \label{thm:alg:termination}
-  Given an MMT $\M$ whose normal form has $n$ states, the active learning
-  procedure of this section terminates and produces an equivalen MMT in
-  canonical form, using at most $n\cdot r!$ equivalence queries, and
-  \todobj{Should we put the exact bound here?} membership queries.
+  Given an MMT $\M$ whose canonical form has $n$ states, each of which has
+  at most $r$ active timers, the
+  procedure of this section terminates and produces an equivalent MMT in
+  canonical form, using a number of queries that is at most
+  polynomial in $n$ and doubly exponential in $r$.
 \end{theorem}
 
-
-\todobj{This is to be fixed, or remove the rest of this}
-
-Starting from some initial approximations (e.g., the singleton
-set consisting of the empty word), the sets $U$ and $V$ are
-successively extended, until $U$ contains one element of each equivalence
-class of $\equiv_{S}$, and $\equiv_{S,V}$ coincides with
-$\equiv_{S}$. 
 At termination the hypothesis is correct, by definition of equivalence query.
 During the construction, $U$ will never contain two elements that are
 equivalent wrp. $\M$.
 Since each round of hypothesis construction and validation adds at least one
 word to $U$, there can be at most $n$ equivalence queries.
 
+Let us analyze the number of queries that may be required in the worst case
+to learn an MMT whose canonical form has $n$ states and at most $r$ active
+timers in any state.
+\begin{itemize}
+\item
+  Hypothesis construction may need $n\cdot(|I|+r+1)\cdot |V|^r$
+  membership queries in total. The factor $|V|^r$ arises as the number of
+  permutations of prefix-timers in each suffix.
+\item
+  Processing a counterexample may need $\log(m)$ membership queries,
+  using binary search, where $m$ is the length of the counterexample.
+\item
+  Each equivalence query will result in refuting an equivalence of form
+  $\beta\cdot \simpleutlabel{i}{o} \equiv_{S,V}^f \beta'$, and extending
+   $V$. There are at most
+  $r !$ possible permutations $f$ for each $\beta\cdot \simpleutlabel{i}{o}$,
+  implying at most $n \cdot r!$ equivalence queries.
+\item Since each equivalence query adds at most $r!$ permutations
+ to $V$, this means that $|V| \leq n\cdot(r!)^2$ when the algorithm finishes,
+\end{itemize}
 
-Since each equivalence query adds only one
-word to $V$, this means that $|V| \leq n$ when the algorithm finishes,
-implying that in total, at most $n^2|I|$ membership queries
-will be performed during hypothesis construction.
-During hypothesis
-validation, at most $2\log(m)$ membership queries need be performed
-(in addition to the equivalence query), where
-$m$ is the length of the largest counterexample word returned.
+
+%% implying that in total, at most $n^2|I|$ membership queries
+%% will be performed during hypothesis construction.
+%% During hypothesis
+%% validation, at most $2\log(m)$ membership queries need be performed
+%% (in addition to the equivalence query), where
+%% $m$ is the length of the largest counterexample word returned.
 
