@@ -4,7 +4,7 @@ The appendix contains proofs of technical results in the paper.
 The proofs are the following:
 \begin{itemize}
 \item
-Proof of Theorem \ref{untimedimpliestimed}
+Proof of Theorem \ref{untimedimpliestimed}, preceded by a small technical lemma.
 \item 
 Proof of Lemma \ref{race elimination}
 \item 
@@ -31,7 +31,11 @@ Proof of Theorem \ref{thm:bj-nerode}
 \end{itemize}
 
 %% Here is the actual material, it can be structured into several files.
-
+\begin{lemma}
+\label{lemma isomorphism}
+Let $\sigma$ be a timed behavior and let $f$ be an isomorphism for $\sigma$.
+Then $\untime(f(\sigma)) = f(\untime(\sigma))$.
+\end{lemma}
 
 \paragraph{Theorem \ref{untimedimpliestimed}.}
 \emph{$\M \approx_{\mathit{untimed}} \N$
