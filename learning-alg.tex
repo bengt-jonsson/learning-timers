@@ -156,7 +156,14 @@ If the query returns ``yes'', then
 the learning is completed, and $\hypoof UV$ accepts $S$.
 If the query returns a counterexample in the form of a lean behavior
 $\alpha$ on which $\hypoof UV$ and $S$ disagree,
-this is used to extend $V$ as follows.
+this is used to extend $V$ by a new input suffix $v$ (and its permutations),
+such that
+$U$ is no longer closed wrt.\ $V$.
+\ifshort
+The procedure for producing this $v$ from $\alpha$ is found in the
+appendix.
+\else
+as follows.
 We assume w.l.o.g.\ that no proper prefix of $\alpha$ is a counterexample. 
 By the fact that $\alpha$ is a counterexample, we can find a lean
 suffix $\gamma$ of $\alpha$, such that
@@ -204,7 +211,9 @@ $\gamma$ as $\gamma_j$.
 This means that $\gamma$ is a new separating suffix, and that $V$ should be
 extended with $\untimedinputword(\gamma)$.
 After adding $v$ (and its permutations) to $V$, $U$ is no longer closed
-wrt.\ $V$, so the algorithm can resume a next round of
+wrt.\ $V$,
+\fi
+The algorithm can then resume a next round of
 hypothesis construction, which will eventually generate a new hypothesis, etc.
 
 Let us analyze the number of queries that may be required in the worst case

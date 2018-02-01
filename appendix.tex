@@ -24,6 +24,8 @@ about zones used in the proof of Theorem \ref{thm:bj-nerode}
 %% Proof of Theorem \ref{Myhill Nerode}
 \item 
 Proof of Theorem \ref{thm:bj-nerode}
+\item
+  The procedure for processing counterexamples in the learning algorithm
 %% \item
 %% A detailed example of a run of the algorithm, in Section YYY
 \end{itemize}
@@ -436,3 +438,57 @@ It is routine to verify that $\M$ is a well-defined MMT whose set of feasible un
 %% \end{itemize}
 %% It is routine to verify that $\M$ is a well-defined MMT whose set of feasible untimed behaviors is isomorphic to $S$.
 %% \end{proof}
+
+\paragraph{Processing Counterexamples in the Learning Algorithm}
+
+This section presents the procedure for extracting a new lean suffix
+from a counterexample produced by an equivalence query.
+Suppose that an equivalence query returns a counterexample in the form of a lean behavior
+$\alpha$ on which $\hypoof UV$ and $S$ disagree,
+this is used to extend $V$ as follows.
+We assume w.l.o.g.\ that no proper prefix of $\alpha$ is a counterexample. 
+By the fact that $\alpha$ is a counterexample, we can find a lean
+suffix $\gamma$ of $\alpha$, such that
+$\beta\cdot \simpleutlabel{i}{o} \equiv_{S,V}^f \beta'$ but
+$\gamma \in \suffixbehs{S}{(\extend{\beta}{i}{\lambda(\beta,i)})}
+\smallnotiff \gamma \in \suffixbehs{S}{\beta'}$
+for some $\beta,\beta' \in U$ such that 
+$\beta\compose{S}\simpleutlabel{i}{o} \equiv_{S,V}^f \beta'$ is used to construct
+the transition triggered by $i$ from $\beta$ in $\hypoof UV$.
+To se this, let $\alpha = \utlabel{i_1}{o_1}{\rho_1} \cdots \utlabel{i_n}{o_n}{\rho_n}$, and for $j = 0 , \ldots, n$, define
+a lean behavior $\beta_j$ and a $\beta_j$-suffix as follows.
+\begin{itemize}
+\item $\beta_0 = \emptyword$, and
+%%   , $f_0$ is arbitrary, and 
+  $\gamma_0$ is obtained by making $\alpha$ a lean suffix (i.e.,
+  renaming each timer $x_l$ to $y_l$).
+\item
+  Let $\gamma_{j-1}$ be of form
+  $\utlabel{\hat{i_j}}{\hat{o_j}}{\hat{\rho_j}} \cdot \gamma_{j-1}'$,
+  let $\beta_j$ be $\lambda(\beta_{j-1},\hat{i_j})$,
+  let $f_j$ be the mapping used to establish
+  $\beta_{j-1}\compose{S}\simpleutlabel{\hat{i_j}}{\hat{o_j}} \equiv_{S,V}^{f_j} \beta_{j}$
+  in the construction of $\hypoof UV$,
+  and let $\gamma_j$ be obtained from $\gamma_{j-1}'$ by
+  (i) applying $f_j$ to timers in $\set{x_1, \ldots , x_{\beta_{j-1}}}$,
+  (ii) replacing $y_1$ by $f_j(x_{\beta_{j-1}+1})$, and
+  (ii) replacing each $y_l$ by $y_{l-1}$.
+\end{itemize}
+The result is that
+$\beta_0 \ldots \beta_n$ is the sequence of states 
+visited when $\hypoof UV$ processes $\alpha$, and
+$\gamma_j$ is lean suffix that can be composed with $\beta_j$,
+which corresponds to a suffix of $\alpha$.
+%% Let $\gamma_j$ be the suffix
+%% $\utlabel{i_{j+1}}{o_{j+1}}{\rho_{j+1}} \cdots \utlabel{i_n}{o_n}{\rho_n}$
+%% of $\alpha$ of length $n-j$. 
+By the fact that $\alpha$ is a counterexample, we have
+$\gamma_0 \in\suffixbehs{S}{\beta_0} \smallnotiff \gamma_n \in\suffixbehs{S}{\beta_n}$ (since $\gamma_n$ is the empty sequence), which implies that
+$\gamma_{j-1} \in\suffixbehs{S}{\beta_{j-1}}
+\smallnotiff
+\gamma_{j} \in\suffixbehs{S}{\beta_{j}}$
+for some $j$;
+we can then take $\beta_{j-1}$ as $\beta$ and $\beta_j$ as $\beta'$, and
+$\gamma$ as $\gamma_j$.
+This means that $\gamma$ is a new separating suffix, and that $V$ should be
+extended with $\untimedinputword(\gamma)$.
