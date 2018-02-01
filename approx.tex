@@ -1,26 +1,77 @@
-\section{A Nerode Equivalence for MMTs}
+\section{A Myhill Nerode Theorem for MMTs}
+\label{sec:nerode}
 \label{sec:bj-nerode}
 
-In this section, we present a Nerode equivalence on timer languages.
+We will now exploit the equivalence between timed and untimed semantics
+(Theorems~\ref{untimedimpliestimed} and~\ref{timedimpliesuntimed}).
+In this section, we develop a Nerode congruence for building MMTs
+from their sets of untimed
 We thereafter, in Section~\ref{sec:approx} present an approximation of this
 Nerode equivalence, tobe used as a basis for the learning algorithm in
 Section~\ref{sec:learning}.
 
-\todobj{The following paragraph could be omitted}
-Recall that an untimed behavior is \emph{canonical} when, for each $j$,
-the timer that is updated in the $j$-th event (if any) is equal to $x_j$.
-It is {\em lean} if it is canonical and
-includes only timers that expire during the behavior. 
+  A Nerode congruence allows to build automata from their languages. For MMTs,
+  these languages are their sets of untimed behaviors, in canonical form.
+
+\begin{definition}
+\label{def:timer language}
+A \emph{timer language} over $I$ and $O$ is a nonempty set 
+$S$ of feasible untimed behaviors in canonical form over $I$ and $O$ that satisfies the following five properties:
+\begin{itemize}
+\item
+\emph{no initial timers}: $\beta \in S \Rightarrow \Head{\beta} = \emptyset$,
+\item
+\emph{prefix closed}: $\beta \cdot \gamma \in S \Rightarrow \beta \in S$,
+\item
+\emph{behavior deterministic}:
+$\beta \xrightarrow{i/o_1/\rho_1} X_1 \in S \wedge \beta \xrightarrow{i/o_2/\rho_2} X_2 \in S \Rightarrow o_1 = o_2 \wedge \rho_1 = \rho_2 \wedge X_1 = X_2$,
+\item
+\emph{input complete}:
+$\beta \in S \wedge i \in I \Rightarrow \exists o, \rho, Y : \beta \xrightarrow{i/o/\rho} Y \in S$,
+and
+\item
+\emph{timeout complete}:
+$\beta \in S \wedge x \mbox{ expirable after } \beta \Rightarrow
+\exists o, \rho, Y: \beta \xrightarrow{\toevent{x}/o/\rho} Y \in S$.
+\end{itemize}
+\end{definition}
+
+During learning of an MMT, the Learner does not ``see'' all the timers
+in the sets of timers of an untimed behavior, only those that have
+been observed to expire at some later point. 
+Recall that an untimed behavior is {\em lean} if it is canonical and
+includes only timers that expire during the behavior.
+Let $\lean{\beta}$ be the lean behavior obtained from a canonical
+behavior $\beta$.
 Since the sequence of timer sets in a lean behavior is
 uniquely determined by the labels on its transition, we can
 denote a lean behavior simply by the sequence
 $\utlabel{i_1}{o_1}{\rho_1} \cdots \utlabel{i_n}{o_n}{\rho_n}$ of its labels.
-If some $\rho_j$ is empty, can omit it. In particular, the last assignment of
-any lean behavior is always empty.
+If some $\rho_j$ is empty, we often omit it. In particular,
+the last assignment of any lean behavior is always empty.
+
+Define a {\em lean timer language} to be the set of lean behaviors derived from
+a timer language. Given a lean timer language $S$, we can obtain a corresponding
+timer language as follows. For a lean behavior, 
+let $\getmemorable{S}{\beta}$ be the set of timers $x_i$ in
+$x_1 , \ldots x_{|\beta|}$ whose corresponding timeout event
+(of form $\toevent{x_i}$) occurs (as an input) in som continuation $\beta'$
+of $\beta$ in $S$.
+Let $\getassignment{S}{\beta}$ map each timer $x_i$ in
+$\getmemorable{S}{\beta}$ to the unique positive integer to which it
+is assigned in that extension.
+It is easy to transform a lean untimed language into a corresponding untimed one:
+simply replace each lean behavior by the untimed behavior obtained by
+letting $\getmemorable{S}{\beta}$ be the set of timers after $\beta$,
+and assigning each occurring timer to 
+$\getassignment{S}{\beta}(x_i)$ in the $i$th transition.
+In the following, when referring to ``timer languages'', we will always
+mean ``lean timer languages''.
 
 The basis for a Nerode equivalence is to define residual languages.
 Intuitively, we would like to say that $\beta$ and $\beta'$ are equivalent if
-$\beta \cdot \gamma \in S \iff \beta' \cdot \gamma \in S$. However, we must
+roughly
+``$\beta \cdot \gamma \in S \iff \beta' \cdot \gamma \in S$''. However, we must
 be careful with the names of timers that expire and/or are assigned in $\gamma$.
 We will therefore introduce conventions for naming timers in suffixes, in
 analogy with the naming in canonical behaviors.
@@ -43,26 +94,26 @@ For integer $k \geq 0$, let $\suffmap{k}$ be the injective mapping on
 $Y$ which maps each $y_j$ to $x_{j+k}$.  We apply mappings of form
 $\suffmap{k}$ to lean suffix behaviors in the natural way.
 
-We can now define residual langues. For a timer language $S$ and lean
+We can now define residual langues. For a (lean) timer language $S$ and lean
 behavior $\beta \in S$, let
 $\suffixbehs{S}{\beta}$ be the set of lean suffixes $\gamma$ such that
 there is a canonical behavior $\beta'$ with $\beta \sqsubseteq \beta'$ such that
 $\beta'\cdot\suffmap{|\beta|}(\gamma) \in S$.
-Let $\getmemorable{S}{\beta}$ be the set of timers $x_i$ in
+Then $\getmemorable{S}{\beta}$ is the set of timers $x_i$ in
 $x_1 , \ldots x_{|\beta|}$ whose corresponding timeout event
 (of form $\toevent{x_i}$) occurs (as an input) in some suffix $\hat{\gamma}$ in
-$\suffixbehs{S}{\beta}$.
-Let $\getassignment{S}{\beta}$ map each timer $x_i$ in
+$\suffixbehs{S}{\beta}$, and
+$\getassignment{S}{\beta}$ maps each timer $x_i$ in
 $\getmemorable{S}{\beta}$ to the unique positive integer to which it
 is assigned in the corresponding
 lean behavior $\beta'\cdot\suffmap{|\beta|}(\hat{\gamma})$
 in $S$.
 
-We can now defined the Nerode equivalence.
+We can now define the Nerode equivalence.
 
 \begin{definition}
   \label{def:bj-nerode}
-Let $S$ be a timer language with $\beta,\beta'\in S$,
+Let $S$ be a (lean) timer language with $\beta,\beta'\in S$,
 and let $f : \getmemorable{S}{\beta} \to \getmemorable{S}{\beta'}$
 be a bijection
 from $\getmemorable{S}{\beta}$ to $\getmemorable{S}{\beta'}$.
@@ -81,13 +132,12 @@ We write $\beta \equiv_{S} \beta'$ to denote that
 $\beta \equiv_{S}^f \beta'$ for some
 $f : \getmemorable{S}{\beta} \to \getmemorable{S}{\beta'}$.
 
-As an example, assume that $S$ contains the lean behaviors
-\(
-\utlabel{i_1}{o_1}{x_1:=5} \cdot \simpleutlabel{\toevent{x_1}}{o_3}
-\) and
-\(
-\simpleutlabel{i_1}{o_1} \cdot \utlabel{i_2}{o_2}{x_2:=4} \cdot \simpleutlabel{\toevent{x_2}}{o_3}
-\).
+\paragraph{Example} Let $S$ contain the lean behaviors
+\[
+\utlabel{i_1}{o_1}{\set{x_1:=5}} \cdot \simpleutlabel{\toevent{x_1}}{o_3}
+\mbox{ and }
+\simpleutlabel{i_1}{o_1} \cdot \utlabel{i_2}{o_2}{\set{x_2:=4}} \cdot \simpleutlabel{\toevent{x_2}}{o_3}
+\]
 Let $\beta_1 = \simpleutlabel{i_1}{o_1}$ and
 $\beta_2 = \simpleutlabel{i_1}{o_1} \cdot \simpleutlabel{i_2}{o_2}$.
 Then $\suffixbehs{S}{\beta_1}$ contains the suffix
@@ -95,10 +145,10 @@ $\gamma_1 = \simpleutlabel{\toevent{x_1}}{o_3}$ and
 $\suffixbehs{S}{\beta_2}$ contains the suffix
 $\gamma_2 = \simpleutlabel{\toevent{x_2}}{o_3}$.
 %% Then $\simpleutlabel{\toevent{x_1}}{o_1}$ and
-%% $\utlabel{\toevent{x_1}}{o_1}{y_1:= 3} \cdot \simpleutlabel{\toevent{y_1}}{o_2}$.
+%% $\utlabel{\toevent{x_1}}{o_1}{\set{y_1:= 3}} \cdot \simpleutlabel{\toevent{y_1}}{o_2}$.
 It is then possible that
 $\beta_1 \equiv_S^f \beta_2$, where $f$ maps $x_1$ to $x_2$ (whether
-$\beta_1 \equiv_S^f \beta_2$ actually holds depends, of course on which other
+$\beta_1 \equiv_S^f \beta_2$ actually holds depends, of course, on which other
 behaviors are in $S$.
 
 %% \(
@@ -128,14 +178,18 @@ behaviors are in $S$.
 
 \begin{theorem}
   \label{thm:bj-nerode}
-Let $S$ be a timer language.
-Then there exists an MMT with timer language $S$ iff 
+Let $S$ be a lean timer language.
+Then there exists an MMT with lean timer language $S$ iff 
 $\equiv_S$ has finitely many equivalence classes (finite index).
 \end{theorem}
+\ifshort
+\begin{proof}
+See appendix.
+\end{proof}
+\else
+\fi
 
-\todobj{Proof is standard}
-
-\subsection{Approximating the Nerode Equivalence}
+\section{Approximating the Nerode Equivalence}
 \label{sec:approx}
 
 For the learning algorithm, we must define an overapproximation

@@ -17,9 +17,11 @@ Theorem \ref{timedimpliesuntimed}
 \item 
 Proof of Theorem \ref{timedimpliesuntimed}
 \item 
-Two technical lemmas about zones used in the proof of Theorem \ref{Myhill Nerode}
+Two technical lemmas about zones used in the proof of Theorem \ref{thm:bj-nerode}
+%% \item 
+%% Proof of Theorem \ref{Myhill Nerode}
 \item 
-Proof of Theorem \ref{Myhill Nerode}
+Proof of Theorem \ref{thm:bj-nerode}
 \item
 A detailed example of a run of the algorithm, in Section YYY
 \end{itemize}
@@ -252,38 +254,56 @@ $\{ \Zone{\beta} \mid \beta \mbox{ feasible untimed behavior of } \M \}$ is fini
   An MMT only has a finite number of timers that can only be set to a finite number of integer values. Since in an MMT the values of timers can only decrease, their values are bounded, so that only finitely many integers may appear in the conjuncts of $\Zone{\beta}$. This the set of possible $\Zone{\beta}$ is finite.
 \end{proof}
 
-\paragraph{Theorem \ref{Myhill Nerode}.}
-\emph{Let $S$ be a timer language.
-Then there exists an MMT with feasible untimed behaviors $T$ and $\can{T} = S$ iff 
+\paragraph{Theorem~\ref{thm:bj-nerode}.}
+\emph{Let $S$ be a lean timer language.
+Then there exists an MMT with feasible lean untimed behaviors $S$ iff
 $\equiv_S$ has finitely many equivalence classes (finite index).}
 
+\newcommand{\tildebeta}{\tilde{\beta}}
+\newcommand{\tildebetap}{\tilde{\beta'}}
 \begin{proof} 
 
-``$\Rightarrow$'' Let $\M$ be an MMT, let $T$ be its set of feasible untimed behaviors, and let $S = \can{T}$.
-Then it follows from the definitions, Lemma~\ref{feasible plus input is feasible} and Lemma~\ref{expirable} that $S$ is a timer language.
+  Let us first introduce some notation.
+  For a lean behavior $\beta\in S$ and $\gamma \in \suffixbehs{S}{\beta}$, let
+$\beta\compose{S}\gamma$ be the (unique) lean behavior $\beta'\cdot\suffmap{|\beta|}(\gamma)$ in $S$ with $\beta \sqsubseteq \beta'$.
+Let $\feasibleinputs{\beta}{S}$ be the set of $i \in \extinputs$ such that
+$\beta \compose{S} \simpleutlabel{i}{o} \in S$ for some $o$ (recall that the
+last assignment of a lean behavior is always empty).
+For $i \in \feasibleinputs{\beta}{S}$, let $\lambda(\beta,i)$ be the unique
+output $o$ such that $\beta \compose{S} \simpleutlabel{i}{o} \in S$.
+
+``$\Rightarrow$'' Let $\M$ be an MMT, let $T$ be its set of feasible untimed behaviors, and let $S = \lean{\can{T}}$.
+Then it follows from the definitions, Lemma~\ref{feasible plus input is feasible} and Lemma~\ref{expirable}, that $S$ is a timer language.
 Suppose that $\beta, \beta' \in S$.
-Then there exist (unique) $\delta, \delta \in T$ with
+Then there are unique canonical $\tildebeta$, $\tildebetap$ such that
+$\beta = \lean{\tildebeta}$ and $\beta' = \lean{\tildebetap}$ and
+(unique) $\delta, \delta \in T$ with
 $\can{\delta}=\beta$ and $\can{\delta'}=\beta'$.
-Suppose $\delta$ and $\delta'$ lead to the same state $q$ of $\M$ and moreover $\Zone{\delta} = \Zone{\delta'}$.
+Since $\tildebeta$ and $\delta$ are isomorphic, there exists an isomorphism
+$h = h_0 ,\ldots, h_k$ from $\tildebeta$ to $\delta$.
+Similarly, since $\tildebetap$ and $\delta'$ are isomorphic, there exists an isomorphism $h' = h'_0 ,\ldots, h'_l$ from $\tildebetap$ to $\delta'$.
+Suppose $\delta$ and $\delta'$ lead to the same state $q$ of $\M$ and moreover $\Zone{h^{-1}(\delta)} = \Zone{{h'}^{-1}(\delta')}$.
 We claim that $\beta \equiv_S \beta'$.
-Since $\beta$ and $\delta$ are isomorphic, there exists an isomorphism $g = g_0 ,\ldots, g_k$ from $\beta$ to $\delta$.
-Similarly, since $\beta'$ and $\delta'$ are isomorphic, there exists an isomorphism $g' = g'_0 ,\ldots, g'_l$ from $\beta'$ to $\delta'$.
-Let $f_0 = (g'_l)^{-1} \circ g_k$.
-Suppose that, for some untimed behavior $\gamma$, $\beta \cdot \gamma \in S$.
-Then there exists an untimed behavior $\zeta$ such that $\delta \cdot \zeta \in T$ and $\can{\delta \cdot \zeta} = \beta \cdot \gamma$.
-Moreover, there exists an isomorphism $h = g_k ,\ldots, g_m$ from $\gamma$ to $\zeta$.
+Let $f$ be the restriction of $(h'_l)^{-1} \circ h_k$ to $\Last{\beta}$.
+Suppose that $\gamma \in \suffixbehs{S}{\beta}$.
+Then there exists an untimed behavior $\zeta$ such that $\delta \cdot \zeta \in T$ and $\lean{\can{\delta \cdot \zeta}} = \beta \compose{S} \gamma$.
+%% Moreover, there exists an injection $h = g_k ,\ldots, g_m$ from $\gamma$ to $\zeta$.
 Since $\delta \cdot \zeta$ is a feasible behavior in $T$, it follows by Lemma~\ref{lemma: feasibility concatenation} that
 $\delta' \cdot \zeta$ is a feasible behavior in $T$.
-Thus there exists an untimed behavior $\gamma'$ such that $\can{\delta' \cdot \zeta} = \beta' \cdot \gamma' \in S$.
-Moreover, we may construct an isomorphism $h' = g'_l ,\ldots, g'_n$ from $\gamma'$ to $\zeta$.
-Then $f = (g'_l)^{-1} \circ g_k \cdots (g'_n)^{-1} \circ g_m$ is an isomorphism from $\gamma$ to $\gamma'$ that extends $f_0$.
-We then have $\beta' \cdot f(\gamma) \in S$, as required.
-Clause (b) of Definition~\ref{def:nerode} follows by a symmetric argument.
+It follows that 
+$\lean{\can{\delta' \cdot \zeta}} = \beta' \compose{S} f(\gamma)$, and hence
+that $f(\gamma) \in \suffixbehs{S}{\beta'}$.
+%% Thus there exists a $\gamma' \in \suffixbehs{S}{\beta'}$ such that
+%% and $\lean{\can{\delta' \cdot \zeta}} = \beta' \compose{S} \gamma'$.
+%% Moreover, we may construct an injection $\tilde{h} = h'_l ,\ldots, h'_n$ from $\gamma'$ to $\zeta$.
+%% Then $f = (g'_l)^{-1} \circ g_k \cdots (g'_n)^{-1} \circ g_m$ is an isomorphism from $\gamma$ to $\gamma'$ that extends $f_0$.
+%% We then have $\beta' \cdot f(\gamma) \in S$, as required.
+Clause (b) of Definition~\ref{def:bj-nerode} follows by a symmetric argument.
 Since $\M$ only has finitely many states and by Lemma~\ref{lemma finitely many zones} the number of zones of feasible
 untimed behaviors of $M$ is finite, it follows that $\equiv_S$ has finite index.
 
 ``$\Leftarrow$'' 
-Suppose $S$ is a timer language such that $\equiv_S$ has a finite index.
+Suppose $S$ is a (lean) timer language such that $\equiv_S$ has a finite index.
 A subset $Q \subseteq S$ is a \emph{basis} for $S$ if it contains a unique representative from
 each equivalence class of $\equiv_S$.
 %We construct a basis for $S$ using a simple greedy algorithm. Start by setting $Q := \{ \emptyset \}$, where $\emptyset$ is the trivial untimed behavior. Then, as long as an untimed behavior $\beta$ exists that extends a behavior in $Q$ with a single transition and
@@ -304,26 +324,111 @@ Since $\equiv_S$ has finite index, $S$ has a finite basis $Q$.
 Now MMT $\M = (I, O \cup \{ \perp \}, Q, \beta_0, \vars, \delta, \lambda, \remap)$ is defined as follows:
 \begin{itemize}
 \item
-$\beta_0$ is the unique element of $Q$ such that $\beta_0 \equiv_S \emptyset$.
+$\beta_0$ is the unique element of $Q$ such that $\beta_0 \equiv_S \emptyword$.
 \item
-$\varsof{\beta} = \Last{\beta}$.
-\item
-Let $\beta \in Q$ and $i \in I$. Then, since $S$ is input complete and behavior deterministic, there are unique
-$o$, $\rho$ and $Y$ such that $\zeta = \beta \xrightarrow{i/o/\rho} Y \in S$.
-Let $\zeta'$ be the unique element of $Q$ with $\zeta' \equiv_S \zeta$, and
-let $f_0$ be a matching for $\zeta' \equiv_S \zeta$.
-Then $\delta(\beta,i) = \zeta'$, $\lambda(\beta,i) = o$, and $\remap(\beta,i) = \rho  \circ f_0$.
-\item
-Assume $\beta \in Q$ and $x\in \Last{\beta}$ expirable after $\beta$. 
-Then, since $S$ is  timeout complete and behavior deterministic, there exist unique
-$o$, $\rho$ and $Y$ such that $\zeta = \beta \xrightarrow{\toevent{x}/o/\rho} Y \in S$.
-Let $\zeta'$ be the unique element of $Q$ with $\zeta' \equiv_S \zeta$, and
-let $f_0$ be a matching for $\zeta' \equiv_S \zeta$.
-Then $\delta(\beta,\toevent{x}) = \zeta'$, $\lambda(\beta,\toevent{x}) = o$, and $\remap(\beta,\toevent{x}) = \rho \circ f_0$.
-\item
-Assume $\beta \in Q$ and $x \in \Last{\beta}$ not expirable after $\beta$.
-We define $\delta(\beta,\toevent{x}) = \beta$, $\lambda(\beta,\toevent{x}) = \perp$, and $\remap(\beta,\toevent{x}) = \rho_0$, 
-where $\perp$ is a special, fresh output event and $\domof{\rho_0} = \emptyset$.
+$\varsof{\beta} = \getmemorable{S}{\beta}$,
+\item Let $\beta \in U$ and $i \in \feasibleinputs{\beta}{S}$. Then
+  \begin{itemize}
+    \item $\lambda(\beta,i)$ is
+     the unique $o$ such that $\extend{\beta}{i}{o} \in S$. 
+    \item $\delta(\beta,i)$ is is
+        the unique $\beta' \in U$ such that there is an $f$ with
+  $\extend{\beta}{i}{\lambda(\beta,i)} \equiv_{S,V}^f \beta'$.
+      \item $\remap(\beta,i):\getmemorable{S}{\beta'} \mapsto (\getmemorable{S}{\beta} \cup \natplus)$ is defined as $f^{-1}$ on
+        $\getmemorable{S}{\beta'}$, except that it maps
+        $f(x_{(|\beta|+1)})$ to
+        \\
+        $\getassignment{S}{\beta'}(f(x_{(|\beta|+1)}))$
+        if $f(x_{(|\beta|+1)}) \in \getmemorable{S}{\beta'}$.
+  \end{itemize}
+\item When $\beta \in U$ and $i$ is of form $\toevent{x_j}$ with
+  $x_i \getmemorable{S}{\beta}$ but
+  $\toevent{x_j} \not\in\feasibleinputs{\beta}{S}$, we let
+  $\lambda(\beta,i) = \bot$, 
+  $\delta(\beta,i) = \beta$, and let
+  $\remap(\beta,i)$ be the identity mapping on $\getmemorable{S}{\beta}{V}$.
 \end{itemize}
+The last case (where  $\toevent{x_j} \not\in\feasibleinputs{\beta}{S}$)
+constructs a transition that is not feasible,
+but which must anyway be syntactically present, since $x_j$
+may expire after some continuation if $\beta$ and is hence live.
+
 It is routine to verify that $\M$ is a well-defined MMT whose set of feasible untimed behaviors is isomorphic to $S$.
 \end{proof}
+
+
+%% \paragraph{Theorem \ref{Myhill Nerode}.}
+%% \emph{Let $S$ be a timer language.
+%% Then there exists an MMT with feasible untimed behaviors $T$ and $\can{T} = S$ iff 
+%% $\equiv_S$ has finitely many equivalence classes (finite index).}
+
+%% \begin{proof} 
+
+%% ``$\Rightarrow$'' Let $\M$ be an MMT, let $T$ be its set of feasible untimed behaviors, and let $S = \can{T}$.
+%% Then it follows from the definitions, Lemma~\ref{feasible plus input is feasible} and Lemma~\ref{expirable} that $S$ is a timer language.
+%% Suppose that $\beta, \beta' \in S$.
+%% Then there exist (unique) $\delta, \delta \in T$ with
+%% $\can{\delta}=\beta$ and $\can{\delta'}=\beta'$.
+%% Suppose $\delta$ and $\delta'$ lead to the same state $q$ of $\M$ and moreover $\Zone{\delta} = \Zone{\delta'}$.
+%% We claim that $\beta \equiv_S \beta'$.
+%% Since $\beta$ and $\delta$ are isomorphic, there exists an isomorphism $g = g_0 ,\ldots, g_k$ from $\beta$ to $\delta$.
+%% Similarly, since $\beta'$ and $\delta'$ are isomorphic, there exists an isomorphism $g' = g'_0 ,\ldots, g'_l$ from $\beta'$ to $\delta'$.
+%% Let $f_0 = (g'_l)^{-1} \circ g_k$.
+%% Suppose that, for some untimed behavior $\gamma$, $\beta \cdot \gamma \in S$.
+%% Then there exists an untimed behavior $\zeta$ such that $\delta \cdot \zeta \in T$ and $\can{\delta \cdot \zeta} = \beta \cdot \gamma$.
+%% Moreover, there exists an isomorphism $h = g_k ,\ldots, g_m$ from $\gamma$ to $\zeta$.
+%% Since $\delta \cdot \zeta$ is a feasible behavior in $T$, it follows by Lemma~\ref{lemma: feasibility concatenation} that
+%% $\delta' \cdot \zeta$ is a feasible behavior in $T$.
+%% Thus there exists an untimed behavior $\gamma'$ such that $\can{\delta' \cdot \zeta} = \beta' \cdot \gamma' \in S$.
+%% Moreover, we may construct an isomorphism $h' = g'_l ,\ldots, g'_n$ from $\gamma'$ to $\zeta$.
+%% Then $f = (g'_l)^{-1} \circ g_k \cdots (g'_n)^{-1} \circ g_m$ is an isomorphism from $\gamma$ to $\gamma'$ that extends $f_0$.
+%% We then have $\beta' \cdot f(\gamma) \in S$, as required.
+%% Clause (b) of Definition~\ref{def:nerode} follows by a symmetric argument.
+%% Since $\M$ only has finitely many states and by Lemma~\ref{lemma finitely many zones} the number of zones of feasible
+%% untimed behaviors of $M$ is finite, it follows that $\equiv_S$ has finite index.
+
+%% ``$\Leftarrow$'' 
+%% Suppose $S$ is a timer language such that $\equiv_S$ has a finite index.
+%% A subset $Q \subseteq S$ is a \emph{basis} for $S$ if it contains a unique representative from
+%% each equivalence class of $\equiv_S$.
+%% %We construct a basis for $S$ using a simple greedy algorithm. Start by setting $Q := \{ \emptyset \}$, where $\emptyset$ is the trivial untimed behavior. Then, as long as an untimed behavior $\beta$ exists that extends a behavior in $Q$ with a single transition and
+%% %is not equivalent to any behavior in $Q$, add it to $Q$.  Since $\equiv_S$ has finite index this algorithm will terminate.
+%% %By construction, the resulting set $Q$ is nonempty, finite and prefix closed.
+%% %By contradiction, we prove that $Q$ contains a representative from each equivalence class.
+%% %Suppose $\beta \in S$ is an untimed behavior that is not equivalent to any behavior in $Q$.
+%% %W.l.o.g.\ we may assume that all proper prefixes of $\beta$ are equivalent to a behavior in $Q$.
+%% %Thus $\beta$ is of the form $\delta \xrightarrow{i/o, \rho} Y$, for some behavior $\delta$ not in $Q$ (otherwise our algorithm would
+%% %have added $\beta$ to $Q$) but equivalent to some $\delta'$ in $Q$.
+%% %Because $S$ is input complete, it contains a behavior $\beta' = \delta' \xrightarrow{i/o', \rho'} Y'$.
+%% %Since $\equiv_S$ is a right-congruence, it follows that $\beta \equiv_S \beta'$.
+%% %Since $\beta$ is not equivalent to any behavior in $Q$, the same holds for $\beta'$.
+%% %This is a contradiction, because we have found a behavior $\beta'$ that extends a behavior in $Q$ with a single transition,
+%% %is not equivalent to any behavior in $Q$, but nevertheless has not been added to $Q$.
+%% %
+%% Since $\equiv_S$ has finite index, $S$ has a finite basis $Q$.
+%% Now MMT $\M = (I, O \cup \{ \perp \}, Q, \beta_0, \vars, \delta, \lambda, \remap)$ is defined as follows:
+%% \begin{itemize}
+%% \item
+%% $\beta_0$ is the unique element of $Q$ such that $\beta_0 \equiv_S \emptyset$.
+%% \item
+%% $\varsof{\beta} = \Last{\beta}$.
+%% \item
+%% Let $\beta \in Q$ and $i \in I$. Then, since $S$ is input complete and behavior deterministic, there are unique
+%% $o$, $\rho$ and $Y$ such that $\zeta = \beta \xrightarrow{i/o/\rho} Y \in S$.
+%% Let $\zeta'$ be the unique element of $Q$ with $\zeta' \equiv_S \zeta$, and
+%% let $f_0$ be a matching for $\zeta' \equiv_S \zeta$.
+%% Then $\delta(\beta,i) = \zeta'$, $\lambda(\beta,i) = o$, and $\remap(\beta,i) = \rho  \circ f_0$.
+%% \item
+%% Assume $\beta \in Q$ and $x\in \Last{\beta}$ expirable after $\beta$. 
+%% Then, since $S$ is  timeout complete and behavior deterministic, there exist unique
+%% $o$, $\rho$ and $Y$ such that $\zeta = \beta \xrightarrow{\toevent{x}/o/\rho} Y \in S$.
+%% Let $\zeta'$ be the unique element of $Q$ with $\zeta' \equiv_S \zeta$, and
+%% let $f_0$ be a matching for $\zeta' \equiv_S \zeta$.
+%% Then $\delta(\beta,\toevent{x}) = \zeta'$, $\lambda(\beta,\toevent{x}) = o$, and $\remap(\beta,\toevent{x}) = \rho \circ f_0$.
+%% \item
+%% Assume $\beta \in Q$ and $x \in \Last{\beta}$ not expirable after $\beta$.
+%% We define $\delta(\beta,\toevent{x}) = \beta$, $\lambda(\beta,\toevent{x}) = \perp$, and $\remap(\beta,\toevent{x}) = \rho_0$, 
+%% where $\perp$ is a special, fresh output event and $\domof{\rho_0} = \emptyset$.
+%% \end{itemize}
+%% It is routine to verify that $\M$ is a well-defined MMT whose set of feasible untimed behaviors is isomorphic to $S$.
+%% \end{proof}

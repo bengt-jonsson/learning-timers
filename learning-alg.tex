@@ -99,9 +99,10 @@ constructs a transition that is not feasible,
 but which must anyway be syntactically present, since $x_j$
 may expire after some continuation if $\beta$ and is hence live.
 
- During {\bf hypothesis construction}, membership queries are performed order
+{\bf Hypothesis construction}, performs membership queries in order
  to construct the sets of form $\apprsuffixbehs{S}{\beta}{V}$ and
- $\apprsuffixbehs{S}{\extend{\beta}{i}{\lambda(\beta,i)}}{V}$ for $\beta \in U$.
+ $\apprsuffixbehs{S}{\extend{\beta}{i}{\lambda(\beta,i)}}{V}$
+ for $\beta \in U$ and $i \in \feasibleinputs{\beta}{S}$.
  Moreoever, the sets $U$ and $V$ are expanded if needed to construct
  a hypothesis automaton.
 

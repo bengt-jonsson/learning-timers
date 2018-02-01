@@ -143,7 +143,8 @@ will always be of form
 $n < t_j - t_l < m$ or $t_j - t_l = m$ for integers $n,m$), and checking that
 all such differences allow $t_{j+1} - t_j$ be positive for each $j$.
 We infer that $\beta$ is feasible iff $\Constraints{\beta}$ is satisfiable.
-Moreover, if $\beta$ is feasible, it is easy to see that there is a solution
+Moreover, if $\beta$ is feasible, we can use the techniques of
+Section~\ref{sec:wiggling} to construt a solution
 such that $\Frac{t_j} \neq \Frac{t_l}$ for each pair of distinct indices $j$ and $l$ with $i_j, i_l \in I$.
 
 From the saturated version of $\Constraints{\beta}$, we also derive a constraint,
@@ -163,8 +164,7 @@ $\tvals_k(x_j) = \rho_j(x_j) - (t_k - t_j)$
 and
 $\tvals_k(x_i) = \rho_i(x_i) - (t_k - t_i)$).
 
-\iflong
-We can derive the following lemmas.
+We can derive the following lemmas, which are proved in the appendix.
 
 \begin{lemma}
 \label{lemma: feasibility concatenation}
@@ -177,10 +177,15 @@ Then $\beta \cdot \gamma$ is feasible iff $\beta' \cdot \gamma$ is feasible.
 \label{lemma finitely many zones}
 $\{ \Zone{\beta} \mid \beta \mbox{ feasible untimed behavior of } \M \}$ is finite.
 \end{lemma}
-\begin{proof}
-  An MMT only has a finite number of timers that can only be set to a finite number of integer values. Since in an MMT the values of timers can only decrease, their values are bounded, so that only finitely many integers may appear in the conjuncts of $\Zone{\beta}$. This the set of possible $\Zone{\beta}$ is finite.
-\end{proof}
-\fi
+%% \ifshort
+%% \begin{proof}
+%% See appendix.
+%% \end{proof}
+%% \else
+%% \begin{proof}
+%%   An MMT only has a finite number of timers that can only be set to a finite number of integer values. Since in an MMT the values of timers can only decrease, their values are bounded, so that only finitely many integers may appear in the conjuncts of $\Zone{\beta}$. This the set of possible $\Zone{\beta}$ is finite.
+%% \end{proof}
+%% \fi
 
 Let $\beta$ be a feasible untimed behavior and let $x \in X$ be a timer. Then we say that $x$ is \emph{expirable} after $\beta$
 if there exists a valuation in $\Zone{\beta}$ in which $x$ is minimal.
