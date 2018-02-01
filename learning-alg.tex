@@ -236,11 +236,12 @@ During the construction, $U$ and $V$ will expand until they represent
 $\equiv_S$, at which time the hypothesis will be the desired one.
 Let us analyze the number of queries that may be required in the worst case
 to learn an MMT whose canonical form has $n$ states and at most $r$ active
-timers in any state.
+timers in any state. In the below, we let $|V|$ be the number of unique
+elements of $V$, before adding permutations.
 \begin{itemize}
 \item
-  Hypothesis construction may need $n\cdot(|I|+r+1)\cdot |V|^r$
-  membership queries in total. The factor $|V|^r$ arises as the number of
+  Hypothesis construction may need $n\cdot(|I|\!+\!r\!+\!1)\cdot |V| \cdot r!$
+  membership queries in total. The factor $r!$ arises as the number of
   permutations of prefix-timers in each suffix.
 \item
   Processing a counterexample may need $\log(m)$ membership queries,
@@ -248,11 +249,11 @@ timers in any state.
 \item
   Each equivalence query will result in refuting an equivalence of form
   $\beta\cdot \simpleutlabel{i}{o} \equiv_{S,V}^f \beta'$, and extending
-   $V$. There are at most
+  $V$. There are at most
   $r !$ possible permutations $f$ for each $\beta\cdot \simpleutlabel{i}{o}$,
   implying at most $n \cdot r!$ equivalence queries.
-\item Since each equivalence query adds at most $r!$ permutations
- to $V$, we have $|V| \leq n\cdot(r!)^2$ when the algorithm finishes,
+\item Since each equivalence query adds at most one element
+ to $V$, we have $|V| \leq n\cdot r!$ when the algorithm finishes.
 \end{itemize}
 
 
