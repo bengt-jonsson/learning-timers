@@ -383,7 +383,7 @@ In the presence of races, Lemma~\ref{wiggle lemma} does not hold.
 Consider the 
 \iflong
 following 
-\else
+\fi
 timed behavior with blocks $\{ 1, 3 \}$, $\{ 2 \}$,
 and 
 \iflong
@@ -472,7 +472,7 @@ forward one by one until no more races remain.
 In a timed behavior, there is always an integer amount of time between events from the same block.
 This means that, if we consider the absolute time at which events occur, the fractional part of the absolute times
 of occurrence is the same for all events in a block.
-We call a timed behavior \emph{transparent} if the fractional part of the absolute times of any pair of events from different blocks is different. Note that a transparent timed behavior contains no races.
+A timed behavior $\sigma$ is \emph{transparent} if $\timedword(\sigma)$ is transparent. This implies that the fractional part of the absolute times of events from different blocks is different, and there are no races.
 
 \begin{lemma}
 \label{lemma: transparent timed behavior}
@@ -596,7 +596,7 @@ transparent timed behavior $\sigma$ such that $\beta = \untime(\sigma)$.
 There exists a unique timed run $\alpha = \run(\gamma,\sigma)$ of $\M$ with $\untime(\alpha) = \gamma$ and $\beh(\alpha) = \sigma$.
 Thus $\sigma$ is a timed behavior of $\M$.
 Let  $w = \timedword(\alpha)$.
-Then $w$ is a timed word of $\M$.
+Then $w$ is a transparent timed word of $\M$.
 By Lemma~\ref{lemma unique causality map}, $w$ has a unique causality map $c$.
 Since $\M \approx_{\mathit{timed}} \N$, $w$ is also a timed word of $\N$.
 By Lemma~\ref{lemma unique timed run}, $\N$ has a unique time run $\alpha'$ such that $w = \timedword(\alpha')$.
@@ -648,9 +648,14 @@ Note that $f_{k+1}$ is surjective because for each $y \in Y_{k+1}$, since $\N$ i
 there exists an untimed behavior $\beta_y$ consisting of transitions that leave $y$ unaffected, except for the last one in which $y$ expires, and such that $\beta' \cdot \beta_y$ is a feasible untimed behavior of $\N$.
 Using again the same construction as in the beginning of this proof, we may establish that $X_{k+1}$ contains a corresponding timer. 
 \end{proof}
+
+Note that in the above proof we only assume that $\M$ and $\N$ have the same transparent timed words. 
+If we combine this observation with Theorem~\ref{untimedimpliestimed}, it follows that
+$\M$ and $\N$ have the same timed words iff they have the same transparent timed words. 
+Thus all the information about the behavior of an MMT is contained in its transparent timed words.
+This allows us to prove the following lemma:
 \fi
 
-\todofv{Still need to prove this one!}
 \begin{lemma}
 \label{not timed}
 Suppose $\M, \N$ are timer live MMTs with $\M \not\approx_{\mathit{timed}} \N$.

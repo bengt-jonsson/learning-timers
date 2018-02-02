@@ -12,7 +12,9 @@ A key technical result is the equivalence between the timed semantics,
 which is suitable to represent practical learning scenarios, and the
 untimed semantics, which is suitable for learning
 algorithms.
-%% dThis equivalence is embodied by an adapter, which transforms queries in one model to queries in the other.
+\iflong
+This equivalence is embodied by an adapter, which transforms queries in one model to queries in the other.
+\fi
 
 The query complexity of our learning algorithm is polynomial in the number of
 states of the learned MMT, but doubly exponential in the number of simultaneously
@@ -21,33 +23,38 @@ simultaneously active timers, this leads us to believe that our work will
 be a suitable theoretical basis for practical learning algorithms for timed
 protocols.
 
-%% Our work consitutes a major step towards a practical approach for active learning of timed systems.
-%% Such an approach would greatly enhance the applicability of active learning for reverse engineering of models of
-%% software and hardware systems.
+\iflong
+Our work consitutes a major step towards a practical approach for active learning of timed systems.
+Such an approach would greatly enhance the applicability of active learning for reverse engineering of models of
+software and hardware systems.
+\fi
 Future work includes to implement equivalence queries for MMTs,
 In the untimed case, equivalence queries for Mealy machines are approximated using conformance testing algorithms,
 for which a rich theory exists \cite{LeeY96}.
-%% Our equivalence result between timed and untimed semantics may help to
-%% lift such algorithms to the setting of MMTs.
+\iflong
+Our equivalence result between timed and untimed semantics may help to
+lift such algorithms to the setting of MMTs.
+\fi
 A challenge is also to deal with timing uncertainties due to nondeterminism  and imprecise measurements.
-%% In a realistic
-%% setting we may need more than one experiment to figure out which event causes a timeout. We may observe, for instance,
-%% that slight changes in the timing of certain inputs lead to corresponding changes in the timing of certain timeouts.
-
-%% Nevertheless, there are still major challenges that need to be addressed.
-%% %
-%% A first challenge is to implement equivalence queries for MMTs.
-%% In the untimed case, equivalence queries for Mealy machines are approximated using conformance testing algorithms,
-%% for which a rich theory exists \cite{LeeY96}.
-%% We hope that our equivalence result for the timed and untimed semantics will help to lift existing conformance
-%% testing algorithms to the setting of MMTs. For MMTs with a single timer this is easy, but we do not yet have good
-%% conformance testing algorithms for MMTs with multiple timers.
-%% %
-%% A second challenge is to deal with the timing uncertainties that occur in real applications due to nondeterminism of
-%% implementations and imprecise measurements. In the idealized setting of this paper we are able to
-%% identify the triggering event for each timeout by providing inputs at different fractional times. In a realistic
-%% setting we may need more than one experiment to figure out which event causes a timeout. We may observe, for instance,
-%% that slight changes in the timing of certain inputs lead to corresponding changes in the timing of certain timeouts.
+\iflong
+In a realistic
+setting we may need more than one experiment to figure out which event causes a timeout. We may observe, for instance,
+that slight changes in the timing of certain inputs lead to corresponding changes in the timing of certain timeouts.
+\fi
+%Nevertheless, there are still major challenges that need to be addressed.
+%
+%A first challenge is to implement equivalence queries for MMTs.
+%In the untimed case, equivalence queries for Mealy machines are approximated using conformance testing algorithms,
+%for which a rich theory exists \cite{LeeY96}.
+%We hope that our equivalence result for the timed and untimed semantics will help to lift existing conformance
+%testing algorithms to the setting of MMTs. For MMTs with a single timer this is easy, but we do not yet have good
+%conformance testing algorithms for MMTs with multiple timers.
+%
+%A second challenge is to deal with the timing uncertainties that occur in real applications due to nondeterminism of
+%implementations and imprecise measurements. In the idealized setting of this paper we are able to
+%identify the triggering event for each timeout by providing inputs at different fractional times. In a realistic
+%setting we may need more than one experiment to figure out which event causes a timeout. We may observe, for instance,
+%that slight changes in the timing of certain inputs lead to corresponding changes in the timing of certain timeouts.
 %
 %% A third important challenge is to implement our algorithm and to apply it to practical case studies. In particular,
 %% it is interesting to see how we can implement lookahead queries. For MMTs with a single timer this is trivial 
