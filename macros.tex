@@ -41,6 +41,7 @@
 \newcommand{\Post}{\mathsf{Post}}
 \newcommand{\beh}{\mathit{beh}}
 \newcommand{\untime}{\mathit{untime}}
+\newcommand{\untimebeh}{\mathit{utbeh}}
 \newcommand{\run}{\mathit{pullback}}
 \newcommand{\timedword}{\mathit{tw}}
 \newcommand{\timedinputword}{\mathit{tiw}}
@@ -58,6 +59,10 @@
 \newcommand{\can}[1]{\mathit{can}({#1})}
 \newcommand{\lean}[1]{\mathit{lean}({#1})}
 \newcommand{\uncan}[1]{\mathit{uncan}({#1})}
+\newcommand{\canmap}[2]{f_{#2}^{#1}}
+\newcommand{\invcanmap}[2]{(f_{#2}^{#1})^{-1}}
+\newcommand{\timerlive}[2]{\mbox{\it timer-live}_{#1}({#2})}
+\newcommand{\timerlivebehs}[1]{\mbox{\it timer-live}({#1})}
 \newcommand{\zone}[1]{\mathit{Zone}({#1})}
 \newcommand{\vars}{\mathcal{X}}
 \newcommand{\varsof}[1]{\vars(#1)}
@@ -65,13 +70,19 @@
 \newcommand{\remapinst}{\rho}
 \newcommand{\constr}{\phi}
 \newcommand{\Zone}[1]{\mathsf{Zone}({#1})}
+\newcommand{\saturatebeh}[2]{[#1]_{#2}}
+\newcommand{\saturateset}[1]{[#1]}
 
 \newcommand{\utlabel}[3]{#1/#2/#3}
 \newcommand{\simpleutlabel}[2]{#1/#2}
 \newcommand{\uttrans}[3]{\xrightarrow{\utlabel{#1}{#2}{#3}}}
 \newcommand{\simpleuttrans}[2]{\xrightarrow{\simpleutlabel{#1}{#2}}}
 \newcommand{\dtrans}[1]{\xrightarrow{#1}}
-
+\newcommand{\sdelay}[1]{\ \rightarrow_{#1} \ }
+\newcommand{\rtcsdelay}[1]{\ {\rightarrow_{#1}}^*\ }
+\newcommand{\wdelay}[1]{\ \Rightarrow_{#1}\ }
+\newcommand{\rtcwdelay}[1]{\ {\Rightarrow_{#1}}^*\ }
+\newcommand{\rtcswdelay}[1]{\ {(\rightarrow_{#1} \cup \Rightarrow_{#1})}^*\ }
 \newcommand{\emptyword}{\epsilon}
 \newcommand{\lengthof}[1]{|#1|}
 \newcommand{\true}{{\it true}}
@@ -81,6 +92,13 @@
 \newcommand{\smalliff}{\Leftrightarrow}
 \newcommand{\notiff}{\centernot\iff}
 \newcommand{\smallnotiff}{\centernot\smalliff}
+
+%% macros for ``algorithm''
+\newcommand{\Constraints}[1]{\Phi_{#1}}
+\newcommand{\Constraintsrf}[1]{\mathsf{constraints}^{\mathit{rf}}({#1})}
+\newcommand{\Frac}[1]{\mathsf{frac}({#1})}
+\newcommand{\Addtimer}[4]{\mathsf{addtimer}[{#1,#2,#3}]({#4})}
+\newcommand{\Addtimerop}[3]{\mathsf{addtimer}[{#1,#2,#3}]}
 
 %% macros for ``approximation''
 \newcommand{\acttimers}{\mathit{active}}

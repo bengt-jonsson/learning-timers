@@ -1,0 +1,545 @@
+\section{Untimed Semantics: Alternative Exposition}
+\label{section constraints}
+In this section, we present an alternative presentation of the untimed
+semantics, and of the
+equivalence between untimed and timed semantics. The main idea is to concentrate
+the exposition by minimizing the number of introduced concepts, and
+by formulating the problem of checking feasibility as a problem
+of finding a satisfying assignment to a constraint. We then treat the problem
+of finding a transparent word in an analogous manner.
+
+Note that in this exposition, we allow timer reassignments from the start.
+We also do not need to restrict to timer-live MMTS.
+
+Let us first slightly redefine the notion of timed run.
+A \emph{timed run} of $\M$ over $w$ is a sequence 
+\begin{eqnarray*}
+\alpha & = & (q_0,\tvals_0) \xrightarrow{d_1} (q_0,\tvals_0') \xrightarrow{i_1/o_1/\rho_1} (q_1,\tvals_1) \xrightarrow{d_2} 
+%C'_1 \xrightarrow{i_2/o_2} C_2 
+\cdots
+\\ && \qquad \cdots
+\xrightarrow{d_k} (q_{k-1},\tvals_{k-1}') \xrightarrow{i_k/o_k/\rho_k} (q_k,\tvals_k)
+\end{eqnarray*}
+of transitions between configurations $(q_j,\tvals_j),(q_j,\tvals_j')$ of $\M$, where $(q_0,\tvals_0)$ is the initial configuration.
+%Note that, since MMTs are deterministic (if we allow to observe the
+%identities of timers in timeout events),
+%for each timed word $w$ there exists at most one run over $w$.
+A \emph{timed word} over inputs $I$ and outputs $O$ is a sequence
+\begin{eqnarray*}
+w & = &  d_1 ~ i_1 ~ o_1 ~ d_2 ~ i_2 ~ o_2 \cdots d_k ~ i_k ~ o_k,
+\end{eqnarray*}
+where $d_j \in \delays$, $i_j \in I \cup \{ \mathit{to} \}$, and $o_j \in O$.
+To each timed run $\alpha$ we associate a \emph{timed word} by forgetting the configurations and the timers
+in timeout events:
+\begin{eqnarray*}
+\timedword(\alpha) & = & d_1 ~ i'_1 ~ o_1 ~ d_2 ~ i'_2 ~ o_2 \cdots d_k ~ i'_k ~ o_k,
+\end{eqnarray*}
+where for all  $j$,
+$i'_j   =   i_j$ if $i_j \in I$, and
+$i'_j   = \mathit{to}$ if $i_j \in \toevents$.
+
+\subsection{Untimed Semantics}
+We will define an alternative semantics for MMTs, which essentially reflects the
+possible feasible sequences of transitions of an MMT, i.e., the sequences of
+transitions that give rise to timed runs.
+Mowever, we do not want this semantics to
+depend on the identity of the timers. Therefore, we introduce a canonical way to
+give names to timers in such runs. To avoid confusion between timers of MMTs
+and timers in the untimed semantics, we will extend the set of timers
+to include $Y = \{ y_1, y_2,\ldots \}$
+\tofix{Extend $\extinputs$}
+
+Define an \emph{untimed behavior} (\emph{utb} for short)
+over inputs $I$ and outputs $O$ to be a sequence 
+\begin{eqnarray*}
+  \beta & = & Y_0 \xrightarrow{i_1/o_1/\varrho_1} Y_1  \cdots \xrightarrow{i_k/o_k/\varrho_k} Y_{k}
+  \ \ ,
+\end{eqnarray*}
+Where $Y_0 = \emptyset$ and for each $j>0$, $Y_j \subseteq \set{y_1, \ldots , y_j}$  $i_j \in \extinputs$, $o_j \in O$,
+and for $y_l \in Y_j$ we have $\varrho_j(y_l) \in \natplus$ if $l=j$, else $\varrho_j(y_l) = y_l$.
+I.e., the only timer that may be started in the $j$th transition is $y_j$, and there are no
+reassignments between timers.
+For a timed run $\alpha$ as defined above,  define
+$\can{\alpha}$ as
+\begin{eqnarray*}
+  \can{\alpha} & = & \canmap{\alpha}{0}(\domof{\tvals_0}) \xrightarrow{i_1'/o_1/\varrho_1}
+%%   \canmap{\alpha}{1}(\domof{\tvals_1})  
+\cdots \xrightarrow{i_k'/o_k/\varrho_k} \canmap{\alpha}{k}(\domof{\tvals_k})
+  \ \ ,
+\end{eqnarray*}
+where for $j = 0, \ldots , k$, the injection
+%% where $\canmap{\alpha}{0}, \ldots, \canmap{\alpha}{k}$ is the
+%% sequence of injections
+$\canmap{\alpha}{j}: \domof{\tvals_j} \rightarrow \set{y_1, \ldots ,y_j}$
+is defined by
+\[
+\canmap{\alpha}{j}(x_l) = \mbox{if} \ \ \rho_j(x_l) \in \natplus
+\ \ \mbox{then} \ \ y_j
+\ \ \mbox{else} \ \
+\canmap{\alpha}{j-1}(\rho_j(x_l))
+\]
+and where
+\begin{itemize}
+\item
+  $i_j'   =   i_j$ if $i_j \in I$, and
+$i_j'   = \toevent{\canmap{\alpha}{j-1}(x_l)}$ if $i_j   = \toevent{x_l}$, and
+\item
+  $\varrho_j = (\canmap{\alpha}{j-1} \cup \mbox{\sl Id}_{\natplus}) \circ \rho_j \circ (\canmap{\alpha}{j})^{-1}$.
+\end{itemize}
+%% It follows that whenever $x_l \in \canmap{\alpha}{j}(Y_j)$ then
+%% $\rho_j'(x_l)\in \natplus$ if $l=j$ else $\rho_j'(x_l) = x_l$.
+For $\rho_j(x_l) \not\in \natplus$ if follows from
+$\canmap{\alpha}{j}(x_l) = \canmap{\alpha}{j-1}(\rho_j(x_l))$ that
+$\varrho_j(x_l) = (\canmap{\alpha}{j-1}) \circ \rho_j \circ (\canmap{\alpha}{j})^{-1}(x_l) = x_l$, i.e.,
+$\can{\alpha}$ satisfies the constraints for being an untimed behavior.
+
+
+Since each set $Y_j$ can be obtained as $\domof{\varrho_j}$, we can write
+an utb simply as a sequence of labels
+$\beta  =  {i_1/o_1/\varrho_1}  \cdots {i_k/o_k/\varrho_k}$.
+
+Two utbs may still have the same observable behavior, but
+differ in timers that are started but never time out. We will introduce two
+ways to consider this.
+For a sequence $i_1/o_1 \ldots i_j/o_j$ of input-output pairs and
+$l \leq j$, say that $y_l$ is \emph{live after $i_1/o_1 \ldots i_j/o_j$} in $\M$
+if there is an utb of $\M$ of form
+${i_1/o_1/\varrho_1}  \cdots {i_j/o_j/\varrho_j} \cdots {\toevent{y_l}/o_k/\varrho_k}$
+with $j < k$,  i.e., which starts with the sequence
+$i_1/o_1 \ldots i_j/o_j$, and in which $y_l$ expires at some transition after
+this sequence.
+
+For a utb $\beta  =  {i_1/o_1/\varrho_1}  \cdots {i_k/o_k/\varrho_k}$ of $\M$,
+let $\timerlive{\M}{\beta}$ be the utb obtained by removing 
+$y_l$ from $\domof{\varrho_j}$ whenever $0 < l \leq j \leq k$ and
+$y_l$ is not live after $i_1/o_1 \ldots i_j/o_j$.
+Let
+$\timerlivebehs{\M}$ be $\setcomp{\timerlive{\M}{\beta}}{\beta \in \can{\M}}$.
+We say that $\M \approx_{\mathit{untimed}} \N$ if
+$\timerlivebehs{\M} = \timerlivebehs{\N}$.
+
+For a utb $\beta  =  {i_1/o_1/\varrho_1}  \cdots {i_k/o_k/\varrho_k}$,
+define the relations $\sdelay{\beta}$ and $\wdelay{\beta}$ by
+\begin{itemize}
+\item
+  $l \sdelay{\beta} j$ if $i_j = \toevent{y_l}$,
+  \item
+    $l \wdelay{\beta} j$ if $y_l$ is started but does not timeout, and
+$j$ is the largest index such that $y_l \in \domof{\varrho_{j-1}}$.
+\end{itemize}
+Let $t_j = d_1 + \cdots + d_j$ for $j = 1 , \ldots, k+1$.
+We associate with $\beta$ a conjunction of difference constraints over
+$t_1, \ldots, t_{k+1}$, denoted $\Constraints{\beta}$, consisting of
+%\todobj{We assume that delays are always non-zero. Check how this is said in the paper}
+\begin{enumerate}
+%% \item
+%% $0 < t_1 \leq d_{\max}$,
+%% \item
+%% for each index $j < k$:  $0 <  t_{j+1} - t_j \leq d_{\max}$,
+\item
+for each index $j$ with $1 \leq j \leq k$:  $0 <  t_{j+1} - t_j$,
+\item
+$t_j - t_l = \varrho_l(y_l)$ whenever $l \sdelay{\beta} j$,
+\item
+$t_j -t_l \leq \varrho_l(y_l)$ whenever $l \wdelay{\beta} j$.
+%% \item
+%% for each pair of distinct indices $j$ and $l$ with $i_j, i_l \in I$: $\Frac{t_j} \neq \Frac{t_l}$ 
+%% (to express that the fractional parts of $t_j$ and $t_l$ are different).
+\end{enumerate}
+Constraints of form 1 formalize that each delay $d_j$ in a timed word is
+positive,
+constraints of form 2 formalize that a timer expires exactly $\varrho_l(y_l)$
+time units after being initialize, and
+constraints of form 3 formalize that a timer must have expired if it has
+not been stopped or expired after  more then $\varrho_l(y_l)$ time units.
+
+For a timer $y_l \in \domof{\varrho_k}$,
+we say that $y_l$ is \emph{expirable} after $\beta$ if there is a
+solution $t_1, \ldots , t_{k+1}$ of  $\Constraints{\beta}$ such that
+$\varrho_l(y_l) - (t_k - t_l)$ is minimal among all
+$\varrho_j(y_j) - (t_k - t_j)$ with $y_j \in \domof{\varrho_k}$.
+To see that this formalizes the intuition that $y_l$ may be the next
+timer to expire, note that
+$\tvals_k(y_j) = \varrho_j(y_j) - (t_k - t_j)$ for each $y_j \in \domof{\varrho_k}$.
+We formalize this as the following lemma.
+
+\begin{lemma}
+\label{expirable}
+Let $\beta  =  {i_1/o_1/\varrho_1}  \cdots {i_k/o_k/\varrho_k} \in \timerlivebehs{\M}$.
+Then $y_l$ is expirable after $\beta$ iff $\beta \toevent{y_l}/o/\rho \in \timerlivebehs{\M}$ for some $o$ and $\rho$.
+\end{lemma}
+
+We are now in the position to characterize the set of
+timed words of $\M$ in terms of the set $\timerlivebehs{\M}$
+
+\begin{theorem}
+\label{thm:characterization}
+$w =  d_1 ~ i_1' ~ o_1 ~ d_2 ~ i_2' ~ o_2 \cdots d_k ~ i_k' ~ o_k$
+  is a timed word of $\M$ if and only if there is 
+  a utb 
+  $\beta = {i_1/o_1/\varrho_1}  \cdots {i_k/o_k/\varrho_k}$
+   in $\timerlivebehs{\M}$,
+such that $t_1, \ldots, t_k$ satisfies $\Constraints{\beta}$, and
+  such that   for all  $j$,
+$i'_j   =   i_j$ if $i_j \in I$, and
+$i'_j   = \mathit{to}$ if $i_j \in \toeventsof{Y}$.
+\end{theorem}
+  
+\begin{proof}
+First assume that
+$w =  d_1 ~ i_1' ~ o_1 ~ d_2 ~ i_2' ~ o_2 \cdots d_k ~ i_k' ~ o_k$
+is a timed word of $\M$, i.e., there is a timed run of $\M$
+\begin{eqnarray*}
+\alpha & = & (q_0,\tvals_0) \xrightarrow{d_1} (q_0,\tvals_0') \xrightarrow{i_1/o_1/\rho_1} (q_1,\tvals_1) \xrightarrow{d_2} 
+%C'_1 \xrightarrow{i_2/o_2} C_2 
+\cdots
+\\ && \qquad \cdots
+\xrightarrow{d_k} (q_{k-1},\tvals_{k-1}') \xrightarrow{i_k/o_k/\rho_k} (q_k,\tvals_k)
+\end{eqnarray*}
+where for all  $j$,
+$i'_j   =   i_j$ if $i_j \in I$, and
+$i'_j   = \mathit{to}$ if $i_j \in \toevents$.
+Let $\beta = \timerlive{\M}{\can{\alpha}}$.
+Let $t_j = d_1 + \cdots + d_j$ for $j = 1 , \ldots, k+1$.
+We must prove that $t_1, \ldots t_k$ is a solution to $\Constraints{\beta}$.
+
+Let $y_l \in Y$,
+%% i.e., be a timer that is started in the $l$th transition, i.e.,
+%% $\rho_l(x_p) \in \natplus$.
+Using the definition of $\can{\alpha}$, we establish by induction that 
+ whenever $l < j \leq k$ and
+ $y_l \in \domof{\varrho_{j-1}}$, then
+\begin{eqnarray*}
+ \tvals_{j-1}'(\invcanmap{\alpha}{j-1}(y_l)) & = &
+ \varrho_l(y_l) - (d_{l+1} + \cdots + d_j)
+ \ \ .
+\end{eqnarray*}
+ For the base case $j = l+1$, let $x_p = \invcanmap{\alpha}{l}(y_l)$.
+ By the definition of $\canmap{\alpha}{l}$ we have that
+ $\rho_l(x_p)  \in \natplus$ and  
+ $\varrho_l(y_l) = \rho_l(x_p)$. By the semantics of timed runs,
+ $\tvals_l(x_p) =  \rho_l(x_p) = \varrho_l(y_l)$ and
+ $\tvals_l'(x_p) =  \varrho_l(y_l) - d_{l+1}$.
+ For the inductive step, assume that $l+1 < j$ and 
+ $y_l \in \domof{\varrho_{j-1}}$, and
+ $\tvals_{j-2}'(\invcanmap{\alpha}{j-2}(y_l)) =
+ \varrho_l(y_l) - (d_{l+1} + \cdots + d_{j-1})$.
+ Let $x_p = \invcanmap{\alpha}{j-1}(y_l)$.
+ Then $\rho_{j-1}(x_p) \not\in \natplus$, whence
+ $\tvals_{j-1}'(x_p) =  \tvals_{j-1}(x_p) -d_j = 
+ \tvals_{j-2}'(\rho_{j-1}(x_p)) - d_j$.
+ From the definition of $\varrho_{j-1}$, we infer
+ $\rho_{j-1}(x_p) = \rho_{j-1}(\invcanmap{\alpha}{j-1}(y_l)) =
+ \invcanmap{\alpha}{j-2}(\varrho_{j-1}(y_l)) =
+ \invcanmap{\alpha}{j-2}(y_2)$. Using the inductive hypothesis, we infer
+ $\tvals_{j-1}'(\invcanmap{\alpha}{j-1}(y_l)) =
+ \varrho_l(y_l) - (d_{l+1} + \cdots + d_j)$, which proves the inductive
+ step.
+
+ Let us now consider the two types of constraints in $\Constraints{\beta}$.
+ \begin{itemize}
+ \item $l \sdelay{\beta} j$. This means that the $j$th input in $\beta$ is
+   $\toevent{y_l}$. By the semantics of timed runs, we must then have
+   $\tvals_{j-1}'(\invcanmap{\alpha}{j-1}(y_l)) = 0$ By Property XXX, this means
+   $\varrho_l(y_l) = (d_{l+1} + \cdots + d_j) = t_j - t_l$, i.e.,
+   $t_1, \ldots, t_k$ satisfies the corresponding constraint.
+ \item $l \wdelay{\beta} j$. This means that $\invcanmap{\alpha}{j-1}(y_l)$
+   is defined, 
+   By the semantics of timed runs, we must then have
+   $\tvals_{j-1}'(\invcanmap{\alpha}{j-1}(y_l)) \geq 0$.
+   By Property XXX, this means
+   $\varrho_l(y_l) \geq (d_{l+1} + \cdots + d_j) = t_j - t_l$, i.e.,
+   $t_1, \ldots, t_k$ satisfies the corresponding constraint.
+ \end{itemize}
+In the other direction, assume that 
+ $\beta = {i_1/o_1/\varrho_1}  \cdots {i_k/o_k/\varrho_k}$
+   in $\timerlivebehs{\M}$,
+and that
+$t_1, \ldots, t_k$ satisfies $\Constraints{\beta}$.
+We will then prove that
+\begin{eqnarray*}
+\alpha & = & (q_0,\tvals_0) \xrightarrow{d_1} (q_0,\tvals_0') \xrightarrow{i_1/o_1/\rho_1} (q_1,\tvals_1) \xrightarrow{d_2} 
+%C'_1 \xrightarrow{i_2/o_2} C_2 
+\cdots
+\\ && \qquad \cdots
+\xrightarrow{d_k} (q_{k-1},\tvals_{k-1}') \xrightarrow{i_k/o_k/\rho_k} (q_k,\tvals_k)
+\end{eqnarray*}
+is a timed run. We must establish that $\alpha$
+satisfies the requirements of a timed run. This is done
+using property XXX, by the same arguments
+as the first direction of the proof. We must only check that timers that
+are not in $\invcanmap{\alpha}{j}(\domof{\varrho_j})$ for some $j$ do not
+interfere. This can happen only if such a timer blocks a delay transition,
+by being smaller than any clock of form
+$\invcanmap{\alpha}{l}(\domof{\varrho_l})$.
+But this implies that there is also a timed run where such a timer expires,
+which implies that it should not have been removed when forming
+$\timerlivebehs{\M}$.
+\end{proof}
+
+\subsection{Equivalence timed/untimed semantics}
+\label{sec:bj-wiggling}
+
+Theorem~\ref{thm:characterization} immediately implies
+that untimed equivalence is finer than timed equivalence.
+
+\begin{theorem}
+\label{untimedimpliestimed}
+$\M \approx_{\mathit{untimed}} \N$
+implies
+$\M \approx_{\mathit{timed}} \N$.
+\end{theorem}
+
+In the other direction, the proof is not so immediate, since timed words
+hide the identity of timers. To prove the correspondence in the other direction,
+we need to find a way to reveal the identity of each expiring timer.
+We will show that this can be done for MMTs in which at most one timer is
+(re)started on each transition. 
+In order prove this result we need to prove a stronger version of
+Theorem~\ref{thm:characterization}.
+
+We let $\rtcsdelay{\beta}$ be the reflexive transitive closure of
+$\sdelay{\beta}$.
+
+\begin{lemma}
+\label{lem:transparent}
+  For an utb $\beta$, if $\Constraints{\beta}$ is satisfiable, then
+  it has a solution $t_1, \ldots , t_k$ such that
+  $t_l$ and $t_j$ have the same fractional part only if
+  $l \rtcsdelay{\beta} j$.
+\end{lemma}
+
+\begin{proof}
+  Consider an utb $\beta$.
+The restriction that each transition can start at most one timer, together with
+the restriction that the timer update function is injective, implies that
+for each $l$ there is at most one $j$ such that
+$l \sdelay{\beta} j$ or $l \wdelay{\beta} j$.
+
+By standard DBM techniques, we can check whether $\Constraints{\beta}$ is satisfiable by saturating it (i.e., closing it under implication),
+and checking whether the induced constraint for 
+$t_{j+1} - t_j$ allow it to be positive for each $j$.
+When $\Constraints{\beta}$ is saturated, the following restrictions
+will be maintained, where $l \leq j$.
+\begin{itemize}
+\item
+A constraint of form $t_j -t_l = N$ can be included only if
+  $l \rtcsdelay{\beta} j$,
+\item
+A constraint of form $t_j -t_l \leq N$ can be included only if
+  $l \rtcswdelay{\beta} j$,
+\item
+  A constraint of form $t_j -t_l \geq N$ can be included only if there is a $k$
+  such that
+  $l \rtcsdelay{\beta} k$ and
+  $j \rtcswdelay{\beta} k$
+\end{itemize}
+It follows from the above that if the constraints include both
+a constraint of form $t_j -t_l \leq N$ and of form $t_j -t_l \geq N$
+then $l \rtcsdelay{\beta} j$.
+
+Assume now that $\Constraints{\beta}$ is satisfiable.
+%% Assume now that $\beta$ is feasible, and that $t_1, \ldots, t_{k+1}$ is a
+%% solution to $\Constraints{\beta}$ is satisfiable.
+We shall now prove that
+there is a solution to  $\Constraints{\beta}$ with the property that
+$t_l$ and $t_j$ have the same fractional part only if
+$l \rtcsdelay{\beta} j$. We can do this by iteratively selecting
+values of $t_1, \ldots , t_{k+1}$ with this property. We use the known
+property of saturated DBMs that for any $j$, we have that
+$\exists t_{j+1}, \ldots , t_{k+1}\Constraints{\beta}$ is equivalent to the
+constraint obtained by removing all constraints from $\Constraints{\beta}$ that
+involve any of $t_{j+1}, \ldots , t_{k+1}$.
+\todobj{citation}
+We then inductively select values of $t_1, \ldots , t_{k+1}$ as follows:
+\begin{itemize}
+\item
+  $t_1$ can be chosen arbitrarily.
+\item Assume that  $t_1, \ldots , t_j$ have been selected to satisfy
+  $\exists t_{j+1}, \ldots , t_{k+1}\Constraints{\beta}$, and such that
+  $t_l$ and $t_j$ have the same fractional part only if
+  $l \rtcsdelay{\beta} j$.
+  We must then find a $t_{j+1}$ so that
+  $\exists t_{j+2}, \ldots , t_{k+1}\Constraints{\beta}$ is satisfied.
+  There are two cases
+  \begin{itemize}
+  \item
+    $l \rtcsdelay{\beta} j+1$ for some $l \leq j$. In this case, there is only
+    one choice for $t_{j+1}$. This value will maintain the property.
+  \item
+    $l \rtcsdelay{\beta} j+1$ for no $l \leq j$. In this case, by the
+    above property, the constraints for choosing the possible values for
+    $t_{j+1}$ may not have non-strict upper and lower bounds that are numbers
+    with the same fractional parts. This implies that we can choose a value
+    for $t_{j+1}$ with a fractional part different from those of
+     $t_1, \ldots , t_k$.
+  \end{itemize}
+\end{itemize}
+This procedure results in an assignment of values such that
+  $t_l$ and $t_j$ have the same fractional part only if
+  $l \rtcsdelay{\beta} j$, and the lemma is proven.
+\end{proof}
+
+Lemma~\ref{lem:transparent}  immediately implies the following
+theorem.
+
+%% \begin{theorem}
+%%   \label{thm:race-free}
+%%   If $\beta$ is a utb in $\timerlivebehs{\M}$, then there is
+%%   a race-free and transparent timed run $\alpha$ such that
+%%   $\beta = \timerlive{\M}{\can{\alpha}}$.
+%% \end{theorem}
+
+\begin{theorem}
+  \label{thm:race-free}
+  If $\alpha$ is a time run of $\M$, then there is
+  a race-free and transparent timed run $\alpha'$ of $\M$ such that
+  $\timerlive{\M}{\can{\alpha}} = \timerlive{\M}{\can{\alpha'}}$.
+\end{theorem}
+
+Theorem~\ref{thm:race-free} also makes it easy to establish the equivalence
+between timed and untimed semantics.
+
+\begin{theorem}
+\label{timedimpliesuntimed}
+$\M \approx_{\mathit{timed}} \N$
+implies
+$\M \approx_{\mathit{untimed}} \N$.
+\end{theorem}
+
+\begin{proof}
+  The proof uses analogous reasoning as in the proof of
+  Theorem~\ref{thm:characterization}, but using transparent and race-
+  free timed runs. For such runs, the identity of timers are uniquely
+  determined from a run, which is what is needed for this reversal.
+\end{proof}
+
+
+
+
+%% Let $\beta$ and $\beta'$ be two untimed behaviors with the same length and outputs:
+%% \begin{eqnarray*}
+%% \beta & = & Y_0 \xrightarrow{i_1/o_1/\rho_1} Y_1  \xrightarrow{i_2/o_2/\rho_2} Y_2 \cdots \xrightarrow{i_k/o_k/\rho_k} Y_{k},\\
+%% \beta' & = & Y_0 \xrightarrow{i'_1/o_1/\rho'_1} Y_1  \xrightarrow{i'_2/o_2/\rho'_2} Y_2 \cdots \xrightarrow{i'_k/o_k/\rho'_k} Y_{k}.
+%% \end{eqnarray*}
+%% An \emph{isomorphism} from $\beta$ to $\beta'$ is a list $f = f_0 ,\ldots, f_k$ of bijections $f_j : Y_j \rightarrow Y_j$ such that
+%% for all $j>0$: (1) for all $x \in Y_j \setminus \domof{\rho_j})$, $f_j(x)=f_{j-1}(x)$,
+%% (2) $i'_j = i_j$ if $i_j \in I$ and $i'_j = \toevent{f_{j-1}(x)}$ if $i_j = \toevent{x}$, for some $x \in Y_{j-1}$, and
+%% (3) $\domof{\rho'_j} = f_j(\domof{\rho_j})$ and $\rho'_j(y) = \rho_j ( f_j^{-1}(y))$, for all $y\in\domof{\rho'_j}$.
+%% In this case, since $\beta'$ is fully determined by $\beta$ and $f$, we write $\beta' = f(\beta)$.
+%% We say that $\beta$ and $\beta'$ are \emph{isomorphic} if there exists an isomorphism $f$ from $\beta$ to $\beta'$.
+
+%% Suppose $\beta$ is an untimed behavior in which transitions update at most one timer.
+%% We say that $\beta$ is in \emph{canonical form} if, for each $j$, the timer that is updated in the $j$-th event
+%% (if any) is equal to $y_j$.
+%% For each untimed behavior $\beta$ in which transitions update at most one timer, there is a unique untimed behavior
+%% $\beta'$ in canonical form that is isomorphic to $\beta$.
+%% We write $\can{\beta}$ to denote this $\beta'$.
+
+
+
+
+
+
+
+\subsection{Potentially useful Text Snippets}
+
+\tofix{Do not read this Subsection}
+
+Let $\lean{\beta}$ be the utb obtained by removing 
+$y_l$ from all $\beta$ altogether (i.e., from each $\domof{\varrho_j}$)
+whenever $y_l$ does not expire in $\beta$.
+Let $\can{\M}$ be the set of utbs of $\M$,, and
+let 
+$\lean{S}$ be $\setcomp{\lean{\beta}}{\beta \in S}$.
+For a lean utb $\beta \in S$
+\begin{eqnarray*}
+\beta & = & X_0 \xrightarrow{i_1/o_1/\rho_1} X_1  \cdots \xrightarrow{i_k/o_k/\rho_k} X_{k},
+\end{eqnarray*}
+define its \emph{saturation wrp.\ $S$}, denoted $\saturatebeh{\beta}{S}$,
+as the utb obtained from $\beta$ by performing the operation
+$\Addtimerop{l}{d}{j}$ 
+for each $\beta' \in S$ and $l < j \leq k$, such that $\beta'$ has the same
+$j$ first input and outputs as $\beta$, which sets $x_l$ to $d$ and does not stop
+or expire $x_l$ up to and including the $j$th transition (i.e., $\beta'$ is of
+form
+\begin{eqnarray*}
+\beta' & = & X_0 \xrightarrow{i_1/o_1/\rho_1'} \cdots \xrightarrow{i_j/o_j/\rho_j'} X_{j}' \xrightarrow{i'/o'/\rho'}  \cdots
+\end{eqnarray*}
+with $\rho_l'(x_l) = d$, and $x_l \in X_j'$).
+For a lean timer language $S$ define its \emph{saturation} $\saturateset{S}$
+as $\setcomp{\saturatebeh{\beta}{S}}{\beta \in S}$.
+
+Consider a utb $\beta$
+\begin{eqnarray*}
+\beta & = & Y_0 \xrightarrow{i_1/o_1, \rho_1} X_1  \cdots \xrightarrow{i_k/o_k, \rho_k} Y_{k}.
+\end{eqnarray*}
+Let $1 \leq l \leq j \leq k$, $d \in \natplus$ and suppose that 
+(1) $\rho_l$ either starts no timer or sets $y_l$ to $d$,
+(2) $\beta$ does not contain a timeout event $\toevent{y_l}$.
+Then $\Addtimer{l}{d}{j}{\beta}$ is the utb obtained from $\beta$ by
+letting $\rho_l$ map $y_l$ to $d$, and adding $y_j$ to the sets $Y_l$ up to (and including) $Y_j$.
+%In the utb $\emptyset \xrightarrow{i/o,~ x:=1 } \{ x\} \xrightarrow{i/o,~ y:=60 } \{ x, y\}$, for instance, we may remove timer $x$
+%and obtain $\emptyset \xrightarrow{i/o } \emptyset \xrightarrow{i/o,~ y:=60 } \{ y\}$.
+%Similarly, we may remove the first use of timer $x$ in the utb 
+%$\emptyset \xrightarrow{i/o,~ x:=1 } \{ x\} \xrightarrow{i/o,~ x:=5 } \{ x\} \xrightarrow{\toevent{x}/o} \emptyset$ and obtain
+%$\emptyset \xrightarrow{i/o } \emptyset \xrightarrow{i/o,~ x:=5 } \{ x\} \xrightarrow{\toevent{x}/o} \emptyset$.
+Write $\beta \sqsubseteq \beta'$ if $\beta'$ can be obtained from $\beta$ by zero or more applications of function $\mathsf{addtimer}.$
+Then $\sqsubseteq$ is a partial order whose minimal elements are utbs in which every timer that is started also times out.
+We call such utbs \emph{lean}.
+
+\todobj{Maybe scrap the following}
+We say that $\beta$ is a \emph{partial} utb of MMT $\M$ iff $\M$ has an utb $\beta'$ such that $\beta \sqsubseteq \beta'$.
+
+
+The set of feasible lean behaviors of an MMT has certain properties, that
+we here collect into the definition of a \emph{timer language}.
+
+\begin{definition}
+\label{def:timer language}
+A (lean) \emph{timer language} over $I$ and $O$ is a nonempty set 
+$S$ of (feasible?) lean utbs in canonical form over $I$ and $O$ that satisfies the following five properties:
+\begin{itemize}
+\item
+\emph{no initial timers}: $\beta \in S \Rightarrow \Head{\beta} = \emptyset$,
+\item
+\emph{prefix closed}: $\beta \cdot \gamma \in S \Rightarrow \beta \in S$,
+\item
+\emph{behavior deterministic}:
+$\beta \xrightarrow{i/o_1/\rho_1} X_1 \in S \wedge \beta \xrightarrow{i/o_2/\rho_2} X_2 \in S \Rightarrow o_1 = o_2 \wedge \rho_1 = \rho_2 \wedge X_1 = X_2$,
+%% \item
+%% \emph{input complete}:
+%% $\beta \in S \wedge i \in I \Rightarrow \exists o, \rho, Y : \beta \xrightarrow{i/o/\rho} Y \in S$,
+\item
+\emph{timer live}:
+$\beta \in S \wedge x \in last(S) \Rightarrow \exists \gamma, o, \rho, Y : \beta \cdot \gamma \xrightarrow{\toevent{x}/o/\rho} Y \in S$,
+and
+\item
+\emph{timeout complete}:
+$\beta \in S \wedge x \mbox{ expirable after } \beta \Rightarrow
+\exists o, \rho, Y: \beta \xrightarrow{\toevent{x}/o/\rho} Y \in S$.
+\end{itemize}
+\end{definition}
+\todobj{Check again the above definition!!!}
+
+From the saturated version of $\Constraints{\beta}$, we also derive a constraint,
+denoted $\Zone{\beta}$,
+which characterizes the possible timer valuations $\tvals_k$ in a timed run
+$\alpha$ with $\can{\alpha} = \beta$.
+The constraint $\Zone{\beta}$
+contains for each pair of timers $x_i,x_j$ in $\domof{\rho_k}$ the conjunct
+\[
+(m + \rho_j(x_j) - \rho_i(x_i)) < \tvals_k(x_j) -\tvals_k(x_i) < (n + \rho_j(x_j) - \rho_i(x_i))
+\]
+whenever the saturated version of $\Constraints{\beta}$ contains the conjunct
+\(
+m < t_j - t_i < n
+\).
+(This can be derived using
+$\tvals_k(x_j) = \rho_j(x_j) - (t_k - t_j)$
+and
+$\tvals_k(x_i) = \rho_i(x_i) - (t_k - t_i)$).
+
+Let $\beta$ be a feasible untimed behavior and let $x \in X$ be a timer. Then we say that $x$ is \emph{expirable} after $\beta$
+if there exists a valuation in $\Zone{\beta}$ in which $x$ is minimal.
+
