@@ -28,7 +28,8 @@
 \newcommand{\toevent}[1]{\mathit{to}[#1]}
 \newcommand{\toeventsof}[1]{\mbox{\sl TO}[#1]}
 \newcommand{\toevents}{\toeventsof{X}}
-\newcommand{\extinputs}{\hat{I}}
+\newcommand{\toinputs}[1]{\hat{I}_{#1}}
+\newcommand{\extinputs}{\toinputs{X}}
 \newcommand{\extextinputs}{\tilde{I}}
 \newcommand{\Head}[1]{\mathsf{Head}({#1})}
 \newcommand{\Tail}[1]{\mathsf{Tail}({#1})}
@@ -43,6 +44,7 @@
 \newcommand{\untime}{\mathit{untime}}
 \newcommand{\untimebeh}{\mathit{utbeh}}
 \newcommand{\run}{\mathit{pullback}}
+\newcommand{\mmtpath}{\tau}
 \newcommand{\timedword}{\mathit{tw}}
 \newcommand{\timedinputword}{\mathit{tiw}}
 \newcommand{\untimedinputword}{\mathit{uiw}}
@@ -57,10 +59,11 @@
 \newcommand{\domof}[1]{\dom(#1)}
 \newcommand{\ranof}[1]{\ran(#1)}
 \newcommand{\can}[1]{\mathit{can}({#1})}
+\newcommand{\fcan}[1]{\mathit{fcan}({#1})}
 \newcommand{\lean}[1]{\mathit{lean}({#1})}
 \newcommand{\uncan}[1]{\mathit{uncan}({#1})}
-\newcommand{\canmap}[2]{f_{#2}^{#1}}
-\newcommand{\invcanmap}[2]{(f_{#2}^{#1})^{-1}}
+\newcommand{\canmap}[2]{h_{#2}^{#1}}
+\newcommand{\invcanmap}[2]{(h_{#2}^{#1})^{-1}}
 \newcommand{\timerlive}[2]{\mbox{\it timer-live}_{#1}({#2})}
 \newcommand{\timerlivebehs}[1]{\mbox{\it timer-live}({#1})}
 \newcommand{\zone}[1]{\mathit{Zone}({#1})}
