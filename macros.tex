@@ -20,8 +20,10 @@
 \newcommand{\dom}{{\textsf{dom}}}
 \newcommand{\ran}{{\textsf{ran}}}
 
+\newcommand{\dvec}{\overline{d}}
 \newcommand{\natplus}{\nat^{>0}}
 \newcommand{\realsplus}{{\mathbb R}^{\geq 0}}
+\newcommand{\reals}{{\mathbb R}}
 \newcommand{\delays}{{\mathbb R}^{> 0}}
 \newcommand{\stoptimer}{\mathit{kill}}
 \newcommand{\tosymbol}{\mathit{to}}
@@ -36,6 +38,7 @@
 \newcommand{\Last}[1]{\mathsf{Last}({#1})}
 \newcommand{\expirable}{\mathit{expirable}}
 \newcommand{\tvals}{\kappa}
+\newcommand{\xtvals}{\lambda}
 \newcommand{\Vals}[1]{\mathit{Val}({#1})}
 \newcommand{\delay}[2]{d_{[#1:#2]}}
 \newcommand{\timerof}[2]{x_{#1}^{#2}}
@@ -45,7 +48,9 @@
 \newcommand{\untimebeh}{\mathit{utbeh}}
 \newcommand{\run}{\mathit{pullback}}
 \newcommand{\mmtpath}{\tau}
+\newcommand{\mmtpathof}[1]{\tau_{#1}}
 \newcommand{\timedword}{\mathit{tw}}
+\newcommand{\twsof}[1]{\mathit{TW}(#1)}
 \newcommand{\timedinputword}{\mathit{tiw}}
 \newcommand{\untimedinputword}{\mathit{uiw}}
 \newcommand{\startedby}{\mathit{startedby}}
@@ -60,11 +65,12 @@
 \newcommand{\ranof}[1]{\ran(#1)}
 \newcommand{\can}[1]{\mathit{can}({#1})}
 \newcommand{\fcan}[1]{\mathit{fcan}({#1})}
+\newcommand{\cani}{\hat{i}}
 \newcommand{\lean}[1]{\mathit{lean}({#1})}
 \newcommand{\uncan}[1]{\mathit{uncan}({#1})}
 \newcommand{\canmap}[2]{h_{#2}^{#1}}
 \newcommand{\invcanmap}[2]{(h_{#2}^{#1})^{-1}}
-\newcommand{\timerlive}[2]{\mbox{\it timer-live}_{#1}({#2})}
+\newcommand{\timerlive}[2]{\mbox{\it tl}_{#1}({#2})}
 \newcommand{\timerlivebehs}[1]{\mbox{\it timer-live}({#1})}
 \newcommand{\zone}[1]{\mathit{Zone}({#1})}
 \newcommand{\vars}{\mathcal{X}}
