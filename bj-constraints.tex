@@ -255,7 +255,7 @@ $\timerlivebehs{\M} = \timerlivebehs{\N}$.
 
 We will now prove the equivalence of the timed and untimed semantics.
 We will establish that $\timerlivebehs{\M}$ can
-be uniquely derived $\twsof{\M}$ and vice versa.
+be uniquely derived from $\twsof{\M}$ and vice versa.
 This will imply that the untimed semantics coincides with the timed
 one, i.e., that
 \(
@@ -281,7 +281,7 @@ Then, for $\xtvals, \xtvals'$ being extended valuations, $i \in \extinputs$, $o 
 we define a discrete transition relation by: $\xtvals \xrightarrow{i/o/\rho}  \xtvals'$ iff
 \begin{eqnarray*}
 && \domof{\rho} = \domof{\xtvals'} ~ \wedge \ranof{\rho} \subseteq \domof{\xtvals} \cup \natplus ~ \wedge\\
-  &&\kappa' = (\kappa \cup \iota) \circ \rho ~ \wedge
+  &&\xtvals' = (\xtvals \cup \iota) \circ \rho ~ \wedge
   \\
   && \forall x \in X : i=\toevent{x} \Rightarrow x \not\in \ranof{\rho}.
 \end{eqnarray*}
@@ -308,7 +308,7 @@ $\alpha(\mmtpath,\dvec)$, defined as
   \end{inparaenum}
   The following lemma establishes a useful relation between the delays in
   $\alpha(\mmtpath,\dvec)$
-and the valuations of timers in $\can{\mmtpathof{\alpha}}$.
+and the valuations of timers in $\can{\mmtpath}$.
 
 \begin{lemma}
   \label{lem:timerval}
@@ -475,7 +475,7 @@ Then $l \wdelay{\timerlive{\M}{\beta}} {j-1}$, and by
    $\xtvals_{j-1}'(x_p) = \varrho_l(y_l) - (t_j - t_l) \geq 0$, which proves
    this case
 \end{itemize}
-   We must finally consider the where 
+   We must finally consider the case when
    $y_l = \canmap{\mmtpath}{j-1}(x_p)$ does not occur in $\timerlive{\M}{\beta}$.
    Assume, to get a contradiction, that $\xtvals_{j-1}'(x_p) < 0$.
    Let $j-1$ be the smallest index where this can occur for any $x_p$. But
@@ -485,9 +485,10 @@ Then $l \wdelay{\timerlive{\M}{\beta}} {j-1}$, and by
 \cdots \quad \cdots
 \xrightarrow{d_j} (q_{j-1},\xtvals_{j-1}'') \xrightarrow{\toevent{x_p}/o_j'} (q_j',\xtvals_j'')
 \]
-in which $x_p$ times out at the $j$th transition.
-This implies that $x_p$ should not have been removed when forming
-$\timerlivebehs{\M}$.
+in which $x_p$ times out at the $j$th transition
+(recall that timeout transitions must be enabled for active timers).
+This implies that $y_l$ should not have been removed when forming
+$\timerlive{\M}{\beta}$.
 \end{proof}
 
 Theorem~\ref{thm:characterization} immediately implies
@@ -526,11 +527,18 @@ the restriction that the timer update function is injective, implies that
 for each $l$ there is at most one $j$ such that
 $l \sdelay{\beta} j$ or $l \wdelay{\beta} j$.
 
-By standard DBM techniques, we can check whether $\Constraints{\beta}$ is satisfiable by saturating it (i.e., closing it under implication),
-and checking whether the induced constraint for 
-$t_{j+1} - t_j$ allow it to be positive for each $j$.
-When $\Constraints{\beta}$ is saturated, the following restrictions
-will be maintained, where $l \leq j$.
+By standard DBM techniques, we can check whether $\Constraints{\beta}$ is satisfiable by normalizing it (i.e., closing it under all consequences of
+pairs of constraints),
+and then checking whether each resulting constraints still
+admit a satisfying assigment (i.e., that the lower bound for
+a difference does not exceed the upper bound). In fact, for
+any specific difference $t_j - t_l$, and any value of
+$d$ between its lower and upper bounds, there is a solution
+of $\Constraints{\beta}$ such that $t_j-t_l=d$.
+
+For the particular form of constraints of form $\Constraints{\beta}$,
+its normalization $\nrml{\Constraints{\beta}}$ satisfies
+the following properties, whenever $l \leq j$.
 \begin{itemize}
 \item
 A constraint of form $t_j -t_l = N$ can be included only if
@@ -544,47 +552,87 @@ A constraint of form $t_j -t_l \leq N$ can be included only if
   $l \rtcsdelay{\beta} k$ and
   $j \rtcswdelay{\beta} k$
 \end{itemize}
-It follows from the above that if the constraints include both
+These properties can be established by proving that they are preserved by
+each normalization step, relying on the requirement that
+for each $l$ there is at most one $j$ such that
+$l \sdelay{\beta} j$ or $l \wdelay{\beta} j$.
+Note that $\nrml{\Constraints{\beta}}$ may also include strict
+inequialities, but these will not interest us here.
+It follows that if $\nrml{\Constraints{\beta}}$ include both
 a constraint of form $t_j -t_l \leq N$ and of form $t_j -t_l \geq N$
-then $l \rtcsdelay{\beta} j$.
+then $l \rtcsdelay{\beta} j$ (again relying on the requirement that
+for each $l$ there is at most one $j$ such that
+$l \sdelay{\beta} j$ or $l \wdelay{\beta} j$).
 
 Assume now that $\Constraints{\beta}$ is satisfiable.
 %% Assume now that $\beta$ is feasible, and that $t_0, \ldots, t_{k+1}$ is a
 %% solution to $\Constraints{\beta}$ is satisfiable.
-We shall now prove that
+We shall prove that
 there is a solution to  $\Constraints{\beta}$ with the property that
 $t_l$ and $t_j$ have the same fractional part only if
-$l \rtcsdelay{\beta} j$. We can do this by iteratively selecting
-values of $t_0, \ldots , t_{k+1}$ with this property. We use the known
-property of saturated DBMs that for any $j$, we have that
-$\exists t_{j+1}, \ldots , t_{k+1}\Constraints{\beta}$ is equivalent to the
-constraint obtained by removing all constraints from $\Constraints{\beta}$ that
-involve any of $t_{j+1}, \ldots , t_{k+1}$.
-\todobj{citation}
-We then inductively select values of $t_0, \ldots , t_{k+1}$ as follows:
-\begin{itemize}
+$l \rtcsdelay{\beta} j$. We do this by iteratively selecting
+values $v_0, \ldots , v_{k+1}$ of $t_0, \ldots , t_{k+1}$ such that this
+property is satisfied.
+We start by letting $v_0 = 0$ (or some other arbitrary value). Thereafter
+we replace $t_o$ by its value ($v_0$) in $\nrml{\Constraints{\beta}}$ and
+simplify all constraints that contain $v_0$ so that they become 
+constraints of form $t_j \sim N$, where $\sim \in \set{<,\leq,\geq,>}$.
+We note that all $N$ is still always an integer in these constraints.
+Using the above properties of $\nrml{\Constraints{\beta}}$, it follows that
+if we obtain both a constraint of form $t_j \leq N$ and of form $t_j \geq N$
+then $0 \rtcsdelay{\beta} j$.
+If not $0 \rtcsdelay{\beta} j$,
+we can therefore choose a value $v_1$ for $t_1$ with a fractional part differen
+from that of $v_0$ (i.e., $0$).
+
+For $i = 1,2,\ldots, k+1$ we  now do the following.
+\begin{enumerate}
+\item choose a value $v_i$ for $t_i$ with a fractional part different
+  from that of any $v_j$ with $j < i$ such that $j \rtcsdelay{\beta} i$
+  does not hold.
 \item
-  $t_1$ can be chosen arbitrarily.
-\item Assume that  $t_0, \ldots , t_j$ have been selected to satisfy
-  $\exists t_{j+1}, \ldots , t_{k+1}\Constraints{\beta}$, and such that
-  $t_l$ and $t_j$ have the same fractional part only if
-  $l \rtcsdelay{\beta} j$.
-  We must then find a $t_{j+1}$ so that
-  $\exists t_{j+2}, \ldots , t_{k+1}\Constraints{\beta}$ is satisfied.
-  There are two cases
-  \begin{itemize}
-  \item
-    $l \rtcsdelay{\beta} j+1$ for some $l \leq j$. In this case, there is only
-    one choice for $t_{j+1}$. This value will maintain the property.
-  \item
-    $l \rtcsdelay{\beta} j+1$ for no $l \leq j$. In this case, by the
-    above property, the constraints for choosing the possible values for
-    $t_{j+1}$ may not have non-strict upper and lower bounds that are numbers
-    with the same fractional parts. This implies that we can choose a value
-    for $t_{j+1}$ with a fractional part different from those of
-     $t_0, \ldots , t_k$.
-  \end{itemize}
-\end{itemize}
+Replace $t_i$ by its value ($v_i$) in the current constraint, and
+simplify all constraints that contain $v_i$ so that they become 
+constraints of form $t_j \sim N$, where $\sim \in \set{<,\leq,\geq,>}$.
+The resulting constraint has the property that for any $j > i$,
+if $t_j \geq N$ and $t_j \leq N'$ are both included (here $N$ and $N'$ can
+be real numbers), then $N$ and $N'$ have different fractional parts unless
+$l \rtcsdelay{\beta} j$ for some $l$. This implies that for $i+1$,
+unless $j \rtcsdelay{\beta} i+1$ for some $j$,
+we can choose a value $v_{i+1}$ for $t_{i+1}$ with a fractional part different
+  from that of any $v_j$ with $j < i+1$;
+ thus we can repeat the procedure for $i+1$, etc.
+\end{enumerate}
+%% We use the known
+%% property of normalized DBMs that for any $j$, we have that
+%% $\exists t_{j+1}, \ldots , t_{k+1}\Constraints{\beta}$ is equivalent to the
+%% constraint obtained by removing all constraints from $\Constraints{\beta}$ that
+%% involve any of $t_{j+1}, \ldots , t_{k+1}$.
+%% \todobj{citation}
+%% We then inductively select values of $t_0, \ldots , t_{k+1}$ as follows:
+%% \begin{itemize}
+%% \item
+%%   $t_1$ can be chosen arbitrarily.
+%% \item Assume that  $t_0, \ldots , t_j$ have been selected to satisfy
+%%   $\exists t_{j+1}, \ldots , t_{k+1}\Constraints{\beta}$, and such that
+%%   $t_l$ and $t_j$ have the same fractional part only if
+%%   $l \rtcsdelay{\beta} j$.
+%%   We must then find a $t_{j+1}$ so that
+%%   $\exists t_{j+2}, \ldots , t_{k+1}\Constraints{\beta}$ is satisfied.
+%%   There are two cases
+%%   \begin{itemize}
+%%   \item
+%%     $l \rtcsdelay{\beta} j+1$ for some $l \leq j$. In this case, there is only
+%%     one choice for $t_{j+1}$. This value will maintain the property.
+%%   \item
+%%     $l \rtcsdelay{\beta} j+1$ for no $l \leq j$. In this case, by the
+%%     above property, the constraints for choosing the possible values for
+%%     $t_{j+1}$ may not have non-strict upper and lower bounds that are numbers
+%%     with the same fractional parts. This implies that we can choose a value
+%%     for $t_{j+1}$ with a fractional part different from those of
+%%      $t_0, \ldots , t_k$.
+%%   \end{itemize}
+%% \end{itemize}
 This procedure results in an assignment of values such that
   $t_l$ and $t_j$ have the same fractional part only if
   $l \rtcsdelay{\beta} j$, and the lemma is proven.
@@ -602,9 +650,9 @@ theorem.
 
 \begin{theorem}
   \label{thm:race-free}
-  If $\alpha$ is a time run of $\M$, then there is
-  a race-free and transparent timed run $\alpha'$ of $\M$ such that
-  $\timerlive{\M}{\can{\alpha}} = \timerlive{\M}{\can{\alpha'}}$.
+  If $\alpha(\mmtpath,\dvec)$ is a timed run of $\M$, then there is
+  a race-free and transparent timed run $\alpha(\mmtpath,\dvec')$ derived
+  from the same path of $\M$.
 \end{theorem}
 
 Theorem~\ref{thm:race-free} also makes it easy to establish the equivalence
