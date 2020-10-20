@@ -1,0 +1,214 @@
+\documentclass[pdf]{beamer}
+
+\usetheme{Warsaw}
+
+
+\usepackage{alltt}
+
+\usepackage{amssymb, amsmath}
+
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{multirow}
+\usepackage{booktabs}
+
+\usepackage[english]{babel}
+
+\usepackage{tikz}
+\usetikzlibrary{calc,trees,positioning,arrows,chains,automata,shapes.geometric,%
+    decorations.pathreplacing,decorations.pathmorphing,shapes,%
+    matrix,shapes.symbols}
+
+\usetikzlibrary{shapes,arrows,automata,positioning,calc}
+\usetikzlibrary{fit,backgrounds}
+\usetikzlibrary{decorations.pathreplacing}
+\tikzset{
+>=stealth',
+  punktchain/.style={
+    rectangle,
+    rounded corners,
+    % fill=black!10,
+    draw=black, very thick,
+    text width=6em,
+    minimum height=3em,
+    text centered,
+    on chain},
+  line/.style={draw, thick, <-},
+  element/.style={
+    tape,
+    top color=white,
+    bottom color=blue!50!black!60!,
+    minimum width=8em,
+    draw=blue!40!black!90, very thick,
+    text width=10em,
+    minimum height=3.5em,
+    text centered,
+    on chain},
+  every join/.style={->, thick,shorten >=1pt},
+  decoration={brace},
+  tuborg/.style={decorate},
+  tubnode/.style={midway, right=2pt},
+}
+
+\input{macros}
+\newcommand{\domain}{\mathcal{D}}
+\newcommand{\binrelations}{\mathcal{R}}
+
+% Define various macros
+\definecolor{darkgreen}{rgb}{0,.75,0}
+\definecolor{darkred}{rgb}{.75,0,0}
+\definecolor{darkblue}{rgb}{0,0,.75}
+\newcommand{\red}[1]{\color{darkred}{#1}\normalcolor }
+\newcommand{\green}[1]{\color{darkgreen}{#1}\normalcolor }
+\newcommand{\blue}[1]{\color{blue}{#1}\normalcolor }
+\newcommand{\tts}{\tt \footnotesize}
+\newcommand{\ra}{\rightarrow}
+
+
+\newif\iflong
+%\longtrue
+\longfalse
+
+\title[Extracting Interfaces via Model Learning]{%
+Extracting Interfaces from Software Components via Model Learning}
+
+\author[Frits Vaandrager]{%
+Frits Vaandrager}
+
+\institute{Radboud University Nijmegen}
+
+\date[]{Awayday SWS group}
+
+
+%\beamertemplatenavigationsymbolsempty
+%\beamertemplateshadingbackground{red!10}{blue!10}
+
+\begin{document}
+
+\frame{\titlepage}
+
+
+
+
+
+\frame{
+\frametitle{Research Question}
+
+\begin{center}
+\includegraphics[width=.8\textwidth]{blackbox.jpg}
+\end{center}
+
+
+}
+
+
+
+\frame{
+	\frametitle{Our Research Method }
+	
+	\begin{center}
+		\includegraphics[width=.8\textwidth]{method.png}
+	\end{center}
+}
+
+
+
+\frame{
+	\frametitle{Bugs in Protocol Implementations}
+	
+	\begin{columns}
+		\begin{column}{0.5\textwidth}  %%<--- here
+			\begin{center}
+				\includegraphics[width=0.9\textwidth]{TCPbug.png}
+			\end{center}
+		\end{column}
+		\begin{column}{0.5\textwidth}
+			Standard violations found in implementations of major protocols: 
+			\begin{itemize}
+				\item
+				\blue{TLS}\  (Usenix Security'15)
+				\item 
+				\blue{TCP}\  (CAV'16)
+				\item
+				\blue{SSH}\  (Spin'17)
+			\end{itemize}
+			%
+			\pause
+			\red{These findings led to bug fixes in implementations.}
+		\end{column}
+	\end{columns}
+	
+}
+
+\frame{
+	\frametitle{ASML Challenge}
+	
+	\begin{columns}
+		\begin{column}{0.5\textwidth}  %%<--- here
+			\begin{center}
+				\includegraphics[width=0.9\textwidth]{ASML-Feature.jpg}
+			\end{center}
+		\end{column}
+		\begin{column}{0.5\textwidth}
+			Can active automata learning be used to support refactoring of legacy software at ASML?
+			
+			\vspace{1 em}
+			ASML machines run on legacy software. Recent components have been designed using model-based techniques. Can we learn those?
+			
+			\vspace{1 em}
+			Can we learn the hundreds of design and interface models
+			used for high level control of the wafer flow during lot operation?
+		\end{column}
+	\end{columns}
+	
+}
+
+\frame{
+	\frametitle{Results LearnLib on ASML Benchmarks}
+	
+	\begin{center}
+		\includegraphics[width=0.8\textwidth]{ASMLBenchmarks.jpg}
+	\end{center}
+	
+}
+
+
+\frame{
+	\frametitle{Potential Applications Interface Models}
+	
+	\begin{center}
+		\includegraphics[width=\textwidth]{applicationsinterfacemodels}
+	\end{center}
+}
+
+
+
+
+
+\frame{
+	\frametitle{Future Work}
+	\begin{enumerate}
+		\item
+		Learning EFSMs
+		\item
+		Combinations of black-box and white-box learning
+		\item
+		Improved algorithms for learning/testing
+		\item
+		From Mealy machines to I/O automata
+		\item
+		Adding time and probabilities
+		\item
+		Refactoring of legacy software excellent application domain
+		\item
+		Funding: NWO, TTW (via ESI), ERC,..
+	\end{enumerate}
+}
+
+
+
+
+
+
+
+\end{document}

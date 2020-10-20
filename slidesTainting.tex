@@ -1,0 +1,365 @@
+\documentclass[pdf]{beamer}
+
+\usetheme{Warsaw}
+
+\usepackage{alltt}
+
+\usepackage{amssymb, amsmath}
+
+\usepackage[english]{babel}
+
+\usepackage{tikz}
+\usetikzlibrary{calc,trees,positioning,arrows,chains,automata,shapes.geometric,%
+    decorations.pathreplacing,decorations.pathmorphing,shapes,%
+    matrix,shapes.symbols}
+
+\usetikzlibrary{shapes,arrows,automata,positioning,calc}
+\usetikzlibrary{fit,backgrounds}
+\usetikzlibrary{decorations.pathreplacing}
+\tikzset{
+>=stealth',
+  punktchain/.style={
+    rectangle,
+    rounded corners,
+    % fill=black!10,
+    draw=black, very thick,
+    text width=6em,
+    minimum height=3em,
+    text centered,
+    on chain},
+  line/.style={draw, thick, <-},
+  element/.style={
+    tape,
+    top color=white,
+    bottom color=blue!50!black!60!,
+    minimum width=8em,
+    draw=blue!40!black!90, very thick,
+    text width=10em,
+    minimum height=3.5em,
+    text centered,
+    on chain},
+  every join/.style={->, thick,shorten >=1pt},
+  decoration={brace},
+  tuborg/.style={decorate},
+  tubnode/.style={midway, right=2pt},
+}
+
+\input{macros}
+
+% Define various macros
+\definecolor{darkgreen}{rgb}{0,.75,0}
+\definecolor{darkred}{rgb}{.75,0,0}
+\definecolor{darkblue}{rgb}{0,0,.75}
+\newcommand{\red}[1]{\color{darkred}{#1}\normalcolor }
+\newcommand{\green}[1]{\color{darkgreen}{#1}\normalcolor }
+\newcommand{\blue}[1]{\color{blue}{#1}\normalcolor }
+\newcommand{\tts}{\tt \footnotesize}
+\newcommand{\ra}{\rightarrow}
+
+\newif\iflong
+%\longtrue
+\longfalse
+
+\title[Learning Register Automata Using Taint Analysis]{%
+Learning Register Automata Using Taint Analysis}
+
+\author[Schrijvers, Howar and Vaandrager]{%
+Timo Schrijvers \and Falk Howar \and Frits Vaandrager}
+
+\institute{\textbf{Bengt Jonsson 60th Birthday Workshop}}
+
+\date[]{Uppsala University, August 29, 2018}
+
+
+\beamertemplatenavigationsymbolsempty
+%\beamertemplateshadingbackground{red!10}{blue!10}
+
+\begin{document}
+
+\frame{\titlepage}
+
+%\section{Introduction}
+
+\frame{
+\frametitle{St.\ Jansberg, NL, 2018}
+
+\begin{center}
+%\includegraphics[width=.8\textwidth]{Plasmolen.jpg}
+\includegraphics[width=.8\textwidth]{Jansberg.jpg}
+\end{center}
+}
+
+\frame{
+\frametitle{Plasmolen, NL, 1989: REX Workshop on Refinement}
+
+\begin{center}
+\includegraphics[width=.9\textwidth]{Plasmolen.jpg}
+%\includegraphics[width=.8\textwidth]{Jansberg.jpg}
+\end{center}
+}
+
+\frame{
+\frametitle{Hotel De Plasmolen: Destroyed Three Times}
+
+\begin{center}
+\includegraphics[width=.25\textwidth]{1944Plasmolen.jpg}
+\includegraphics[width=.7\textwidth]{bord_plasmolen.jpg}
+\end{center}
+
+\pause\red{... but one can still feel {\bf The Force!}}
+}
+
+\frame{
+\frametitle{Bengt Is Always 5 Years Ahead!!}
+
+\begin{itemize}
+\item
+I/O automata
+\item
+Refinement relations
+\item
+Model checking
+\item
+Testing
+\item
+Timed and probabilistic models
+\item
+Automata learning
+\item
+...
+\end{itemize}
+}
+
+
+
+
+
+\frame{
+\frametitle{Minimally adequate teacher (Angluin)}
+
+\begin{center}
+ \begin{tikzpicture}[>=stealth]
+            \draw [thick] (0,0) rectangle (1.5,3.5) node[midway] {Learner};
+            \draw [thick] (4.5,0) rectangle (6,3.5) node[midway] {Teacher};
+            \draw [->] (1.5,3) -- (4.5,3) node[midway,below] {MQ};
+            \draw (1.5,3) -- (4.5,3) node[midway,above] {\small input sequences};
+            \draw [<-] (1.5,2.5) -- (4.5,2.5) node[midway,below] {\small output sequences};
+            \draw [->] (1.5,1) -- (4.5,1) node[midway,below] {EQ};
+            \draw (1.5,1) -- (4.5,1) node[midway,above] {\small hypothesis};
+            \draw [<-] (1.5,0.5) -- (4.5,0.5) node[midway,below] {\small counterexample};
+        \end{tikzpicture}
+        \hspace{2 em}
+\includegraphics[width=.25\textwidth]{angluin.png}
+\end{center}
+}
+\frame{
+\frametitle{Black box checking (Peled, Vardi \& Yannakakis)}
+
+\begin{center}
+ \begin{tikzpicture}[>=stealth]
+            \draw [thick] (0,0) rectangle (1.5,3.5);
+            \draw (4.5,0) rectangle (6,3.5) node[midway] {TQs};
+            \draw [thick] (4.7,2.25) rectangle (5.8,3.15) node[midway] {SUL};
+            \draw [thick] (4.7,0.6) rectangle (5.8,1.5) node[midway] {CT};
+            \draw [->] (1.5,3) -- (4.7,3) node[midway,below] {MQ};
+            \draw [<-] (1.5,2.5) -- (4.7,2.5);
+            \draw [->] (1.5,1.3) -- (4.7,1.3) node[midway,below] {EQ};
+            \draw [<-] (1.5,0.8) -- (4.7,0.8);
+            \draw [->] (4.85,1.55) -- (4.85,2.25);
+            \draw [<-] (5.65,1.55) -- (5.65,2.25);
+            \node [below] at (0.75,0.5) {Learner};
+            \node [below] at (5.25,0.5) {Teacher};
+        \end{tikzpicture}
+                \hspace{1 em}
+        \includegraphics[width=1.2cm]{peled.jpg}
+        \includegraphics[width=1.35cm]{vardi.jpeg}
+        \includegraphics[width=1.1cm]{Yannakakis.png}
+\end{center}
+\red{Learner}: Formulate hypotheses\\
+\red{Conformance Tester (CT)}: Test correctness hypotheses
+}
+
+\frame{
+\frametitle{LearnLib}
+
+\begin{center}
+\includegraphics[width=.7\textwidth]{LearnLib.jpg}
+    \hspace{1 em}
+        \includegraphics[width=2.5cm]{steffen.jpg}
+\end{center}
+}
+
+
+\frame{
+\frametitle{Application: E.dentifier2}
+\begin{center}
+\includegraphics[width=.8\textwidth]{nosedentifier.png}
+\end{center}
+}
+
+\frame{
+\frametitle{State machines for old and new E.dentifier2}
+\begin{center}
+\includegraphics[width=.9\textwidth]{oldedentifier.png}
+
+\includegraphics[width=.9\textwidth]{newedentifier.png}
+\end{center}
+}
+
+\frame{
+\frametitle{Bugs in protocol implementations}
+
+\begin{center}
+\includegraphics[width=.35\textwidth]{TCPbug.png}
+\end{center}
+{\small Standard violations found in implementations of major protocols, e.g.,
+\blue{TCP}\  (CAV'16, FMICS'17), \blue{TLS}\  (Usenix Security'15), \blue{SSH}\  (Spin'17).}
+%
+\pause
+\red{These findings led to several bug fixes in implementations.}
+}
+
+\frame{
+\frametitle{Learned model for SSH implementation}
+
+\begin{center}
+\includegraphics[width=.8\textwidth]{sshbug.png}
+\end{center}
+}
+\frame{
+\frametitle{SSH model checking results}
+
+\begin{center}
+\includegraphics[width=.8\textwidth]{sshresults.png}
+\end{center}
+}
+
+\frame{
+\frametitle{Power Control Service  from Philips Healthcare}
+
+\begin{center}
+\includegraphics[width=.4\textwidth]{Xray.png}
+\end{center}
+
+Are legacy component and refactored implementation equivalent?
+}
+
+\frame{
+\frametitle{Refactoring Legacy Implementations}
+
+\begin{center}
+\includegraphics[width=.8\textwidth]{MethodeLegacy.jpg}
+\end{center}
+
+\pause
+\red{This approach allowed us to find several bugs in refactored implementations.}
+}
+
+
+\frame{
+\frametitle{Register Automata}
+
+\begin{center}
+\includegraphics[width=.8\textwidth]{fifoset.jpg}
+\end{center}
+}
+
+\frame{
+\frametitle{Research Problem}
+
+\begin{itemize}
+\item 
+Model learning is an highly effective bug finding technique
+\pause
+\item
+... but it has some serious scalability problems
+\pause
+\item
+\red{Can we use white-box information while preserving the extensionality of black-box models?}
+\end{itemize}
+}
+
+\frame{
+\frametitle{Our Approach: Use Taint Analysis}
+
+\begin{center}
+\includegraphics[width=.8\textwidth]{ants.jpg}
+\end{center}
+}
+
+
+\frame{
+\frametitle{Taint Analysis}
+
+\begin{itemize}
+\item
+White-box technique for code analysis
+\item
+Instruments code to track input values
+\item
+Many tools focus on specific vulnerabilities, e.g.\ buffer overflows and sql injections
+\item
+Usually implemented using Dynamic Binary Analysis, e.g.\ Valgrind
+\item
+We use python library from Pygmalion tool from Andreas Zeller et al.
+\end{itemize}
+}
+
+\frame{
+\frametitle{What Does Pygmalion Tool Do For Us?}
+
+\begin{center}
+\includegraphics[width=\textwidth]{taintedtrace.jpg}
+\end{center}
+
+\pause
+\red{Potential of exponential gains during learning!}
+}
+\frame{
+\frametitle{Architecture RAlib Tool for Learning Register Automata}
+
+\begin{center}
+ \includegraphics[width=\textwidth]{ralib.jpg}
+\end{center}
+}
+
+\frame{
+\frametitle{Tree Oracle}
+
+\begin{center}
+ \includegraphics[width=0.6\textwidth]{SDT.jpg}
+\end{center}
+}
+
+\frame{
+\frametitle{Ongoing Work}
+
+Replace tree oracle in RAlib by a version that uses taint analysis.
+
+\vspace{2cm}
+\pause
+\red{First prototype finished (for integers with equality)!!!}
+}
+
+
+\frame{
+\frametitle{Future Work}
+\begin{enumerate}
+\item
+Complete implementation and correctness proof tree oracle
+\item
+Build equivalence oracle that uses tainting
+\item
+Extend to setting with operations on data
+\item
+Experiment with different tainting libraries
+\item
+Benchmarks and new case studies!
+\end{enumerate}
+}
+
+
+
+
+
+\end{document}

@@ -1,0 +1,351 @@
+\documentclass[pdf]{beamer}
+
+\usetheme{Warsaw}
+
+\usepackage{alltt}
+
+\usepackage{amssymb, amsmath}
+
+\usepackage[english]{babel}
+
+\usepackage{tikz}
+\usetikzlibrary{calc,trees,positioning,arrows,chains,automata,shapes.geometric,%
+    decorations.pathreplacing,decorations.pathmorphing,shapes,%
+    matrix,shapes.symbols}
+
+\usetikzlibrary{shapes,arrows,automata,positioning,calc}
+\usetikzlibrary{fit,backgrounds}
+\usetikzlibrary{decorations.pathreplacing}
+\tikzset{
+>=stealth',
+  punktchain/.style={
+    rectangle,
+    rounded corners,
+    % fill=black!10,
+    draw=black, very thick,
+    text width=6em,
+    minimum height=3em,
+    text centered,
+    on chain},
+  line/.style={draw, thick, <-},
+  element/.style={
+    tape,
+    top color=white,
+    bottom color=blue!50!black!60!,
+    minimum width=8em,
+    draw=blue!40!black!90, very thick,
+    text width=10em,
+    minimum height=3.5em,
+    text centered,
+    on chain},
+  every join/.style={->, thick,shorten >=1pt},
+  decoration={brace},
+  tuborg/.style={decorate},
+  tubnode/.style={midway, right=2pt},
+}
+
+\input{macros}
+
+% Define various macros
+\definecolor{darkgreen}{rgb}{0,.75,0}
+\definecolor{darkred}{rgb}{.75,0,0}
+\definecolor{darkblue}{rgb}{0,0,.75}
+\newcommand{\red}[1]{\color{darkred}{#1}\normalcolor }
+\newcommand{\green}[1]{\color{darkgreen}{#1}\normalcolor }
+\newcommand{\blue}[1]{\color{blue}{#1}\normalcolor }
+\newcommand{\tts}{\tt \footnotesize}
+\newcommand{\ra}{\rightarrow}
+
+\newif\iflong
+%\longtrue
+\longfalse
+
+\title[Model Learning as an SMT Problem]{%
+Model Learning as an SMT Problem}
+
+\author[Smetsers,  Fiter\u{a}u-Bro\c{s}tean and Vaandrager]{%
+Rick Smetsers \and Paul Fiter\u{a}u-Bro\c{s}tean \and Frits Vaandrager}
+
+\institute{Radboud University Nijmegen}
+
+\date[LATA 2018]{LATA 2018, Bar-Ilan, April 9-11, 2018}
+
+
+\beamertemplatenavigationsymbolsempty
+%\beamertemplateshadingbackground{red!10}{blue!10}
+
+\begin{document}
+
+\frame{\titlepage}
+
+%\section{Introduction}
+
+\frame{
+\frametitle{Goal active automaton learning}
+
+\begin{center}
+\includegraphics[width=.8\textwidth]{blackbox.jpg}
+\end{center}
+}
+
+\frame{
+\frametitle{Machine Learning in General}
+
+\begin{center}
+\includegraphics[width=\textwidth]{machinelearningingeneral.png}
+\end{center}
+}
+
+\frame{
+\frametitle{Learning Regular Languages}
+
+\begin{center}
+\includegraphics[width=\textwidth]{learningregularlanguages.png}
+\end{center}
+}
+
+\frame{
+\frametitle{Minimally adequate teacher (Angluin)}
+
+\begin{center}
+ \begin{tikzpicture}[>=stealth]
+            \draw [thick] (0,0) rectangle (1.5,3.5) node[midway] {Learner};
+            \draw [thick] (4.5,0) rectangle (6,3.5) node[midway] {Teacher};
+            \draw [->] (1.5,3) -- (4.5,3) node[midway,below] {MQ};
+            \draw (1.5,3) -- (4.5,3) node[midway,above] {\small input sequences};
+            \draw [<-] (1.5,2.5) -- (4.5,2.5) node[midway,below] {\small output sequences};
+            \draw [->] (1.5,1) -- (4.5,1) node[midway,below] {EQ};
+            \draw (1.5,1) -- (4.5,1) node[midway,above] {\small hypothesis};
+            \draw [<-] (1.5,0.5) -- (4.5,0.5) node[midway,below] {\small counterexample};
+        \end{tikzpicture}
+        \hspace{2 em}
+\includegraphics[width=.25\textwidth]{angluin.png}
+\end{center}
+}
+\frame{
+\frametitle{Black box checking (Peled, Vardi \& Yannakakis)}
+
+\begin{center}
+ \begin{tikzpicture}[>=stealth]
+            \draw [thick] (0,0) rectangle (1.5,3.5);
+            \draw (4.5,0) rectangle (6,3.5) node[midway] {TQs};
+            \draw [thick] (4.7,2.25) rectangle (5.8,3.15) node[midway] {SUL};
+            \draw [thick] (4.7,0.6) rectangle (5.8,1.5) node[midway] {CT};
+            \draw [->] (1.5,3) -- (4.7,3) node[midway,below] {MQ};
+            \draw [<-] (1.5,2.5) -- (4.7,2.5);
+            \draw [->] (1.5,1.3) -- (4.7,1.3) node[midway,below] {EQ};
+            \draw [<-] (1.5,0.8) -- (4.7,0.8);
+            \draw [->] (4.85,1.55) -- (4.85,2.25);
+            \draw [<-] (5.65,1.55) -- (5.65,2.25);
+            \node [below] at (0.75,0.5) {Learner};
+            \node [below] at (5.25,0.5) {Teacher};
+        \end{tikzpicture}
+                \hspace{1 em}
+        \includegraphics[width=1.2cm]{peled.jpg}
+        \includegraphics[width=1.35cm]{vardi.jpeg}
+        \includegraphics[width=1.1cm]{Yannakakis.png}
+\end{center}
+\red{Learner}: Formulate hypotheses\\
+\red{Conformance Tester (CT)}: Test correctness hypotheses
+}
+
+
+
+\frame{
+\frametitle{Research method}
+
+\begin{center}
+\includegraphics[width=.8\textwidth]{method.png}
+\end{center}
+}
+
+\frame{
+\frametitle{Application: E.dentifier2}
+\begin{center}
+\includegraphics[width=.8\textwidth]{nosedentifier.png}
+\end{center}
+}
+
+\frame{
+\frametitle{State machines for old and new E.dentifier2}
+\begin{center}
+\includegraphics[width=.9\textwidth]{oldedentifier.png}
+
+\includegraphics[width=.9\textwidth]{newedentifier.png}
+\end{center}
+}
+
+\frame{
+\frametitle{Bugs in protocol implementations}
+
+\begin{center}
+\includegraphics[width=.35\textwidth]{TCPbug.png}
+\end{center}
+{\small Standard violations found in implementations of major protocols, e.g.,
+\blue{TCP}\  (CAV'16, FMICS'17), \blue{TLS}\  (Usenix Security'15), \blue{SSH}\  (Spin'17).}
+%
+\pause
+\red{These findings led to several bug fixes in implementations.}
+}
+
+\frame{
+\frametitle{Learned model for SSH implementation}
+
+\begin{center}
+\includegraphics[width=.8\textwidth]{sshbug.png}
+\end{center}
+}
+
+
+\frame{
+\frametitle{Power Control Service  from Philips Healthcare}
+
+\begin{center}
+\includegraphics[width=.4\textwidth]{Xray.png}
+\end{center}
+
+Are legacy component and refactored implementation equivalent?
+}
+
+\frame{
+\frametitle{Refactoring Legacy Implementations}
+
+\begin{center}
+\includegraphics[width=.8\textwidth]{MethodeLegacy.jpg}
+\end{center}
+
+\pause
+\red{This approach allowed us to find several bugs in refactored implementations.}
+}
+
+
+\frame{
+\frametitle{For background and applications see CACM review article}
+
+\begin{center}
+\includegraphics[width=.4\textwidth]{cacm.jpg}
+\end{center}
+}
+
+\frame{
+\frametitle{Our approach}
+
+\begin{center}
+ \begin{tikzpicture}[>=stealth]
+            \draw [thick] (0,0) rectangle (1.5,3.5);
+            \draw (4.5,0) rectangle (6,3.5) node[midway] {TQs};
+            \draw [thick] (4.7,2.25) rectangle (5.8,3.15) node[midway] {SUL};
+            \draw [thick] (4.7,0.6) rectangle (5.8,1.5) node[midway] {CT};
+            \draw [->] (1.5,1.3) -- (4.7,1.3) node[midway,below] {EQ};
+            \draw [<-] (1.5,0.8) -- (4.7,0.8);
+            \draw [->] (4.85,1.55) -- (4.85,2.25);
+            \draw [<-] (5.65,1.55) -- (5.65,2.25);
+            \node [below] at (0.75,0.5) {Learner};
+            \node [below] at (5.25,0.5) {Teacher};
+        \end{tikzpicture}
+                
+\end{center}
+\pause
+Crazy idea?
+\pause
+Might work because of:
+\begin{itemize}
+\item
+Advances in constraint solvers
+\item
+Conformance testers not adversarial
+\item
+In applications case studies are often small
+\end{itemize}
+}
+
+\frame{
+\frametitle{Using a Constraint Solver for Passive Learning}
+
+\begin{enumerate}
+\item 
+Arrange positive and negative examples in \emph{observation tree} $O$,
+\item
+Ask solver if there exists a DFA $A$ with at most $n$ states
+and a homomorphic mapping from $O$ to $A$,
+\item
+Repeat for $n = 1,2,3 \ldots$ until minimal DFA is found.
+\end{enumerate}}
+
+\frame{
+\frametitle{Question}
+Can our approach compete with active learning algorithms?
+
+\begin{itemize}
+\item
+Implement passive learner using Z3 SMT solver
+\item
+Compare total number of inputs needed to learn models with Angluin's L$^{\ast}$ and state-of-the-art TTT algorithm of Isberner et al
+\item
+Use state-of-the-art conformance testing algorithm based on adaptive distinguishing sequences of Lee and Yannakakis
+\item
+Evaluate on a number of realistic benchmarks
+\end{itemize}
+}
+
+\frame{
+\frametitle{Experimental Results}
+
+
+\begin{center}
+\includegraphics[width=.75\textwidth]{Tabel2LATA.jpg}
+\end{center}
+}
+
+\frame{
+\frametitle{Other Modelling Frameworks}
+
+We also defined SMT encodings for
+\begin{itemize}
+\item 
+Mealy machines
+\item
+Register automata
+\item
+Input output register automata
+\item
+Learning setting without resets a la Petrenko et  al
+\end{itemize}
+
+Experimental results described in paper.
+}
+%\section{Conclusions and future work}
+\frame{
+\frametitle{Conclusions}
+
+\begin{enumerate}
+\item
+Our approach to use SMT solvers for model learning is highly versatile
+\item
+Approach does not scale well, but is able to learn small models
+\item
+Competitive with state of the art 
+\end{enumerate}
+
+}
+
+\frame{
+\frametitle{Future Work}
+\begin{enumerate}
+\item
+Improve scalability via smarter encodings
+\item
+Reduce number of queries via smarter testing
+\item
+Explore approach for rapid prototyping new types of models, such as Mealy machines with timers
+\item
+From query complexity to input symbol complexity: better theoretical understanding
+
+\end{enumerate}
+}
+
+
+
+
+
+\end{document}
